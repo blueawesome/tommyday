@@ -1,0 +1,858 @@
+
+@import "tailwindcss";
+
+/* Slightly increase root font-size so rem-based Tailwind sizes read a bit larger
+	(112.5% of 16px = 18px) */
+html { font-size: 112.5%; }
+
+/* Typography: EB Garamond for body, Space Mono for headings */
+h1, h2, h3, h4, h5 { font-family: 'Special Elite', 'Space Mono', ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+/* Base type tuning */
+body { font-family: 'EB Garamond', Georgia, 'Times New Roman', serif; line-height: 1.6; font-size: 1.125rem; }
+h1, h2, h3, h4, h5 { font-family: 'Special Elite', 'Space Mono', ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+/* Sidebar nav uses Special Elite with a slightly larger size for emphasis */
+.sidebar-nav a { font-family: 'Special Elite', cursive; font-size: 1.125rem; text-transform: uppercase; letter-spacing: 0.08em; display: flex; align-items: center; gap: 0.65rem; }
+.sidebar-nav .font-mono { font-size: 0.95rem; opacity: 0.85; font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace; font-weight: 700; line-height: 1; }
+
+/* Nav icon styling (Font Awesome will provide the glyphs once installed) */
+.nav-icon { font-size: 1.1rem; color: #2a2a2a; width: 1.3rem; }
+
+/* Slightly more padding for the overall sidebar nav container */
+.sidebar-nav { padding: .75rem 1rem; }
+
+.sidebar-nav ul { gap: 0.95rem; margin-top: 1rem; list-style: none; padding-left: 1rem; display: flex; flex-direction: column; }
+
+/* Slightly larger base text for small UI elements */
+small, .text-sm { font-size: 1.05rem; }
+
+/* Hide elements before Alpine initializes to prevent flash of unfiltered content */
+[x-cloak] { display: none !important; }
+
+/* Subtle card transitions for Alpine x-transition hooks */
+.alpine-enter { transition: opacity 220ms ease, transform 220ms ease; }
+.alpine-enter-start { opacity: 0; transform: translateY(6px) scale(0.995); }
+.alpine-enter-end { opacity: 1; transform: translateY(0) scale(1); }
+
+.alpine-leave { transition: opacity 180ms ease, transform 180ms ease; }
+.alpine-leave-start { opacity: 1; transform: translateY(0) scale(1); }
+.alpine-leave-end { opacity: 0; transform: translateY(6px) scale(0.995); }
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+	.alpine-enter,
+	.alpine-enter-start,
+	.alpine-enter-end,
+	.alpine-leave,
+	.alpine-leave-start,
+	.alpine-leave-end {
+		transition: none !important;
+		transform: none !important;
+		opacity: 1 !important;
+	}
+}
+
+/* Subtle paper/photocopy texture layer for the site background.
+	 Uses the image at /images/bg.jpg (placed in public/images/bg.jpg).
+	 The texture is tiled and very low-opacity so it reads like paper rather than a photo.
+*/
+body {
+  background-color: #f7f4ed;
+  background-image: none;
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: url('/images/paper.jpg');
+  background-repeat: repeat;
+  background-size: 600px auto;
+  background-position: top left;
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: -1;
+}
+
+
+
+/* Respect reduced motion / minimal visuals for users who opt out */
+@media (prefers-reduced-motion: reduce) {
+	body { background-attachment: scroll; }
+}
+
+:root {
+  --paper: #F7F4ED;
+  --ink: #11100D;
+  --muted: #5F5A50;
+  --line: rgba(17,16,13,0.22);
+  --riso-yellow: #F7E733;
+  --riso-pink: #FF4FA3;
+  --riso-blue: #2563eb;
+  --card-media-height: 680px; /* default desktop card image container height (taller as requested) */
+}
+.card-media { height: var(--card-media-height); display: block; background: transparent; }
+.card-media img.card-image { width: 100%; height: 100%; object-fit: contain; display: block; }
+.card--compact .card-media { height: clamp(210px, 28vw, 340px); }
+
+/* Prevent text-decoration/underline on nav links/icons */
+.sidebar-nav a { text-decoration: none; }
+
+/* Nav label highlighter effect */
+.nav-label { position: relative; z-index: 1; padding: 0.06rem 0.08rem; }
+.nav-label::before {
+	content: "";
+	position: absolute;
+	left: -0.12rem;
+	right: -0.12rem;
+	top: 50%;
+	height: 0.88rem;
+ 	background: var(--riso-yellow);
+	transform: translateY(-50%) rotate(-2deg);
+	z-index: -1;
+	opacity: 0;
+	transition: opacity 180ms ease, transform 220ms ease;
+	border-radius: 2px;
+}
+
+.sidebar-nav a:hover .nav-label::before,
+.sidebar-nav a:focus .nav-label::before { opacity: 0.95; transform: translateY(-50%) rotate(-1deg) scaleX(1.03); }
+
+/* active/current page state for nav */
+.sidebar-nav a.active .nav-label::before,
+.sidebar-nav a[aria-current="page"] .nav-label::before,
+.sidebar-nav a[aria-current="true"] .nav-label::before {
+  opacity: 0.95;
+  transform: translateY(-50%) rotate(-1deg) scaleX(1.03);
+}
+
+/* logo spacing tweak */
+.td-logo { margin-top: 1rem; }
+
+@media (prefers-reduced-motion: reduce) {
+	.nav-label::before { transition: none; }
+}
+
+@media (max-width: 640px) {
+	:root { --card-media-height: 220px; }
+}
+
+/* PJAX progress bar is injected by the script; ensure it looks right */
+#pjax-progress { height: 3px; position: fixed; top: 0; left: 0; right: 0; z-index: 9999; transform-origin: left; }
+
+/* SW update banner */
+.sw-update { position: fixed; bottom: 20px; right: 20px; background: rgba(255,255,255,0.95); padding: 8px 12px; border-radius: 6px; box-shadow: 0 6px 18px rgba(0,0,0,0.08); z-index: 9999; }
+.sw-update button { margin-left: 8px; }
+
+.filter-strip {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.9rem 1.2rem;
+  width: -moz-fit-content;
+  width: fit-content;
+  max-width: 100%;
+  margin: 1rem 0 3.5rem;
+  padding: 0.6rem 0.9rem;
+  background: var(--riso-yellow);
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  box-shadow: 6px 6px 0 var(--ink);
+  border-radius: 0; /* square corners */
+  transform: rotate(-0.15deg); /* tiny tilt like a pasted label */
+}
+
+/* Container that spans the content width and right-aligns the compact filter strip */
+
+
+.filter-strip::after {
+  /* subtle paper texture over the pasted strip */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("/images/paper.jpg");
+  background-size: 500px auto;
+  opacity: 0.22;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+.filter-strip > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Select box styling inside the riso filter strip */
+.filter-strip select,
+.filter-strip .border {
+  background-color: var(--paper);
+  border: 1.5px solid var(--ink);
+  border-radius: 0;
+  color: var(--ink);
+  padding: 0.28rem 1.2rem 0.28rem 0.5rem;
+  box-shadow: 2px 2px 0 var(--ink);
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+/* Sentence-style variant: inline, no extra rounded corners, reads like a fill-in-the-blank */
+.sentence-strip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.6rem;
+}
+
+/* Ensure the compact sentence-style filter strip can be right-aligned
+   by making it a block-level flex container when it also has
+   the .filter-strip class (keeps DOM simple, avoids wrapper). */
+.filter-strip.sentence-strip {
+  display: flex; /* block-level flex -> margin-left:auto will work */
+}
+
+.filter-blank {
+  background-color: var(--paper);
+  border: 2px solid var(--ink);
+  color: var(--ink);
+  padding: 0.18rem 0.9rem;
+  min-width: 6.5rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  -webkit-appearance: none;
+  appearance: none;
+  box-shadow: 3px 3px 0 var(--ink);
+  border-radius: 0;
+}
+
+.home-hero {
+  display: grid;
+  gap: 2rem;
+  align-items: center;
+}
+
+.home-hero__intro {
+  position: relative;
+  max-width: 36rem;
+  padding: 1.25rem 1.5rem 1.5rem;
+  background: rgba(247, 244, 237, 0.88);
+  border: 2px solid var(--ink);
+  box-shadow: 8px 8px 0 rgba(17, 16, 13, 0.9);
+}
+
+.hero-kicker {
+  margin: 0 0 0.75rem;
+  font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.home-hero__title {
+  margin: 0;
+  font-size: clamp(2.2rem, 5vw, 4.5rem);
+  line-height: 0.92;
+  max-width: 10ch;
+}
+
+.home-hero__lede {
+  margin-top: 1rem;
+  max-width: 30rem;
+  font-size: 1.15rem;
+  color: #3d392f;
+}
+
+.home-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  margin-top: 1.5rem;
+}
+
+.hero-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 0.9rem;
+  border: 2px solid var(--ink);
+  background: var(--riso-yellow);
+  box-shadow: 4px 4px 0 var(--ink);
+  font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.9rem;
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.home-hero__art {
+  position: relative;
+  min-height: 27rem;
+}
+
+.hero-scrap {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.94);
+  padding: 0.7rem;
+  box-shadow: 0 16px 32px rgba(17, 16, 13, 0.18);
+}
+
+.hero-scrap::before {
+  content: "";
+  position: absolute;
+  top: -0.55rem;
+  left: 1rem;
+  width: 4.25rem;
+  height: 1rem;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(17, 16, 13, 0.08);
+  transform: rotate(-6deg);
+}
+
+.hero-scrap img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-scrap--1 {
+  left: 0;
+  top: 2.25rem;
+  width: min(44%, 17rem);
+  aspect-ratio: 4 / 5;
+  transform: rotate(-6deg);
+}
+
+.hero-scrap--2 {
+  left: 26%;
+  top: 0;
+  width: min(38%, 14rem);
+  aspect-ratio: 5 / 6;
+  transform: rotate(3deg);
+  z-index: 2;
+}
+
+.hero-scrap--3 {
+  right: 0;
+  top: 3rem;
+  width: min(42%, 16rem);
+  aspect-ratio: 4 / 5;
+  transform: rotate(7deg);
+}
+
+.section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+}
+
+.section-title {
+  margin: 0;
+}
+
+.section-link {
+  font-size: 0.95rem;
+  text-decoration: underline;
+}
+
+/* When archive is selected, we hide the format select (x-show handles DOM) but ensure visual spacing works */
+.sentence-strip .filter-blank[hidden] { display: none !important; }
+
+/* keep selects readable on small screens */
+.filter-strip select { min-width: 8.25rem; }
+
+/* small chevron spacing if browser shows native arrow */
+.filter-strip select::-ms-expand { display: none; }
+
+.chunky-divider {
+  width: min(100%, 760px);
+  height: 18px;
+  background: #f7e733;
+  border: 2px solid #11100d;
+  box-shadow: 7px 7px 0 #11100d;
+  transform: rotate(-0.4deg);
+  margin: 2rem 0;
+}
+
+/* Card treatment: quiet by default, tactile on hover */
+.card-media { height: var(--card-media-height); display: block; background: transparent; border-radius: 0; }
+.card-media img.card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  border: none;
+  outline: none;
+  transition: transform 100ms ease-out;
+}
+
+/* Hover / focus: standard nudge (no rotation), quicker and more noticeable */
+.group:hover .card-media img.card-image,
+.group:focus-within .card-media img.card-image {
+  transform: translateY(-6px);
+}
+
+/* Add vertical spacing between cards (bottom margin on the card root link) */
+a.group { margin-bottom: 2rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .group:hover .card-media img.card-image,
+  .group:focus-within .card-media img.card-image {
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .group:hover .card-media img.card-image,
+  .group:focus-within .card-media img.card-image {
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+/* Title hover: subtle underline + tiny yellow highlight */
+.group:hover .font-semibold,
+.group:focus-within .font-semibold {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+/* Art card titles should use Special Elite for a handmade display feel.
+   Target the common card title classes to avoid changing other headings. */
+.group .text-xl.font-semibold {
+  font-family: 'Special Elite', 'Space Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  /* responsive, scaley but clamped so it never gets too large or too small */
+  font-size: clamp(1rem, 2.6vw, 1.25rem);
+  /* tighter line-height keeps titles compact while still readable */
+  line-height: 1.04;
+  letter-spacing: 0.01em;
+  margin-bottom: 0.125rem;
+  /* ensure long titles wrap nicely without overflowing */
+  word-break: break-word;
+}
+
+/* Slightly reduce title size on very small viewports for tight layouts */
+@media (max-width: 420px) {
+  .group .text-xl.font-semibold {
+    font-size: clamp(0.95rem, 4.2vw, 1.05rem);
+    line-height: 1.06;
+  }
+}
+
+@media (min-width: 900px) {
+  .home-hero {
+    grid-template-columns: minmax(0, 1.1fr) minmax(22rem, 0.9fr);
+    min-height: 28rem;
+  }
+}
+
+@media (max-width: 899px) {
+  .home-hero__art {
+    min-height: 22rem;
+    margin-top: 1rem;
+  }
+
+  .hero-scrap--1 {
+    width: min(45%, 13rem);
+  }
+
+  .hero-scrap--2 {
+    left: 30%;
+    width: min(36%, 10.5rem);
+  }
+
+  .hero-scrap--3 {
+    width: min(42%, 12rem);
+  }
+}
+
+@media (max-width: 640px) {
+  .home-hero__intro {
+    padding: 1rem;
+    box-shadow: 5px 5px 0 rgba(17, 16, 13, 0.9);
+  }
+
+  .home-hero__lede {
+    font-size: 1.02rem;
+  }
+
+  .home-hero__art {
+    min-height: 16rem;
+  }
+
+  .hero-scrap {
+    padding: 0.45rem;
+  }
+
+  .hero-scrap::before {
+    width: 3rem;
+  }
+}
+
+/* Alternate: small yellow behind the title on hover */
+.group:hover .font-semibold::after,
+.group:focus-within .font-semibold::after {
+  content: "";
+  display: inline-block;
+  height: 0.78em;
+  background: var(--riso-yellow);
+  transform: translateY(0.07em) rotate(-1deg);
+  margin-left: -0.12rem;
+  margin-right: -0.12rem;
+  z-index: -1;
+}
+
+.page-header {
+  display: grid;
+  gap: 1.75rem;
+  align-items: center;
+  margin-bottom: 2.5rem;
+}
+
+.page-header__copy {
+  max-width: 34rem;
+  padding: 1rem 1.25rem 1.15rem;
+  background: rgba(247, 244, 237, 0.9);
+  border: 2px solid var(--ink);
+  box-shadow: 7px 7px 0 rgba(17, 16, 13, 0.88);
+}
+
+.page-header__kicker {
+  margin: 0 0 0.6rem;
+  font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.page-header__title {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  line-height: 0.96;
+}
+
+.page-header__description {
+  margin: 0.9rem 0 0;
+  font-size: 1.1rem;
+  color: #3d392f;
+}
+
+.page-header__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-top: 1.15rem;
+}
+
+.page-header__visuals {
+  position: relative;
+  min-height: 16rem;
+}
+
+.page-scrap {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 0.55rem;
+  box-shadow: 0 12px 24px rgba(17, 16, 13, 0.18);
+}
+
+.page-scrap::before {
+  content: "";
+  position: absolute;
+  top: -0.45rem;
+  left: 0.8rem;
+  width: 3rem;
+  height: 0.9rem;
+  background: rgba(255, 255, 255, 0.76);
+  transform: rotate(-4deg);
+}
+
+.page-scrap img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.page-scrap figcaption {
+  margin-top: 0.35rem;
+  font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.page-scrap--1 {
+  left: 0;
+  top: 1.8rem;
+  width: min(44%, 12rem);
+  aspect-ratio: 4 / 5;
+  transform: rotate(-5deg);
+}
+
+.page-scrap--2 {
+  left: 30%;
+  top: 0;
+  width: min(40%, 10rem);
+  aspect-ratio: 5 / 6;
+  transform: rotate(4deg);
+  z-index: 2;
+}
+
+.page-scrap--3 {
+  right: 0;
+  top: 2rem;
+  width: min(44%, 12rem);
+  aspect-ratio: 4 / 5;
+  transform: rotate(6deg);
+}
+
+.page-intro-copy {
+  max-width: 42rem;
+  margin-bottom: 2rem;
+  font-size: 1.08rem;
+  color: #3d392f;
+}
+
+.content-stack {
+  display: grid;
+  gap: 2rem;
+}
+
+.editorial-block {
+  display: grid;
+  gap: 1.5rem;
+  padding: 1.25rem;
+  border: 1px solid rgba(17, 16, 13, 0.14);
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.editorial-block__copy h2 {
+  margin: 0 0 0.6rem;
+}
+
+.editorial-block__copy p {
+  margin: 0;
+  color: #3d392f;
+}
+
+.editorial-block__links,
+.media-card__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-top: 1rem;
+}
+
+.editorial-block__media {
+  display: grid;
+  gap: 1rem;
+}
+
+.media-card {
+  border: 2px solid rgba(17, 16, 13, 0.9);
+  background: rgba(247, 244, 237, 0.92);
+  box-shadow: 6px 6px 0 rgba(17, 16, 13, 0.88);
+}
+
+.media-card__frame {
+  aspect-ratio: 16 / 9;
+  background: rgba(17, 16, 13, 0.08);
+}
+
+.media-card__iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.media-card__placeholder {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.media-card__body {
+  padding: 0.95rem 1rem 1rem;
+}
+
+.media-card__title {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.media-card__description {
+  margin: 0.5rem 0 0;
+  color: #3d392f;
+}
+
+.media-card__link {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 0.8rem;
+  border: 2px solid var(--ink);
+  background: transparent;
+  font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.9rem;
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.stack-grid {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.post-card {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid rgba(17, 16, 13, 0.16);
+  background: rgba(255, 255, 255, 0.38);
+}
+
+.post-card__image-link {
+  display: block;
+}
+
+.post-card__image {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  display: block;
+}
+
+.post-card__meta,
+.blog-post__meta {
+  margin: 0;
+  font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.post-card__title {
+  margin: 0.35rem 0 0;
+  font-size: clamp(1.35rem, 3vw, 2rem);
+}
+
+.post-card__title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.post-card__excerpt {
+  margin: 0.55rem 0 0;
+  color: #3d392f;
+}
+
+.blog-post {
+  max-width: 44rem;
+}
+
+.blog-post__back {
+  display: inline-block;
+  margin-bottom: 1rem;
+  text-decoration: underline;
+}
+
+.blog-post__title {
+  margin: 0;
+  font-size: clamp(2rem, 4.5vw, 3.5rem);
+  line-height: 0.96;
+}
+
+.blog-post__dek {
+  margin: 0.85rem 0 1.35rem;
+  font-size: 1.08rem;
+  color: #3d392f;
+}
+
+.blog-post__cover {
+  width: 100%;
+  display: block;
+  margin: 0 0 1.25rem;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.blog-post__embed {
+  margin-bottom: 1.25rem;
+}
+
+.blog-post__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-bottom: 1.25rem;
+}
+
+.blog-post__tag {
+  padding: 0.2rem 0.55rem;
+  border: 1px solid rgba(17, 16, 13, 0.2);
+  font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.82rem;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.blog-post__content {
+  color: #2e2b24;
+}
+
+.blog-post__content p,
+.blog-post__content ul,
+.blog-post__content ol {
+  margin: 0 0 1rem;
+}
+
+.blog-post__content h2,
+.blog-post__content h3 {
+  margin: 1.8rem 0 0.7rem;
+}
+
+@media (min-width: 860px) {
+  .page-header {
+    grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.8fr);
+  }
+
+  .editorial-block {
+    grid-template-columns: minmax(0, 0.8fr) minmax(18rem, 1fr);
+    align-items: start;
+  }
+
+  .stack-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 859px) {
+  .page-header__visuals {
+    min-height: 12rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .page-header__copy {
+    padding: 0.95rem 1rem 1rem;
+    box-shadow: 5px 5px 0 rgba(17, 16, 13, 0.88);
+  }
+
+  .editorial-block {
+    padding: 1rem;
+  }
+
+  .post-card {
+    padding: 0.85rem;
+  }
+}

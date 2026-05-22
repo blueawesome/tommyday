@@ -1,0 +1,65 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteShell from "../../components/SiteShell.astro";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog", ({ data }) => !data.draft);
+
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+---
+
+<BaseLayout title={`${post.data.title} — Tommy Day`} description={post.data.description}>
+  <SiteShell>
+    <article class="blog-post">
+      <a class="blog-post__back" href="/blog/">← Back to blog</a>
+      <p class="page-header__kicker">Blog post</p>
+      <h1 class="blog-post__title">{post.data.title}</h1>
+      <p class="blog-post__meta">
+        {post.data.pubDate.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })}
+      </p>
+      <p class="blog-post__dek">{post.data.description}</p>
+
+      {post.data.coverImage ? (
+        <img src={post.data.coverImage} alt="" class="blog-post__cover" />
+      ) : null}
+
+      {post.data.youtubeEmbedUrl ? (
+        <div class="media-card blog-post__embed">
+          <div class="media-card__frame">
+            <iframe
+              src={post.data.youtubeEmbedUrl}
+              title={post.data.title}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+              class="media-card__iframe"
+            ></iframe>
+          </div>
+        </div>
+      ) : null}
+
+      {post.data.tags && post.data.tags.length > 0 ? (
+        <div class="blog-post__tags">
+          {post.data.tags.map((tag) => (
+            <span class="blog-post__tag">{tag}</span>
+          ))}
+        </div>
+      ) : null}
+
+      <div class="blog-post__content">
+        <Content />
+      </div>
+    </article>
+  </SiteShell>
+</BaseLayout>

@@ -1,0 +1,107 @@
+---
+import "../styles/global.css";
+const { title = 'Tommy Day', description = 'Collage, music, and video by Tommy Day.' } = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  {Astro.props.canonical ? <link rel="canonical" href={Astro.props.canonical} /> : null}
+  <meta name="robots" content={Astro.props.robots || 'index,follow'} />
+  <!-- Open Graph -->
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:image" content={Astro.props.ogImage || '/images/bg.jpg'} />
+  <meta property="og:type" content="website" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={Astro.props.ogImage || '/images/bg.jpg'} />
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Special+Elite&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Font Awesome kit (loads icons for the nav) -->
+  <script src="https://kit.fontawesome.com/f0d3128641.js" crossorigin="anonymous"></script>
+    <!-- Structured data: WebSite and Person -->
+    <script type="application/ld+json">
+      {JSON.stringify({
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "url": "/",
+            "name": title,
+            "description": description
+          },
+          {
+            "@type": "Person",
+            "name": "Tommy Day",
+            "url": "/",
+            "sameAs": []
+          }
+        ]
+      })}
+    </script>
+    <link rel="icon" href="/favicon.svg" />
+    <!-- Load Alpine helpers as an ES module from src so Vite can bundle and HMR during dev -->
+    <script type="module" src="/src/scripts/artFilters.js" defer></script>
+    <!-- PJAX for instant internal navigation and service-worker registration -->
+    <script type="module" src="/src/scripts/pjax.js" defer></script>
+  </head>
+  <body class="bg-stone-100 text-neutral-950 antialiased">
+    <slot />
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js').then((reg) => {
+          if (reg && reg.waiting) {
+            // show update available
+            showSWUpdate();
+          }
+          reg.addEventListener('updatefound', () => {
+            const installing = reg.installing;
+            if (!installing) return;
+            installing.addEventListener('statechange', (evt) => {
+              const s = evt && evt.target && (evt.target as any).state ? (evt.target as any).state : null;
+              if (s === 'installed' && navigator.serviceWorker.controller) {
+                showSWUpdate();
+              }
+            });
+          });
+        }).catch(() => {
+          // ignore registration errors
+        });
+      }
+      
+      function showSWUpdate() {
+        if (document.getElementById('sw-update')) return;
+        const el = document.createElement('div');
+        el.id = 'sw-update';
+        el.className = 'sw-update';
+        el.innerHTML = 'New version available.' +
+          '<button id="sw-reload">Reload</button>' +
+          '<button id="sw-dismiss">Dismiss</button>';
+        document.body.appendChild(el);
+        const reloadBtn = document.getElementById('sw-reload');
+        const dismissBtn = document.getElementById('sw-dismiss');
+        if (reloadBtn) {
+          reloadBtn.addEventListener('click', () => {
+            navigator.serviceWorker.getRegistration().then((reg) => {
+              if (!reg || !reg.waiting) return location.reload();
+              reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+              reg.waiting.addEventListener('statechange', (e) => {
+                const st = e && e.target && (e.target as any).state ? (e.target as any).state : null;
+                if (st === 'activated') location.reload();
+              });
+            });
+          });
+        }
+        if (dismissBtn) dismissBtn.addEventListener('click', () => el.remove());
+      }
+    </script>
+  </body>
+</html>

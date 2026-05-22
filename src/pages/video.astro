@@ -1,0 +1,56 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteShell from "../components/SiteShell.astro";
+import PageHeader from "../components/PageHeader.astro";
+import MediaEmbedCard from "../components/MediaEmbedCard.astro";
+import { videoPage } from "../data/siteContent";
+---
+<BaseLayout title="Video — Tommy Day" description={videoPage.description}>
+  <SiteShell>
+    <PageHeader
+      title={videoPage.title}
+      kicker={videoPage.kicker}
+      description={videoPage.description}
+      visualItems={videoPage.visualItems}
+      actions={videoPage.actions}
+    />
+
+    <section class="page-intro-copy">
+      <p>{videoPage.intro}</p>
+    </section>
+
+    <div class="content-stack">
+      {videoPage.sections.map((section) => (
+        <section class="editorial-block">
+          <div class="editorial-block__copy">
+            <h2>{section.title}</h2>
+            <p>{section.body}</p>
+
+            {section.links && section.links.length > 0 ? (
+              <div class="editorial-block__links">
+                {section.links.map((link) => (
+                  <a
+                    href={link.href}
+                    class="media-card__link"
+                    target={link.external ? "_blank" : undefined}
+                    rel={link.external ? "noopener noreferrer" : undefined}
+                  >
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+            ) : null}
+          </div>
+
+          {section.embeds && section.embeds.length > 0 ? (
+            <div class="editorial-block__media">
+              {section.embeds.map((embed) => (
+                <MediaEmbedCard item={embed} />
+              ))}
+            </div>
+          ) : null}
+        </section>
+      ))}
+    </div>
+  </SiteShell>
+</BaseLayout>

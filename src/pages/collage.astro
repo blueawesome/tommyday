@@ -1,0 +1,73 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteShell from "../components/SiteShell.astro";
+import ArtCard from "../components/ArtCard.astro";
+import { publishedArtworks } from "../data/artworks";
+---
+<BaseLayout title="Collage — Tommy Day">
+  <SiteShell>
+    <h1 class="text-2xl font-serif">Collage</h1>
+    <p class="mt-3 text-neutral-700">Analog collage made from old magazines, books, ads, packaging, and whatever else survives the scissors.</p>
+
+
+  <div x-data="artFilters()" class="mt-6">
+      <div class="filter-strip sentence-strip px-3 py-2 inline-flex items-center gap-2">
+        <span class="text-sm font-serif">Show me</span>
+
+        <!-- scope select -->
+        <label class="sr-only" for="scope-select">Scope</label>
+        <select id="scope-select" x-model="scope" @change="setScope($event.target.value)" class="filter-blank">
+          <option value="all">all work</option>
+          <option value="available">work for sale</option>
+          <option value="sold">sold pieces</option>
+        </select>
+
+        <div x-show="scope === 'available'" x-cloak class="inline-flex items-center gap-2">
+          <span class="text-sm font-serif">as</span>
+
+          <label class="sr-only" for="format-select">Available as</label>
+          <select id="format-select" x-model="selectedFormat" @change="setFormat($event.target.value)" class="filter-blank">
+            <option value="any">anything</option>
+            <option value="original">originals</option>
+            <option value="print">prints</option>
+            <option value="card">cards</option>
+            <option value="bookmark">bookmarks</option>
+          </select>
+          <!-- inline clear button inside the yellow strip -->
+          <button x-show="hasActiveFilters()" @click="clearFilters()" class="ml-3 text-sm underline" type="button">Clear</button>
+        </div>
+      </div>
+
+      <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {publishedArtworks.map((art, i) => {
+          // derive top-level status (use explicit art.status if present)
+          const status = art.status ? art.status : (art.purchaseOptions && art.purchaseOptions.length > 0 ? 'available' : 'sold');
+          // collect purchase option types (normalize greeting-card -> card)
+          const purchaseTypes = (art.purchaseOptions || []).map((o) => o.type).filter(Boolean).map((t) => t);
+          const uniqueTypes = Array.from(new Set(purchaseTypes));
+          const availableAs = uniqueTypes.join(',');
+
+          return (
+            <div class="h-full"
+              :style={`transitionDelay: calc(var(--stagger-step) * ${i})`}
+              data-status={status}
+              data-available={availableAs ? 'true' : 'false'}
+              data-available-as={availableAs}
+              data-sizes={art.filters && art.filters.sizes ? art.filters.sizes.join(',') : ''}
+              x-show="matches($el)"
+              x-cloak
+              x-transition:enter="alpine-enter"
+              x-transition:enter-start="alpine-enter-start"
+              x-transition:enter-end="alpine-enter-end"
+              x-transition:leave="alpine-leave"
+              x-transition:leave-start="alpine-leave-start"
+              x-transition:leave-end="alpine-leave-end"
+            >
+              <ArtCard artwork={art} />
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  </SiteShell>
+</BaseLayout>

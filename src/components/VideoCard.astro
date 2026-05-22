@@ -1,0 +1,16 @@
+---
+const { video } = Astro.props as { video: { id: string; title: string; description?: string; embedUrl?: string } };
+---
+<article class="bg-white/60 p-4 rounded shadow-sm">
+  <h3 class="font-semibold">{video.title}</h3>
+  <div class="mt-2">
+    {video.embedUrl ? (
+      <div class="aspect-video">
+        <iframe src={video.embedUrl} title={video.title} frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="w-full h-full"></iframe>
+      </div>
+    ) : (
+      <div class="text-sm text-neutral-600">Video embed coming soon.</div>
+    )}
+  </div>
+  {video.description ? <p class="mt-2 text-sm text-neutral-700">{video.description}</p> : null}
+</article>

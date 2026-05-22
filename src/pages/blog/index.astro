@@ -1,0 +1,53 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteShell from "../../components/SiteShell.astro";
+import PageHeader from "../../components/PageHeader.astro";
+
+const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()
+);
+---
+
+<BaseLayout
+  title="Blog — Tommy Day"
+  description="Notes, how-tos, process posts, and companion writing for videos and projects."
+>
+  <SiteShell>
+    <PageHeader
+      title="Blog"
+      kicker="Notes and process"
+      description="An occasional place for how-tos, project notes, and companion posts for videos and experiments."
+      actions={[{ label: "Latest post", href: posts[0] ? `/blog/${posts[0].id}/` : "/blog/" }]}
+      visualItems={[
+        { src: "/art/placeholders/calm-lake.jpg", alt: "Placeholder blog scrap" },
+        { src: "/art/placeholders/house.jpg", alt: "Placeholder blog scrap", note: "Starter scraps" },
+      ]}
+    />
+
+    <section class="stack-grid">
+      {posts.map((post) => (
+        <article class="post-card">
+          {post.data.coverImage ? (
+            <a href={`/blog/${post.id}/`} class="post-card__image-link">
+              <img src={post.data.coverImage} alt="" class="post-card__image" loading="lazy" />
+            </a>
+          ) : null}
+          <div class="post-card__body">
+            <p class="post-card__meta">
+              {post.data.pubDate.toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </p>
+            <h2 class="post-card__title">
+              <a href={`/blog/${post.id}/`}>{post.data.title}</a>
+            </h2>
+            <p class="post-card__excerpt">{post.data.description}</p>
+          </div>
+        </article>
+      ))}
+    </section>
+  </SiteShell>
+</BaseLayout>

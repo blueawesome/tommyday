@@ -1,0 +1,24 @@
+---
+import type { Artwork } from "../data/artworks";
+const { artwork, compact = false } = Astro.props as {
+  artwork: Artwork;
+  compact?: boolean;
+};
+import { getAvailabilityLabel } from "../data/artworkHelpers";
+const displaySize = artwork.dimensions || (artwork.filters?.sizes ? artwork.filters.sizes.join(', ') : '');
+---
+<a href={`/collage/${artwork.slug}/`} class:list={["group h-full flex flex-col", { "card--compact": compact }]}>
+  <!-- prefer thumbnail if present -->
+  <div class="card-media flex-none rounded overflow-hidden">
+    <img src={artwork.thumbnail || artwork.image} alt={artwork.alt} class="card-image" loading="lazy" />
+  </div>
+
+  <div class="mt-2 text-base text-neutral-700 flex-1 flex flex-col justify-between">
+    <div>
+      <div class="text-xl font-semibold">{artwork.title}</div>
+      <div class="text-sm">{displaySize}</div>
+    </div>
+
+    <div class="mt-1 text-sm text-neutral-600">{getAvailabilityLabel(artwork)}</div>
+  </div>
+</a>

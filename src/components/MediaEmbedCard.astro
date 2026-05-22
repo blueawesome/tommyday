@@ -1,0 +1,47 @@
+---
+import type { ActionLink, MediaEmbed } from "../data/siteContent";
+
+const {
+  item,
+  links = [],
+} = Astro.props as {
+  item: MediaEmbed;
+  links?: ActionLink[];
+};
+---
+
+<article class="media-card">
+  <div class="media-card__frame">
+    {item.embedUrl ? (
+      <iframe
+        src={item.embedUrl}
+        title={item.title}
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+        class="media-card__iframe"
+      ></iframe>
+    ) : (
+      <div class="media-card__placeholder">Embed coming soon.</div>
+    )}
+  </div>
+
+  <div class="media-card__body">
+    <h3 class="media-card__title">{item.title}</h3>
+    {item.description ? <p class="media-card__description">{item.description}</p> : null}
+
+    {links.length > 0 ? (
+      <div class="media-card__links">
+        {links.map((link) => (
+          <a
+            href={link.href}
+            class="media-card__link"
+            target={link.external ? "_blank" : undefined}
+            rel={link.external ? "noopener noreferrer" : undefined}
+          >
+            {link.label}
+          </a>
+        ))}
+      </div>
+    ) : null}
+  </div>
+</article>

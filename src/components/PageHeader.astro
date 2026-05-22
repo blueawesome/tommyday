@@ -1,0 +1,51 @@
+---
+import type { ActionLink, VisualItem } from "../data/siteContent";
+
+const {
+  title,
+  description,
+  kicker,
+  visualItems = [],
+  actions = [],
+} = Astro.props as {
+  title: string;
+  description: string;
+  kicker?: string;
+  visualItems?: VisualItem[];
+  actions?: ActionLink[];
+};
+---
+
+<section class="page-header">
+  <div class="page-header__copy">
+    {kicker ? <p class="page-header__kicker">{kicker}</p> : null}
+    <h1 class="page-header__title">{title}</h1>
+    <p class="page-header__description">{description}</p>
+
+    {actions.length > 0 ? (
+      <div class="page-header__actions">
+        {actions.map((action) => (
+          <a
+            href={action.href}
+            class="hero-link"
+            target={action.external ? "_blank" : undefined}
+            rel={action.external ? "noopener noreferrer" : undefined}
+          >
+            {action.label}
+          </a>
+        ))}
+      </div>
+    ) : null}
+  </div>
+
+  {visualItems.length > 0 ? (
+    <div class="page-header__visuals" aria-hidden="true">
+      {visualItems.slice(0, 3).map((item, index) => (
+        <figure class={`page-scrap page-scrap--${index + 1}`}>
+          <img src={item.src} alt="" loading="lazy" />
+          {item.note ? <figcaption>{item.note}</figcaption> : null}
+        </figure>
+      ))}
+    </div>
+  ) : null}
+</section>
