@@ -5,7 +5,7 @@ function isInternalLink(link) {
   return location.origin === link.origin && !link.hash && link.pathname !== location.pathname;
 }
 
-async function fetchAndReplace(url) {
+async function fetchAndReplace(url, pushHistory = true) {
   try {
     const res = await fetch(url, { headers: { 'X-PJAX': 'true' } });
     if (!res.ok) throw new Error('Network error');
@@ -36,10 +36,11 @@ async function fetchAndReplace(url) {
       if (window.Alpine && typeof window.Alpine.initTree === 'function') {
         window.Alpine.initTree(newMain);
       }
-      history.pushState({}, '', url);
+      if (pushHistory) history.pushState({}, '', url);
       window.scrollTo(0, 0);
       // update active nav after client-side navigation
       updateActiveNav();
+      updateShellState();
       hideProgress();
     }
   } catch (err) {
@@ -61,7 +62,7 @@ function onClick(e) {
 document.addEventListener('click', onClick);
 window.addEventListener('popstate', () => {
   // handle back/forward
-  fetchAndReplace(location.href);
+  fetchAndReplace(location.href, false);
 });
 
 // Normalize a pathname by removing trailing slashes (but keep root '/')
@@ -82,6 +83,11 @@ function updateActiveNav() {
   const current = normalizePath(location.pathname);
   links.forEach((a) => {
     try {
+      if (a.classList.contains('snipcart-checkout')) {
+        a.removeAttribute('aria-current');
+        a.classList.remove('active');
+        return;
+      }
       const href = new URL(a.href, location.origin).pathname;
       const linkPath = normalizePath(href);
       if (linkPath === current) {
@@ -97,10 +103,20 @@ function updateActiveNav() {
   });
 }
 
+function updateShellState() {
+  const shell = document.querySelector('.site-shell');
+  if (!shell) return;
+  shell.classList.toggle('site-shell--home', normalizePath(location.pathname) === '/');
+}
+
 // initialize active nav on first load
-document.addEventListener('DOMContentLoaded', () => updateActiveNav());
+document.addEventListener('DOMContentLoaded', () => {
+  updateActiveNav();
+  updateShellState();
+});
 // also run immediately in case DOMContentLoaded already fired
 updateActiveNav();
+updateShellState();
 
 // Progress indicator helpers
 function ensureProgressEl() {

@@ -3,7 +3,11 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import SiteShell from "../../components/SiteShell.astro";
 import ArtworkPurchaseOptions from "../../components/ArtworkPurchaseOptions.astro";
 import { publishedArtworks } from "../../data/artworks";
-import { getAvailabilityLabel } from "../../data/artworkHelpers";
+import {
+  getDetailPageDescription,
+  getAvailableProducts,
+  hasAvailableProducts,
+} from "../../data/artworkHelpers";
 
 export async function getStaticPaths() {
   return publishedArtworks.map((a) => ({ params: { slug: a.slug } }));
@@ -15,26 +19,141 @@ const artwork = publishedArtworks.find((a) => a.slug === slug);
 if (!artwork) {
   throw new Error(`Artwork not found: ${slug}`);
 }
+
+const fallbackImage = {
+  id: "artwork",
+  src: artwork.image,
+  alt: artwork.alt,
+  label: "Artwork",
+  type: "artwork",
+};
+const detailImages = artwork.galleryImages?.length ? artwork.galleryImages : [fallbackImage];
+const galleryState = `{
+  images: ${JSON.stringify(detailImages)},
+  activeImage: ${JSON.stringify(detailImages[0])},
+  previousImage: null,
+  isTransitioning: false,
+  transitionTimer: null,
+  selectImage(image) {
+    if (!image || image.id === this.activeImage.id) return;
+    this.previousImage = this.activeImage;
+    this.activeImage = image;
+    this.isTransitioning = true;
+    window.clearTimeout(this.transitionTimer);
+    this.transitionTimer = window.setTimeout(() => {
+      this.isTransitioning = false;
+      window.setTimeout(() => {
+        if (!this.isTransitioning) this.previousImage = null;
+      }, 340);
+    }, 30);
+  },
+  selectImageById(id) {
+    if (!id) return;
+    const image = this.images.find((item) => item.id === id);
+    if (image) this.selectImage(image);
+  }
+}`;
+const availableProducts = getAvailableProducts(artwork);
+const artworkSchema = {
+  "@context": "https://schema.org",
+  "@type": "VisualArtwork",
+  "name": artwork.title,
+  "creator": {
+    "@type": "Person",
+    "name": "Tommy Day"
+  },
+  "artMedium": artwork.medium,
+  "dateCreated": artwork.year,
+  "image": new URL(artwork.image, "https://tommyday.com").href,
+  "url": `https://tommyday.com/collage/${artwork.slug}/`,
+  ...(artwork.description ? { "description": artwork.description } : {}),
+  ...(availableProducts.length
+    ? {
+        "offers": availableProducts
+          .filter((product) => typeof product.price === "number")
+          .map((product) => ({
+            "@type": "Offer",
+            "name": product.label,
+            "price": product.price,
+            "priceCurrency": "USD",
+            "availability": "https://schema.org/InStock",
+            "url": `https://tommyday.com/collage/${artwork.slug}/`
+          }))
+      }
+    : {})
+};
 ---
 
-<BaseLayout title={`${artwork.title}`} description={artwork.description || 'Analog collage, songs, videos, and handmade work by Tommy Day.'} ogImage={artwork.image}>
+<BaseLayout
+  title={`${artwork.title} — Analog Collage by Tommy Day`}
+  description={getDetailPageDescription(artwork)}
+  ogImage={artwork.image}
+  canonicalUrl={`/collage/${artwork.slug}/`}
+>
   <SiteShell>
-    <a class="text-sm underline" href="/collage/">← Back to collage</a>
+    <script type="application/ld+json" set:html={JSON.stringify(artworkSchema)} />
 
-    <div class="mt-4 grid gap-8 md:grid-cols-2">
-      <div>
-        <img src={artwork.image} alt={artwork.alt} class="w-full bg-white shadow-sm" />
+    <div class="detail-top-links">
+      <nav class="detail-breadcrumb" aria-label="Breadcrumb">
+        <a href="/collage/">Collage</a>
+        <span aria-hidden="true">/</span>
+        <span>{artwork.title}</span>
+      </nav>
+      {hasAvailableProducts(artwork) ? <a class="detail-shop-link" href="/shop/">Shop Available Work</a> : null}
+    </div>
+
+    <div class="mt-4 grid gap-8 md:grid-cols-2" x-data={galleryState}>
+      <div class="detail-media">
+        <div class="detail-image-frame">
+          <img
+            src={artwork.image}
+            alt=""
+            class="detail-image detail-image--previous"
+            x-bind:src="previousImage ? previousImage.src : activeImage.src"
+            x-bind:alt="previousImage ? previousImage.alt : ''"
+            x-bind:class="{ 'is-visible': previousImage && isTransitioning }"
+            aria-hidden="true"
+          />
+          <img
+            src={artwork.image}
+            alt={artwork.alt}
+            class="detail-image detail-image--active"
+            x-bind:src="activeImage.src"
+            x-bind:alt="activeImage.alt"
+            x-bind:class="{ 'is-entering': isTransitioning }"
+          />
+        </div>
+
+        {detailImages.length > 1 ? (
+          <div class="detail-gallery-strip" aria-label="Artwork image gallery">
+            {detailImages.map((image) => (
+              <button
+                type="button"
+                class="detail-gallery-thumb"
+                x-bind:class={`activeImage.id === ${JSON.stringify(image.id)} ? 'is-active' : ''`}
+                @click={`selectImage(${JSON.stringify(image)})`}
+                aria-label={image.label ? `Show ${image.label}` : "Show artwork image"}
+              >
+                <img src={image.src} alt="" loading="lazy" />
+                {image.label ? <span>{image.label}</span> : null}
+              </button>
+            ))}
+          </div>
+        ) : null}
       </div>
 
       <div>
-  <h1 class="text-2xl font-serif">{artwork.title}</h1>
-  <div class="text-neutral-700 mt-2">{artwork.dimensions ? `${artwork.dimensions} · ` : ''}{artwork.year}</div>
-
-        <div class="mt-4 text-sm text-neutral-600">{getAvailabilityLabel(artwork)}</div>
+        <h1 class="text-2xl font-serif">{artwork.title}</h1>
+        <div class="detail-meta-line">
+          {artwork.medium}{artwork.dimensions ? ` · ${artwork.dimensions}` : ""} · {artwork.year}
+        </div>
 
         {artwork.description ? <p class="mt-4">{artwork.description}</p> : null}
 
-        <ArtworkPurchaseOptions artwork={artwork} />
+        <div class="mt-6">
+          <h2 class="font-semibold text-xl">Available As</h2>
+          <ArtworkPurchaseOptions artwork={artwork} />
+        </div>
       </div>
     </div>
   </SiteShell>

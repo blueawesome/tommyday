@@ -1,0 +1,173 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteShell from "../components/SiteShell.astro";
+import ShopCard from "../components/ShopCard.astro";
+import { getLowestAvailablePrice } from "../data/artworkHelpers";
+import { shopArtworks } from "../data/artworks";
+import { launchPreorderProducts } from "../data/preorderProducts";
+
+const preorderCount = launchPreorderProducts.length;
+---
+
+<BaseLayout
+  title="Shop Collage Prints, Cards, and Originals — Tommy Day"
+  description="Shop available analog collage work, small-batch prints, greeting cards, bookmarks, and original pieces by Tommy Day."
+  canonicalUrl="/shop/"
+>
+  <SiteShell>
+    <section class="shop-hero">
+      <div class="shop-hero__copy">
+        <h1 class="shop-hero__title">Shop</h1>
+        <p class="shop-hero__description">
+          Original analog collage, small-batch prints, greeting cards, and paper goods made by hand in Indianapolis, Indiana.
+        </p>
+        <p class="shop-hero__trust">Ships from Indianapolis * Packed flat</p>
+      </div>
+
+      <div class="shop-hero__visual" aria-hidden="true">
+        <div class="shop-hero__visual-card">
+          <span>Future shop scan</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="shop-preorder" aria-labelledby="shop-preorder-heading">
+      <div class="shop-preorder__header">
+        <p class="shop-preorder__kicker">Pre-order window</p>
+        <h2 id="shop-preorder-heading">Signed prints & card packs</h2>
+        <p>
+          {preorderCount} preorder items are available now. Preorder items are produced after the
+          preorder window closes, and print orders include one free mystery 5x7 launch art card.
+        </p>
+        <a href="/pre-order/" class="shop-preorder__link">Read preorder details</a>
+      </div>
+    </section>
+
+    <div x-data="shopFilters()">
+      <div class="shop-filter-panel">
+        <div class="shop-filter-panel__row">
+          <span class="shop-filter-panel__label">Show me</span>
+          <div class="shop-segmented" role="tablist" aria-label="Shop base filter">
+            <button
+              type="button"
+              class="shop-segmented__button"
+              :class="{ 'is-active': selectedBase === 'all' }"
+              @click="setBase('all')"
+            >
+              All available
+            </button>
+            <button
+              type="button"
+              class="shop-segmented__button"
+              :class="{ 'is-active': selectedBase === 'original' }"
+              @click="setBase('original')"
+            >
+              Originals
+            </button>
+            <button
+              type="button"
+              class="shop-segmented__button"
+              :class="{ 'is-active': selectedBase === 'print' }"
+              @click="setBase('print')"
+            >
+              Prints
+            </button>
+            <button
+              type="button"
+              class="shop-segmented__button"
+              :class="{ 'is-active': isActive('card') }"
+              @click="toggleFilter('card')"
+            >
+              Greeting Cards
+            </button>
+            <button
+              type="button"
+              class="shop-segmented__button"
+              :class="{ 'is-active': isActive('bookmark') }"
+              @click="toggleFilter('bookmark')"
+            >
+              Bookmarks
+            </button>
+          </div>
+        </div>
+
+        <div class="shop-filter-panel__row">
+          <span class="shop-filter-panel__label">Narrow by</span>
+          <div class="shop-toggle-list">
+            <button
+              type="button"
+              class="shop-toggle-button"
+              :class="{ 'is-active': isActive('under25') }"
+              @click="toggleFilter('under25')"
+            >
+              Under $25
+            </button>
+            <button
+              type="button"
+              class="shop-toggle-button"
+              :class="{ 'is-active': isActive('size8x10') }"
+              @click="toggleFilter('size8x10')"
+            >
+              8x10
+            </button>
+            <button
+              type="button"
+              class="shop-toggle-button"
+              :class="{ 'is-active': isActive('size5x7') }"
+              @click="toggleFilter('size5x7')"
+            >
+              5x7
+            </button>
+          </div>
+          <button
+            x-show="hasActiveFilters()"
+            @click="clearFilters()"
+            class="shop-filter-panel__clear"
+            type="button"
+          >
+            Clear
+          </button>
+        </div>
+
+        <p
+          class="shop-filter-panel__count"
+          aria-live="polite"
+          x-text="resultLabel()"
+        ></p>
+      </div>
+
+      <div class="shop-grid">
+        {shopArtworks.map((art) => {
+          const availableProducts = art.products.filter((product) => product.status === "available");
+          const availableAs = availableProducts
+            .map((product) => product.type)
+            .filter((value, index, array) => array.indexOf(value) === index)
+            .join(",");
+          const sizeTags = availableProducts
+            .map((product) => {
+              if (product.label.includes("8x10")) return "8x10";
+              if (product.label.includes("5x7")) return "5x7";
+              return null;
+            })
+            .filter((value, index, array) => value && array.indexOf(value) === index)
+            .join(",");
+          const lowestPrice = getLowestAvailablePrice(art);
+
+          return (
+            <div
+              data-available-as={availableAs}
+              data-size-tags={sizeTags}
+              data-under-25={lowestPrice !== null && lowestPrice <= 25 ? "true" : "false"}
+              data-shop-item
+              x-show="matches($el)"
+              x-cloak
+              class="h-full"
+            >
+              <ShopCard artwork={art} />
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  </SiteShell>
+</BaseLayout>

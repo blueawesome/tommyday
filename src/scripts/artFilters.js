@@ -34,6 +34,19 @@ document.addEventListener("alpine:init", () => {
       this.selectedFormat = "any";
     },
 
+    resultLabel() {
+      const items = Array.from(document.querySelectorAll("[data-archive-item]"));
+      const count = items.filter((item) => this.matches(item)).length;
+      const noun = count === 1 ? "piece" : "pieces";
+      const scopeLabel = this.scope === "available"
+        ? "available"
+        : this.scope === "sold"
+          ? "sold"
+          : "archive";
+
+      return `Showing ${count} ${scopeLabel} ${noun}`;
+    },
+
     displayProduct(product) {
       if (!product || product === "all") return "";
       if (product === "bookmark") return "Bookmarks";

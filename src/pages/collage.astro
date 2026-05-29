@@ -2,58 +2,148 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SiteShell from "../components/SiteShell.astro";
 import ArtCard from "../components/ArtCard.astro";
-import { publishedArtworks } from "../data/artworks";
+import { galleryArtworks } from "../data/artworks";
+import {
+  getArtworkScopeStatus,
+  hasAvailableProductType,
+} from "../data/artworkHelpers";
 ---
-<BaseLayout title="Collage — Tommy Day">
+<BaseLayout
+  title="Analog Collage by Tommy Day"
+  description="Analog collage archive by Tommy Day, including sold work, available originals, prints, cards, and archive-only pieces."
+  canonicalUrl="/collage/"
+>
   <SiteShell>
-    <h1 class="text-2xl font-serif">Collage</h1>
-    <p class="mt-3 text-neutral-700">Analog collage made from old magazines, books, ads, packaging, and whatever else survives the scissors.</p>
+    <section class="collage-hero">
+      <div class="collage-hero__copy">
+        <p class="section-eyebrow">Analog collage archive</p>
+        <h1 class="collage-hero__title">Collage</h1>
+        <p>
+          Cut from old magazines, books, ads, packaging, and whatever else survives the scissors.
+          This archive includes available work, sold originals, studies, and pieces that may become
+          prints or cards.
+        </p>
+      </div>
 
+      <div class="collage-hero__visual" aria-hidden="true">
+        <div class="collage-hero__visual-card">
+          <span>Future scissors portrait</span>
+        </div>
+      </div>
+    </section>
 
-  <div x-data="artFilters()" class="mt-6">
-      <div class="filter-strip sentence-strip px-3 py-2 inline-flex items-center gap-2">
-        <span class="text-sm font-serif">Show me</span>
+    <div x-data="artFilters()" class="collage-archive">
+      <div class="collage-filter-panel">
+        <div class="collage-filter-panel__row">
+          <span class="collage-filter-panel__label">Show me</span>
+          <div class="collage-filter-panel__buttons" role="group" aria-label="Archive scope">
+            <button
+              type="button"
+              class="collage-filter-button"
+              :class="{ 'is-active': scope === 'all' }"
+              @click="setScope('all')"
+            >
+              All work
+            </button>
+            <button
+              type="button"
+              class="collage-filter-button"
+              :class="{ 'is-active': scope === 'available' }"
+              @click="setScope('available')"
+            >
+              Work for sale
+            </button>
+            <button
+              type="button"
+              class="collage-filter-button"
+              :class="{ 'is-active': scope === 'sold' }"
+              @click="setScope('sold')"
+            >
+              Sold pieces
+            </button>
+          </div>
+        </div>
 
-        <!-- scope select -->
-        <label class="sr-only" for="scope-select">Scope</label>
-        <select id="scope-select" x-model="scope" @change="setScope($event.target.value)" class="filter-blank">
-          <option value="all">all work</option>
-          <option value="available">work for sale</option>
-          <option value="sold">sold pieces</option>
-        </select>
+        <div class="collage-filter-panel__row" x-show="scope === 'available'" x-cloak>
+          <span class="collage-filter-panel__label">Available as</span>
+          <div class="collage-filter-panel__buttons" role="group" aria-label="Available format">
+            <button
+              type="button"
+              class="collage-filter-button"
+              :class="{ 'is-active': selectedFormat === 'any' }"
+              @click="setFormat('any')"
+            >
+              Anything
+            </button>
+            <button
+              type="button"
+              class="collage-filter-button"
+              :class="{ 'is-active': selectedFormat === 'original' }"
+              @click="setFormat('original')"
+            >
+              Originals
+            </button>
+            <button
+              type="button"
+              class="collage-filter-button"
+              :class="{ 'is-active': selectedFormat === 'print' }"
+              @click="setFormat('print')"
+            >
+              Prints
+            </button>
+            <button
+              type="button"
+              class="collage-filter-button"
+              :class="{ 'is-active': selectedFormat === 'card' }"
+              @click="setFormat('card')"
+            >
+              Cards
+            </button>
+            <button
+              type="button"
+              class="collage-filter-button"
+              :class="{ 'is-active': selectedFormat === 'bookmark' }"
+              @click="setFormat('bookmark')"
+            >
+              Bookmarks
+            </button>
+          </div>
+        </div>
 
-        <div x-show="scope === 'available'" x-cloak class="inline-flex items-center gap-2">
-          <span class="text-sm font-serif">as</span>
-
-          <label class="sr-only" for="format-select">Available as</label>
-          <select id="format-select" x-model="selectedFormat" @change="setFormat($event.target.value)" class="filter-blank">
-            <option value="any">anything</option>
-            <option value="original">originals</option>
-            <option value="print">prints</option>
-            <option value="card">cards</option>
-            <option value="bookmark">bookmarks</option>
-          </select>
-          <!-- inline clear button inside the yellow strip -->
-          <button x-show="hasActiveFilters()" @click="clearFilters()" class="ml-3 text-sm underline" type="button">Clear</button>
+        <div class="collage-filter-panel__footer">
+          <p class="collage-filter-panel__count" aria-live="polite" x-text="resultLabel()"></p>
+          <button
+            x-show="hasActiveFilters()"
+            x-cloak
+            @click="clearFilters()"
+            class="collage-filter-panel__clear"
+            type="button"
+          >
+            Clear filters
+          </button>
         </div>
       </div>
 
-      <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {publishedArtworks.map((art, i) => {
-          // derive top-level status (use explicit art.status if present)
-          const status = art.status ? art.status : (art.purchaseOptions && art.purchaseOptions.length > 0 ? 'available' : 'sold');
-          // collect purchase option types (normalize greeting-card -> card)
-          const purchaseTypes = (art.purchaseOptions || []).map((o) => o.type).filter(Boolean).map((t) => t);
-          const uniqueTypes = Array.from(new Set(purchaseTypes));
-          const availableAs = uniqueTypes.join(',');
+      <div class="archive-columns">
+        {galleryArtworks.map((art, i) => {
+          const status = getArtworkScopeStatus(art);
+          const availableAs = [
+            hasAvailableProductType(art, "original") ? "original" : null,
+            hasAvailableProductType(art, "print") ? "print" : null,
+            hasAvailableProductType(art, "card") ? "card" : null,
+            hasAvailableProductType(art, "bookmark") ? "bookmark" : null,
+          ]
+            .filter(Boolean)
+            .join(",");
 
           return (
-            <div class="h-full"
+            <div
+              class:list={["archive-item", `archive-item--tilt-${(i % 5) + 1}`]}
               :style={`transitionDelay: calc(var(--stagger-step) * ${i})`}
               data-status={status}
-              data-available={availableAs ? 'true' : 'false'}
               data-available-as={availableAs}
               data-sizes={art.filters && art.filters.sizes ? art.filters.sizes.join(',') : ''}
+              data-archive-item
               x-show="matches($el)"
               x-cloak
               x-transition:enter="alpine-enter"

@@ -1,0 +1,82 @@
+---
+import type { Artwork, ArtworkProduct } from "../data/artworks";
+import {
+  getProductDisplayPrice,
+  getSnipcartDescription,
+  getSnipcartName,
+} from "../data/artworkHelpers";
+
+const { artwork, product } = Astro.props as {
+  artwork: Artwork;
+  product: ArtworkProduct;
+};
+
+const snipcartEnabled = Boolean(import.meta.env.PUBLIC_SNIPCART_API_KEY);
+const price = getProductDisplayPrice(product);
+const soldLike = product.status === "sold" || product.status === "unavailable";
+const cardClass = product.status === "available"
+  ? "product-option-card product-option-card--available"
+  : "product-option-card product-option-card--unavailable";
+const statusLabel = product.status === "available"
+  ? price || "Available"
+  : product.status === "coming-soon"
+    ? "Coming soon"
+    : product.status === "sold"
+      ? "Sold"
+      : "Not available";
+---
+
+<article
+  class={cardClass}
+  data-product-image-id={product.imageId}
+  x-bind:class={product.imageId ? `{ 'is-image-active': activeImage.id === ${JSON.stringify(product.imageId)} }` : undefined}
+  @mouseenter="selectImageById($el.dataset.productImageId)"
+  @focusin="selectImageById($el.dataset.productImageId)"
+  @click="if (!$event.target.closest('.product-option-card__button')) selectImageById($el.dataset.productImageId)"
+>
+  <div class="product-option-card__copy">
+    <h3 class="product-option-card__title">{product.label}</h3>
+    {product.note ? <p class="product-option-card__note">{product.note}</p> : null}
+    {product.imageId ? <p class="product-option-card__photo-cue">View photo</p> : null}
+  </div>
+
+  <div class="product-option-card__actions">
+    <p class="product-option-card__price">{statusLabel}</p>
+
+    {product.status === "available" && product.externalUrl ? (
+      <a
+        class="product-option-card__button"
+        href={product.externalUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {product.externalLabel || "View listing"}
+      </a>
+    ) : null}
+
+    {product.status === "available" && !product.externalUrl && snipcartEnabled ? (
+      <button
+        class="product-option-card__button snipcart-add-item"
+        data-item-id={product.id}
+        data-item-price={product.price}
+        data-item-url={`/collage/${artwork.slug}/`}
+        data-item-description={getSnipcartDescription(artwork, product)}
+        data-item-image={artwork.image}
+        data-item-name={getSnipcartName(artwork, product)}
+      >
+        Add to cart
+      </button>
+    ) : null}
+
+    {product.status === "available" && !product.externalUrl && !snipcartEnabled ? (
+      <div class="product-option-card__disabled">
+        Cart unavailable until Snipcart is configured.
+      </div>
+    ) : null}
+
+    {soldLike ? <div class="product-option-card__status">Unavailable</div> : null}
+    {product.status === "coming-soon" ? (
+      <div class="product-option-card__status">Not on sale yet</div>
+    ) : null}
+  </div>
+</article>

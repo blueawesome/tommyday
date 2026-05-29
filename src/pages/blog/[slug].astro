@@ -16,7 +16,12 @@ const { post } = Astro.props;
 const { Content } = await render(post);
 ---
 
-<BaseLayout title={`${post.data.title} — Tommy Day`} description={post.data.description}>
+<BaseLayout
+  title={`${post.data.title} — Tommy Day`}
+  description={post.data.description}
+  canonicalUrl={`/blog/${post.id}/`}
+  robots="noindex,follow"
+>
   <SiteShell>
     <article class="blog-post">
       <a class="blog-post__back" href="/blog/">← Back to blog</a>

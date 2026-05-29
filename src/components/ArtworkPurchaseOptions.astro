@@ -1,18 +1,36 @@
 ---
 import type { Artwork } from "../data/artworks";
+import ProductOptionCard from "./ProductOptionCard.astro";
+import { getAvailableProducts, getUnavailableProducts } from "../data/artworkHelpers";
 const { artwork } = Astro.props as { artwork: Artwork };
-// Render any purchase options that have a URL (assumed current offerings).
-const available = artwork.purchaseOptions.filter((o) => o.url && o.label);
+const available = getAvailableProducts(artwork);
+const unavailable = getUnavailableProducts(artwork);
 ---
 
 <div class="mt-6">
   {available.length === 0 ? (
     <p>This piece is not currently available.</p>
   ) : (
-    <div class="flex gap-3 flex-wrap">
-      {available.map((opt) => (
-        <a class="px-3 py-2 bg-neutral-900 text-white text-sm rounded" href={opt.url} target="_blank" rel="noopener noreferrer">{opt.label}{opt.price ? ` — ${opt.price}` : ''}</a>
+    <section class="purchase-panel">
+      <div class="purchase-panel__intro">
+        <p class="purchase-panel__copy">Choose from the current formats below. Available formats are stocked in small batches.</p>
+      </div>
+
+      <div class="product-options-grid">
+        {available.map((product) => (
+          <ProductOptionCard artwork={artwork} product={product} />
+        ))}
+      </div>
+
+      <p class="purchase-panel__trust">Ships flat from Indianapolis. Packed with care.</p>
+    </section>
+  )}
+
+  {unavailable.length > 0 ? (
+    <div class="product-options-grid mt-4">
+      {unavailable.map((product) => (
+        <ProductOptionCard artwork={artwork} product={product} />
       ))}
     </div>
-  )}
+  ) : null}
 </div>

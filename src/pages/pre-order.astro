@@ -1,0 +1,198 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteShell from "../components/SiteShell.astro";
+import PreorderProductCard from "../components/PreorderProductCard.astro";
+import {
+  launchPreorder,
+  launchPreorderProducts,
+  launchPreorderBundles,
+  launchPreorderCardPacks,
+  launchPreorderPrints,
+} from "../data/preorderProducts";
+
+const preorderCloseDate = new Intl.DateTimeFormat("en-US", {
+  month: "long",
+  day: "numeric",
+  year: "numeric",
+}).format(new Date(`${launchPreorder.closesAt}T00:00:00`));
+
+const preorderItemListSchema = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "Tommy Day Art launch preorder",
+  "itemListElement": launchPreorderProducts.map((product, index) => ({
+    "@type": "ListItem",
+    "position": index + 1,
+    "item": {
+      "@type": "Product",
+      "name": product.snipcartName || product.title,
+      "description": product.snipcartDescription || product.description,
+      "image": new URL(product.image, "https://tommyday.com").href,
+      "brand": {
+        "@type": "Brand",
+        "name": "Tommy Day Art"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": product.price,
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/PreOrder",
+        "url": "https://tommyday.com/pre-order/",
+        "availabilityStarts": launchPreorder.openedAt,
+        "availabilityEnds": launchPreorder.closesAt
+      }
+    }
+  }))
+};
+---
+
+<BaseLayout
+  title="Pre-Order Prints & Cards - Tommy Day"
+  description="Pre-order signed Tommy Day Art prints, greeting cards, and launch bundles from the initial small print run."
+  canonicalUrl="/pre-order/"
+>
+  <SiteShell>
+    <script type="application/ld+json" set:html={JSON.stringify(preorderItemListSchema)} />
+
+    <section class="preorder-hero">
+      <div class="preorder-hero__copy">
+        <p class="section-eyebrow">Launch preorder</p>
+        <h1 class="preorder-hero__title">Pre-Order Prints & Cards</h1>
+        <div class="preorder-hero__text">
+          <p>
+            I'm opening a short preorder window for the first small run of Tommy Day Art prints,
+            cards, and bonus art cards.
+          </p>
+          <p>
+            Orders from this preorder help fund the initial print run, packaging, and shop launch.
+            Printing begins after the preorder window closes, and orders are expected to ship around
+            {` ${launchPreorder.estimatedShipDate}`}.
+          </p>
+          <p>
+            Every order containing at least one preorder print includes one free mystery 5x7 launch
+            art card.
+          </p>
+        </div>
+      </div>
+
+      <div class="preorder-hero__side">
+        <div class="preorder-hero__stamp" aria-label={`Preorder closes ${preorderCloseDate}`}>
+          <span>Preorder closes</span>
+          <strong>{preorderCloseDate}</strong>
+        </div>
+
+        <aside class="preorder-local-note" aria-label="Local handoff pickup note">
+          <p>
+            Know me in real life? Choose Local handoff / pickup at checkout for free in-person delivery.
+          </p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="preorder-section" aria-labelledby="preorder-prints">
+      <div class="preorder-section__header">
+        <p class="section-eyebrow">Signed preorder prints</p>
+        <h2 id="preorder-prints">Signed Preorder Prints</h2>
+        <p>
+          Signed prints from the initial preorder batch. Each print order includes one free mystery
+          5x7 launch art card.
+        </p>
+      </div>
+
+      <div class="preorder-grid">
+        {launchPreorderPrints.map((product) => (
+          <PreorderProductCard product={product} />
+        ))}
+      </div>
+    </section>
+
+    <section class="preorder-section" aria-labelledby="preorder-cards">
+      <div class="preorder-section__header">
+        <p class="section-eyebrow">Folded cards</p>
+        <h2 id="preorder-cards">Greeting Card Pack</h2>
+        <p>A2 folded cards, blank inside, with envelopes included.</p>
+      </div>
+
+      <div class="preorder-grid preorder-grid--single">
+        {launchPreorderCardPacks.map((product) => (
+          <PreorderProductCard product={product} />
+        ))}
+      </div>
+    </section>
+
+    <section class="preorder-section preorder-section--bundle" aria-labelledby="preorder-bundle">
+      <div class="preorder-section__header">
+        <p class="section-eyebrow">Everything together</p>
+        <h2 id="preorder-bundle">The Whole Dang Thing Bundle</h2>
+        <p>
+          For the true sickos, early supporters, and people who don't want to choose. This is its
+          own preorder product, not an automatic cart discount.
+        </p>
+      </div>
+
+      <div class="preorder-grid preorder-grid--single">
+        {launchPreorderBundles.map((product) => (
+          <PreorderProductCard product={product} featured />
+        ))}
+      </div>
+    </section>
+
+    <section class="preorder-faq" aria-labelledby="preorder-faq">
+      <div class="preorder-section__header">
+        <p class="section-eyebrow">Tiny FAQ</p>
+        <h2 id="preorder-faq">Preorder FAQ</h2>
+      </div>
+
+      <div class="preorder-faq__grid">
+        <div>
+          <h3>Is this a preorder?</h3>
+          <p>Yes. These items are ordered now and produced after the preorder window closes.</p>
+        </div>
+        <div>
+          <h3>When will my order ship?</h3>
+          <p>
+            Orders are expected to ship around {launchPreorder.estimatedShipDate}. I'll send an
+            update if timing changes.
+          </p>
+        </div>
+        <div>
+          <h3>What is the mystery 5x7 art card?</h3>
+          <p>
+            It's a flat mini print selected at random from a separate launch batch. You don't need
+            to pick a design.
+          </p>
+        </div>
+        <div>
+          <h3>Are the prints signed?</h3>
+          <p>Yes, preorder prints are signed unless a product specifically says otherwise.</p>
+        </div>
+        <div>
+          <h3>Are these limited editions?</h3>
+          <p>
+            This is a signed preorder batch, not necessarily a permanently limited edition unless a
+            product specifically says so.
+          </p>
+        </div>
+        <div>
+          <h3>Can I order regular shop items with preorder items?</h3>
+          <p>
+            For launch, preorder items should be treated as shipping together when the preorder
+            batch is ready.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <dialog class="preorder-lightbox" id="preorder-lightbox" aria-labelledby="preorder-lightbox-title">
+      <div class="preorder-lightbox__panel">
+        <button class="preorder-lightbox__close" type="button" data-preorder-lightbox-close>
+          Close
+        </button>
+        <figure class="preorder-lightbox__figure">
+          <img src="" alt="" class="preorder-lightbox__image" data-preorder-lightbox-image />
+          <figcaption class="preorder-lightbox__caption" id="preorder-lightbox-title" data-preorder-lightbox-caption></figcaption>
+        </figure>
+      </div>
+    </dialog>
+  </SiteShell>
+</BaseLayout>

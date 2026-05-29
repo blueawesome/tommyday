@@ -1,10 +1,14 @@
 ---
 ---
 <div class="max-w-[260px]">
-  <a href="/" class="inline-block w-full">
+  <a href="/" class="inline-block w-full sidebar-logo-link">
     <img src="/images/td-logo.png" alt="Tommy Day" class="w-full h-auto block td-logo" />
     <span class="sr-only">Tommy Day</span>
   </a>
+
+  <figure class="home-sidebar-headshot" aria-label="Tommy Day">
+    <img src="/images/headshot.png" alt="Tommy Day" loading="eager" />
+  </figure>
 
   <nav class="mt-8 sidebar-nav">
     <ul class="flex gap-4 md:flex-col">
@@ -16,31 +20,39 @@
         </a>
       </li>
       <li>
-        <a class="flex items-center gap-3" href="/music/">
-          <i class="fa-sharp fa-solid fa-guitar-electric nav-icon" aria-hidden="true"></i>
-          <span class="sr-only">Music</span>
-          <span class="nav-label">Music</span>
+        <a class="flex items-center gap-3" href="/pre-order/">
+          <i class="fa-sharp fa-solid fa-wand-magic-sparkles nav-icon" aria-hidden="true"></i>
+          <span class="sr-only">Pre-Order</span>
+          <span class="nav-label">Pre-Order</span>
         </a>
       </li>
       <li>
-        <a class="flex items-center gap-3" href="/video/">
-          <i class="fa-sharp fa-solid fa-camcorder nav-icon" aria-hidden="true"></i>
-          <span class="sr-only">Video</span>
-          <span class="nav-label">Video</span>
+        <a class="flex items-center gap-3" href="/shop/">
+          <i class="fa-sharp fa-solid fa-image-polaroid nav-icon" aria-hidden="true"></i>
+          <span class="sr-only">Shop</span>
+          <span class="nav-label">Shop</span>
         </a>
       </li>
       <li>
-        <a class="flex items-center gap-3" href="/blog/">
-          <i class="fa-sharp fa-solid fa-book-open nav-icon" aria-hidden="true"></i>
-          <span class="sr-only">Blog</span>
-          <span class="nav-label">Blog</span>
+        <a class="flex items-center gap-3" href="/about/">
+          <i class="fa-sharp fa-solid fa-block-question nav-icon" aria-hidden="true"></i>
+          <span class="sr-only">About</span>
+          <span class="nav-label">About</span>
         </a>
       </li>
       <li>
         <a class="flex items-center gap-3" href="/contact/">
-          <i class="fa-sharp fa-regular fa-paper-plane nav-icon" aria-hidden="true"></i>
+          <i class="fa-sharp fa-solid fa-mailbox nav-icon" aria-hidden="true"></i>
           <span class="sr-only">Contact</span>
           <span class="nav-label">Contact</span>
+        </a>
+      </li>
+      <li>
+        <a class="flex items-center gap-3 nav-cart snipcart-checkout" href="#snipcart">
+          <i class="fa-sharp fa-solid fa-box-open nav-icon" aria-hidden="true"></i>
+          <span class="sr-only">Cart</span>
+          <span class="nav-cart__label">Cart</span>
+          <span class="nav-cart__count snipcart-items-count" aria-hidden="true">0</span>
         </a>
       </li>
     </ul>

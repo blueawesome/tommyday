@@ -1,0 +1,34 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteShell from "../components/SiteShell.astro";
+import PageHeader from "../components/PageHeader.astro";
+
+const visualItems = [
+  { src: "/art/placeholders/house.jpg", alt: "Collage header scrap" },
+  { src: "/art/placeholders/star-boy.jpg", alt: "Collage header scrap" },
+];
+---
+
+<BaseLayout
+  title="About Tommy Day"
+  description="Learn more about Tommy Day Art, an analog collage practice focused on originals, prints, cards, and paper goods."
+  canonicalUrl="/about/"
+>
+  <SiteShell>
+    <PageHeader
+      title="About Tommy Day"
+      kicker="Artist statement"
+      description="Analog collage is the center of gravity here: handmade images, paper goods, and small-batch shop work cut from old print material."
+      visualItems={visualItems}
+    />
+
+    <section class="page-intro-copy">
+      <p>
+        Tommy Day is an artist and maker working primarily in analog collage, building images out of old print material, found textures, and whatever paper accidents are worth keeping.
+      </p>
+      <p class="mt-4">
+        The site is meant to work as both an archive and a quiet storefront: a place to browse the body of work, find prints or cards when they exist, and keep the rest of the creative practice close at hand without turning the whole thing into a generic shop.
+      </p>
+    </section>
+  </SiteShell>
+</BaseLayout>

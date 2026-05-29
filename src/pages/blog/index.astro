@@ -12,6 +12,8 @@ const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
 <BaseLayout
   title="Blog — Tommy Day"
   description="Notes, how-tos, process posts, and companion writing for videos and projects."
+  canonicalUrl="/blog/"
+  robots="noindex,follow"
 >
   <SiteShell>
     <PageHeader

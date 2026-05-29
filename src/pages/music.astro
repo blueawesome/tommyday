@@ -5,7 +5,12 @@ import PageHeader from "../components/PageHeader.astro";
 import MediaEmbedCard from "../components/MediaEmbedCard.astro";
 import { musicPage } from "../data/siteContent";
 ---
-<BaseLayout title="Music — Tommy Day" description={musicPage.description}>
+<BaseLayout
+  title="Music — Tommy Day"
+  description={musicPage.description}
+  canonicalUrl="/music/"
+  robots="noindex,follow"
+>
   <SiteShell>
     <PageHeader
       title={musicPage.title}

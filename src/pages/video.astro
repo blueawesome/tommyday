@@ -5,7 +5,12 @@ import PageHeader from "../components/PageHeader.astro";
 import MediaEmbedCard from "../components/MediaEmbedCard.astro";
 import { videoPage } from "../data/siteContent";
 ---
-<BaseLayout title="Video — Tommy Day" description={videoPage.description}>
+<BaseLayout
+  title="Video — Tommy Day"
+  description={videoPage.description}
+  canonicalUrl="/video/"
+  robots="noindex,follow"
+>
   <SiteShell>
     <PageHeader
       title={videoPage.title}

@@ -4,21 +4,28 @@ const { artwork, compact = false } = Astro.props as {
   artwork: Artwork;
   compact?: boolean;
 };
-import { getAvailabilityLabel } from "../data/artworkHelpers";
+import { getArchiveStatusLabel } from "../data/artworkHelpers";
 const displaySize = artwork.dimensions || (artwork.filters?.sizes ? artwork.filters.sizes.join(', ') : '');
+const imageClass = compact ? "home-art-card__image" : "card-image archive-card__image";
 ---
-<a href={`/collage/${artwork.slug}/`} class:list={["group h-full flex flex-col", { "card--compact": compact }]}>
+<a href={`/collage/${artwork.slug}/`} class:list={["group h-full flex flex-col", { "card--compact": compact, "card--archive": !compact }]}>
   <!-- prefer thumbnail if present -->
-  <div class="card-media flex-none rounded overflow-hidden">
-    <img src={artwork.thumbnail || artwork.image} alt={artwork.alt} class="card-image" loading="lazy" />
+  <div class:list={[compact ? "home-art-card__image-wrap" : "card-media flex-none rounded overflow-hidden"]}>
+    <img
+      src={artwork.thumbnail || artwork.image}
+      alt={artwork.alt}
+      class={imageClass}
+      loading="lazy"
+    />
   </div>
 
-  <div class="mt-2 text-base text-neutral-700 flex-1 flex flex-col justify-between">
+  <div class="art-card__body mt-2 text-base text-neutral-700 flex-1 flex flex-col justify-between">
     <div>
-      <div class="text-xl font-semibold">{artwork.title}</div>
-      <div class="text-sm">{displaySize}</div>
+      <div class="art-card__title text-xl font-semibold">{artwork.title}</div>
+      <div class="art-card__meta text-sm">{displaySize}</div>
     </div>
 
-    <div class="mt-1 text-sm text-neutral-600">{getAvailabilityLabel(artwork)}</div>
+    <div class="art-card__status mt-1 text-sm text-neutral-600">{getArchiveStatusLabel(artwork)}</div>
+    <span class:list={["art-card__cta", !compact && "art-card__cta--archive"]}>View piece</span>
   </div>
 </a>

@@ -1,12 +1,16 @@
 ---
 import SidebarNav from "../components/SidebarNav.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+
+const isHomePage = Astro.url.pathname === "/";
 ---
-  <div class="min-h-screen md:grid md:grid-cols-[260px_1fr]">
+  <div class:list={["site-shell min-h-screen md:grid md:grid-cols-[260px_1fr]", isHomePage && "site-shell--home"]}>
     <aside class="bg-transparent md:sticky md:top-0 md:h-screen md:pt-8 md:pl-6">
       <SidebarNav />
     </aside>
 
     <main class="px-6 py-8">
       <slot />
+      <SiteFooter />
     </main>
   </div>

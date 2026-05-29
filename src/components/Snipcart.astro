@@ -1,0 +1,17 @@
+---
+const apiKey = import.meta.env.PUBLIC_SNIPCART_API_KEY;
+---
+
+{apiKey ? (
+  <>
+    <link
+      rel="stylesheet"
+      href="https://cdn.snipcart.com/themes/v3.4.1/default/snipcart.css"
+    />
+    <script
+      async
+      src="https://cdn.snipcart.com/themes/v3.4.1/default/snipcart.js"
+    ></script>
+    <div id="snipcart" data-api-key={apiKey} hidden></div>
+  </>
+) : null}

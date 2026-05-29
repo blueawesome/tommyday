@@ -1,0 +1,35 @@
+---
+import type { Artwork } from "../data/artworks";
+import {
+  formatPrice,
+  getAvailableProducts,
+  getLowestAvailablePrice,
+} from "../data/artworkHelpers";
+
+const { artwork } = Astro.props as { artwork: Artwork };
+const lowestPrice = getLowestAvailablePrice(artwork);
+const compactSummary = getAvailableProducts(artwork)
+  .map((product) => product.label)
+  .filter((value, index, array) => array.indexOf(value) === index)
+  .join(" · ");
+---
+
+<a href={`/collage/${artwork.slug}/`} class="shop-card">
+  <div class="shop-card__image-wrap">
+    <img
+      src={artwork.thumbnail || artwork.image}
+      alt={artwork.alt}
+      class="shop-card__image"
+      loading="lazy"
+    />
+  </div>
+
+  <div class="shop-card__body">
+    <div class="shop-card__meta">
+      <span>{lowestPrice ? `From ${formatPrice(lowestPrice)}` : "View options"}</span>
+    </div>
+    <h2 class="shop-card__title">{artwork.title}</h2>
+    <p class="shop-card__summary">{compactSummary || "Not currently available"}</p>
+    <span class="shop-card__cta">View options</span>
+  </div>
+</a>

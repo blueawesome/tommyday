@@ -4,63 +4,60 @@ import SiteShell from "../components/SiteShell.astro";
 import ArtCard from "../components/ArtCard.astro";
 import { featuredArtworks } from "../data/artworks";
 
-const shuffled = featuredArtworks.slice().sort(() => Math.random() - 0.5);
-const show = shuffled.slice(0, 3);
-const heroArt = featuredArtworks.slice(0, 3);
+const featured = featuredArtworks.slice(0, 6);
 ---
-<BaseLayout title="Tommy Day — Collage, music, and video" description="Collage, music, and video by Tommy Day." canonical="/">
+<BaseLayout
+  title="Tommy Day Art - Analog Collage, Prints, Cards, and Paper Goods"
+  description="Analog collage, prints, cards, and strange paper goods by Tommy Day."
+  canonicalUrl="/"
+>
   <SiteShell>
-    <section class="home-hero">
-      <div class="home-hero__intro">
-        <p class="hero-kicker">Artist hub</p>
-        <h1 class="home-hero__title">Collage, music, and video.</h1>
-        <p class="home-hero__lede">
-          Analog collage, songs, and moving pictures gathered into one place now that the work side of life is moving over to WPIndy.
-        </p>
-
-        <div class="home-hero__actions">
-          <a href="/collage/" class="hero-link">Browse collage work</a>
-          <a href="/music/" class="hero-link">Hear the music</a>
-        </div>
+    <section class="home-brand-hero">
+      <div class="home-brand-hero__top">
+        <picture>
+          <source media="(min-width: 720px)" srcset="/images/tommy-day-art.png" />
+          <img
+            src="/images/tommy-day-art-small.png"
+            alt="Tommy Day Art"
+            class="home-brand-hero__logo"
+            loading="eager"
+          />
+        </picture>
       </div>
 
-      <div class="home-hero__art" aria-hidden="true">
-        {heroArt.map((art, index) => (
-          <figure class={`hero-scrap hero-scrap--${index + 1}`}>
-            <img src={art.thumbnail || art.image} alt="" loading="eager" />
-          </figure>
+      <div class="home-brand-hero__copy">
+        <p class="home-brand-hero__line">Analog collage, prints, cards, and strange paper goods.</p>
+        <p>
+          Cut from old magazines, books, ads, catalogs, and whatever else looks like it has
+          unfinished business. Handmade analog collage using vintage paper, available as originals,
+          prints, cards, and small-batch paper goods.
+        </p>
+      </div>
+
+      <div class="home-brand-hero__actions">
+        <a href="/pre-order/" class="hero-link hero-link--primary">Pre-Order Prints & Cards</a>
+        <a href="/collage/" class="hero-link">Browse Collage Work</a>
+      </div>
+    </section>
+
+    <section class="home-featured" aria-labelledby="home-featured-heading">
+      <div class="home-featured__header">
+        <p class="section-eyebrow">Featured collage</p>
+        <h1 id="home-featured-heading" class="home-featured__title">Recent cuts from the archive</h1>
+        <p>
+          A small window into the collage work. The full archive has more originals, experiments,
+          and pieces that may become prints or cards.
+        </p>
+        <a href="/collage/" class="section-link">View full collage archive</a>
+      </div>
+
+      <div class="home-featured__grid">
+        {featured.map((art) => (
+          <div class="h-full">
+            <ArtCard artwork={art} compact={true} />
+          </div>
         ))}
       </div>
-    </section>
-
-    <section class="mt-12">
-      <div class="section-head">
-        <h2 class="section-title">Featured collage</h2>
-        <a href="/collage/" class="section-link">View full collage portfolio</a>
-      </div>
-
-      <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 items-stretch">
-      {show.map((art) => (
-        <div class="h-full">
-          <ArtCard artwork={art} compact={true} />
-        </div>
-      ))}
-      </div>
-    </section>
-
-    <section class="mt-12">
-      <h2 class="font-semibold">Music</h2>
-      <p class="text-neutral-700 mt-2">Songs, side projects, Secret Oats with Jay Adams, and a place for clips and recordings to live together.</p>
-      <div class="mt-3 flex gap-3">
-        <a class="px-3 py-2 border" href="/music/">Music page</a>
-        <a class="px-3 py-2 border" href="/video/">Video work</a>
-        <a class="px-3 py-2 border" href="/blog/">Blog</a>
-      </div>
-    </section>
-
-    <section class="mt-12">
-      <h2 class="font-semibold">Contact</h2>
-      <p class="text-neutral-700 mt-2">For art, music, booking, commissions, or weird opportunities: <a class="underline" href="mailto:hey@tommyday.com">hey@tommyday.com</a></p>
     </section>
   </SiteShell>
 </BaseLayout>

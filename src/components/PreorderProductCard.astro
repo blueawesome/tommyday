@@ -1,0 +1,71 @@
+---
+import type { PreorderProduct } from "../data/preorderProducts";
+import { formatPrice } from "../data/artworkHelpers";
+
+const { product, featured = false } = Astro.props as {
+  product: PreorderProduct;
+  featured?: boolean;
+};
+
+const buttonLabel = product.preorderButtonLabel || "Pre-Order Now";
+const formattedPrice = formatPrice(product.price);
+const sharedCardDetails = new Set([
+  "Signed 11x14 print",
+  "Signed 8x10 print",
+  "Signed 8.5x11 print",
+  "Ships flat",
+  "Mystery 5x7 launch art card included",
+]);
+const visibleIncludes = product.includes?.filter((item) => !sharedCardDetails.has(item)) || [];
+---
+
+<article class:list={["preorder-card", featured && "preorder-card--featured"]}>
+  <button
+    class="preorder-card__image-wrap preorder-card__image-button"
+    type="button"
+    aria-label={`Enlarge image of ${product.title}`}
+    data-preorder-lightbox-trigger
+    data-lightbox-src={product.image}
+    data-lightbox-alt={product.imageAlt}
+    data-lightbox-title={product.title}
+  >
+    <img
+      src={product.image}
+      alt={product.imageAlt}
+      class="preorder-card__image"
+      loading="lazy"
+    />
+    <span class="preorder-card__image-cue">View larger</span>
+  </button>
+
+  <div class="preorder-card__body">
+    <div class="preorder-card__content">
+      <div class="preorder-card__topline">
+        <span class="preorder-card__badge">{product.badge || "Pre-Order"}</span>
+        <span class="preorder-card__price">{formattedPrice}</span>
+      </div>
+
+      <h3 class="preorder-card__title">{product.title}</h3>
+      {product.size ? <p class="preorder-card__size">{product.size}</p> : null}
+      <p class="preorder-card__description">{product.description}</p>
+
+      {visibleIncludes.length ? (
+        <ul class="preorder-card__includes" aria-label={`${product.title} includes`}>
+          {visibleIncludes.map((item) => <li>{item}</li>)}
+        </ul>
+      ) : null}
+    </div>
+
+    <button
+      class="preorder-card__button snipcart-add-item"
+      data-item-id={product.id}
+      data-item-name={product.snipcartName || `Pre-Order: ${product.title}`}
+      data-item-price={product.price}
+      data-item-url="/pre-order/"
+      data-item-description={product.snipcartDescription || product.description}
+      data-item-image={product.image}
+    >
+      {buttonLabel}
+    </button>
+  </div>
+</article>

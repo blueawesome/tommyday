@@ -1,0 +1,51 @@
+---
+const links = [
+  { label: "Pre-Order", href: "/pre-order/" },
+  { label: "Shop", href: "/shop/" },
+  { label: "About", href: "/about/" },
+  { label: "Contact", href: "/contact/" },
+  { label: "Shipping", href: "/shipping/" },
+  { label: "Privacy", href: "/privacy/" },
+  { label: "Terms", href: "/terms/" },
+];
+---
+
+<footer class="site-footer">
+  <div class="site-footer__brand">
+    <img
+      src="/images/tommy-day-art-small.png"
+      alt="Tommy Day Art"
+      class="site-footer__logo"
+      loading="lazy"
+    />
+    <p>Analog collage, prints, cards, and strange paper goods.</p>
+  </div>
+
+  <nav class="site-footer__nav" aria-label="Footer">
+    {links.map((link) => (
+      <a href={link.href}>{link.label}</a>
+    ))}
+    <a href="#snipcart" class="snipcart-checkout">Cart</a>
+  </nav>
+
+  <div class="site-footer__meta">
+    <a
+      href="https://www.instagram.com/tommyday"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="site-footer__social"
+    >
+      <svg
+        class="site-footer__social-icon"
+        aria-hidden="true"
+        viewBox="0 0 24 24"
+        focusable="false"
+      >
+        <rect x="4" y="4" width="16" height="16" rx="4"></rect>
+        <circle cx="12" cy="12" r="3.5"></circle>
+        <circle cx="16.6" cy="7.4" r="1.1"></circle>
+      </svg>
+      @TommyDay
+    </a>
+  </div>
+</footer>

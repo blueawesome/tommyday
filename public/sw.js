@@ -1,17 +1,24 @@
-const CACHE_VERSION = 'v1';
+const CACHE_VERSION = 'v2';
 const CACHE_NAME = `tommyday-${CACHE_VERSION}`;
 const ASSETS = [
   '/',
   '/index.html',
   '/collage/',
-  '/music/',
+  '/pre-order/',
+  '/shop/',
+  '/about/',
   '/contact/',
-  '/styles/global.css',
   '/images/bg.jpg'
 ];
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)).then(() => self.skipWaiting()));
+  e.waitUntil(
+    caches.open(CACHE_NAME)
+      .then((cache) => Promise.all(
+        ASSETS.map((asset) => cache.add(asset).catch(() => null))
+      ))
+      .then(() => self.skipWaiting())
+  );
 });
 
 self.addEventListener('activate', (e) => {
@@ -29,9 +36,15 @@ self.addEventListener('message', (e) => {
 
 self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET') return;
-  e.respondWith(caches.match(e.request).then((cached) => cached || fetch(e.request).then((res) => {
-    const copy = res.clone();
-    caches.open(CACHE_NAME).then((cache) => cache.put(e.request, copy));
-    return res;
-  }).catch(() => cached)));
+  if (!e.request.url.startsWith(self.location.origin)) return;
+  e.respondWith(
+    fetch(e.request)
+      .then((res) => {
+        if (!res || res.status !== 200) return res;
+        const copy = res.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(e.request, copy));
+        return res;
+      })
+      .catch(() => caches.match(e.request))
+  );
 });

@@ -1,6 +1,26 @@
 ---
 import "../styles/global.css";
-const { title = 'Tommy Day', description = 'Collage, music, and video by Tommy Day.' } = Astro.props;
+import Snipcart from "../components/Snipcart.astro";
+import artFiltersScript from "../scripts/artFilters.js?url";
+import shopFiltersScript from "../scripts/shopFilters.js?url";
+import preorderLightboxScript from "../scripts/preorderLightbox.js?url";
+import pjaxScript from "../scripts/pjax.js?url";
+const {
+  title = "Tommy Day",
+  description = "Analog collage, prints, cards, and strange paper goods by Tommy Day.",
+  ogImage,
+  ogType = "website",
+  canonicalUrl,
+  canonical,
+  robots = "index,follow",
+} = Astro.props;
+
+const siteOrigin = "https://tommyday.com";
+const resolvedCanonical = canonicalUrl || canonical;
+const canonicalHref = resolvedCanonical
+  ? new URL(resolvedCanonical, siteOrigin).href
+  : undefined;
+const ogImageHref = ogImage ? new URL(ogImage, siteOrigin).href : undefined;
 ---
 <!doctype html>
 <html lang="en">
@@ -9,18 +29,21 @@ const { title = 'Tommy Day', description = 'Collage, music, and video by Tommy D
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{title}</title>
   <meta name="description" content={description} />
-  {Astro.props.canonical ? <link rel="canonical" href={Astro.props.canonical} /> : null}
-  <meta name="robots" content={Astro.props.robots || 'index,follow'} />
+  {canonicalHref ? <link rel="canonical" href={canonicalHref} /> : null}
+  <meta name="robots" content={robots} />
+  <meta name="theme-color" content="#fff12f" />
   <!-- Open Graph -->
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />
-  <meta property="og:image" content={Astro.props.ogImage || '/images/bg.jpg'} />
-  <meta property="og:type" content="website" />
+  <meta property="og:type" content={ogType} />
+  <meta property="og:site_name" content="Tommy Day Art" />
+  {canonicalHref ? <meta property="og:url" content={canonicalHref} /> : null}
+  {ogImageHref ? <meta property="og:image" content={ogImageHref} /> : null}
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content={title} />
   <meta name="twitter:description" content={description} />
-  <meta name="twitter:image" content={Astro.props.ogImage || '/images/bg.jpg'} />
+  {ogImageHref ? <meta name="twitter:image" content={ogImageHref} /> : null}
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,24 +57,27 @@ const { title = 'Tommy Day', description = 'Collage, music, and video by Tommy D
         "@graph": [
           {
             "@type": "WebSite",
-            "url": "/",
-            "name": title,
+            "url": siteOrigin,
+            "name": "Tommy Day Art",
             "description": description
           },
           {
             "@type": "Person",
             "name": "Tommy Day",
-            "url": "/",
-            "sameAs": []
+            "url": siteOrigin,
+            "sameAs": ["https://www.instagram.com/tommyday"]
           }
         ]
       })}
     </script>
     <link rel="icon" href="/favicon.svg" />
     <!-- Load Alpine helpers as an ES module from src so Vite can bundle and HMR during dev -->
-    <script type="module" src="/src/scripts/artFilters.js" defer></script>
+    <script type="module" src={artFiltersScript}></script>
+    <script type="module" src={shopFiltersScript}></script>
+    <script type="module" src={preorderLightboxScript}></script>
     <!-- PJAX for instant internal navigation and service-worker registration -->
-    <script type="module" src="/src/scripts/pjax.js" defer></script>
+    <script type="module" src={pjaxScript}></script>
+    <Snipcart />
   </head>
   <body class="bg-stone-100 text-neutral-950 antialiased">
     <slot />
