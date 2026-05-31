@@ -13,8 +13,10 @@ const sharedCardDetails = new Set([
   "Signed 11x14 print",
   "Signed 8x10 print",
   "Signed 8.5x11 print",
+  "Archival quality print",
   "Ships flat",
   "Mystery 5x7 launch art card included",
+  "Free random 5x7 cardstock print included",
 ]);
 const visibleIncludes = product.includes?.filter((item) => !sharedCardDetails.has(item)) || [];
 ---

@@ -54,6 +54,10 @@ const galleryState = `{
   }
 }`;
 const availableProducts = getAvailableProducts(artwork);
+const isSecretArtwork = artwork.showInGallery === false && artwork.showInShop === false;
+const pricedAvailableProducts = availableProducts.filter(
+  (product) => typeof product.price === "number"
+);
 const artworkSchema = {
   "@context": "https://schema.org",
   "@type": "VisualArtwork",
@@ -67,11 +71,9 @@ const artworkSchema = {
   "image": new URL(artwork.image, "https://tommyday.com").href,
   "url": `https://tommyday.com/collage/${artwork.slug}/`,
   ...(artwork.description ? { "description": artwork.description } : {}),
-  ...(availableProducts.length
+  ...(pricedAvailableProducts.length
     ? {
-        "offers": availableProducts
-          .filter((product) => typeof product.price === "number")
-          .map((product) => ({
+        "offers": pricedAvailableProducts.map((product) => ({
             "@type": "Offer",
             "name": product.label,
             "price": product.price,
@@ -89,6 +91,7 @@ const artworkSchema = {
   description={getDetailPageDescription(artwork)}
   ogImage={artwork.image}
   canonicalUrl={`/collage/${artwork.slug}/`}
+  robots={isSecretArtwork ? "noindex,follow" : "index,follow"}
 >
   <SiteShell>
     <script type="application/ld+json" set:html={JSON.stringify(artworkSchema)} />
@@ -99,7 +102,9 @@ const artworkSchema = {
         <span aria-hidden="true">/</span>
         <span>{artwork.title}</span>
       </nav>
-      {hasAvailableProducts(artwork) ? <a class="detail-shop-link" href="/shop/">Shop Available Work</a> : null}
+      {hasAvailableProducts(artwork) && artwork.showInShop !== false ? (
+        <a class="detail-shop-link" href="/shop/">Shop Available Work</a>
+      ) : null}
     </div>
 
     <div class="mt-4 grid gap-8 md:grid-cols-2" x-data={galleryState}>

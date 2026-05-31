@@ -4,7 +4,7 @@ import SiteShell from "../components/SiteShell.astro";
 import ArtCard from "../components/ArtCard.astro";
 import { featuredArtworks } from "../data/artworks";
 
-const featured = featuredArtworks.slice(0, 6);
+const featured = featuredArtworks.slice(0, 9);
 ---
 <BaseLayout
   title="Tommy Day Art - Analog Collage, Prints, Cards, and Paper Goods"
@@ -51,12 +51,30 @@ const featured = featuredArtworks.slice(0, 6);
         <a href="/collage/" class="section-link">View full collage archive</a>
       </div>
 
-      <div class="home-featured__grid">
-        {featured.map((art) => (
-          <div class="h-full">
-            <ArtCard artwork={art} compact={true} />
-          </div>
-        ))}
+      <div class="home-featured-carousel" aria-label="Featured collage carousel">
+        <button
+          class="home-featured-carousel__control home-featured-carousel__control--prev"
+          type="button"
+          aria-label="Scroll featured collage left"
+          onclick="this.closest('.home-featured-carousel').querySelector('.home-featured-carousel__track').scrollBy({ left: -420, behavior: 'smooth' })"
+        >
+          <span aria-hidden="true">←</span>
+        </button>
+        <div class="home-featured-carousel__track" tabindex="0">
+          {featured.map((art) => (
+            <div class="home-featured-carousel__slide">
+              <ArtCard artwork={art} compact={true} />
+            </div>
+          ))}
+        </div>
+        <button
+          class="home-featured-carousel__control home-featured-carousel__control--next"
+          type="button"
+          aria-label="Scroll featured collage right"
+          onclick="this.closest('.home-featured-carousel').querySelector('.home-featured-carousel__track').scrollBy({ left: 420, behavior: 'smooth' })"
+        >
+          <span aria-hidden="true">→</span>
+        </button>
       </div>
     </section>
   </SiteShell>

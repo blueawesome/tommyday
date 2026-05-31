@@ -13,17 +13,28 @@ const { artwork, product } = Astro.props as {
 
 const snipcartEnabled = Boolean(import.meta.env.PUBLIC_SNIPCART_API_KEY);
 const price = getProductDisplayPrice(product);
-const soldLike = product.status === "sold" || product.status === "unavailable";
-const cardClass = product.status === "available"
-  ? "product-option-card product-option-card--available"
-  : "product-option-card product-option-card--unavailable";
+const hasPrice = typeof product.price === "number";
+const soldOut = product.status === "sold-out";
+const soldLike = product.status === "sold" || product.status === "unavailable" || soldOut;
+const cardClass = [
+  "product-option-card",
+  product.status === "available"
+    ? "product-option-card--available"
+    : "product-option-card--unavailable",
+  product.type === "original" ? "product-option-card--original" : "",
+].filter(Boolean).join(" ");
 const statusLabel = product.status === "available"
   ? price || "Available"
   : product.status === "coming-soon"
     ? "Coming soon"
-    : product.status === "sold"
+    : soldOut
+      ? "Sold out, but more on the way!"
+      : product.status === "sold"
       ? "Sold"
       : "Not available";
+const sizeLabel = product.type === "original" && artwork.dimensions
+  ? `${artwork.dimensions}"`
+  : "";
 ---
 
 <article
@@ -34,8 +45,12 @@ const statusLabel = product.status === "available"
   @focusin="selectImageById($el.dataset.productImageId)"
   @click="if (!$event.target.closest('.product-option-card__button')) selectImageById($el.dataset.productImageId)"
 >
+  {product.type === "original" ? <span class="product-option-card__badge">Original</span> : null}
   <div class="product-option-card__copy">
-    <h3 class="product-option-card__title">{product.label}</h3>
+    <div class="product-option-card__heading">
+      <h3 class="product-option-card__title">{product.label}</h3>
+      {sizeLabel ? <span class="product-option-card__size">{sizeLabel}</span> : null}
+    </div>
     {product.note ? <p class="product-option-card__note">{product.note}</p> : null}
     {product.imageId ? <p class="product-option-card__photo-cue">View photo</p> : null}
   </div>
@@ -54,7 +69,7 @@ const statusLabel = product.status === "available"
       </a>
     ) : null}
 
-    {product.status === "available" && !product.externalUrl && snipcartEnabled ? (
+    {product.status === "available" && !product.externalUrl && snipcartEnabled && hasPrice ? (
       <button
         class="product-option-card__button snipcart-add-item"
         data-item-id={product.id}
@@ -63,18 +78,28 @@ const statusLabel = product.status === "available"
         data-item-description={getSnipcartDescription(artwork, product)}
         data-item-image={artwork.image}
         data-item-name={getSnipcartName(artwork, product)}
+        data-item-quantity={product.type === "original" ? "1" : undefined}
+        data-item-max-quantity={typeof product.inventory === "number" ? product.inventory : product.type === "original" ? "1" : undefined}
       >
         Add to cart
       </button>
     ) : null}
 
-    {product.status === "available" && !product.externalUrl && !snipcartEnabled ? (
+    {product.status === "available" && !product.externalUrl && !hasPrice ? (
+      <a class="product-option-card__button" href={`mailto:hey@tommyday.com?subject=${encodeURIComponent(`Question about ${artwork.title}`)}`}>
+        Ask about it
+      </a>
+    ) : null}
+
+    {product.status === "available" && !product.externalUrl && !snipcartEnabled && hasPrice ? (
       <div class="product-option-card__disabled">
         Cart unavailable until Snipcart is configured.
       </div>
     ) : null}
 
-    {soldLike ? <div class="product-option-card__status">Unavailable</div> : null}
+    {product.status === "sold" || product.status === "unavailable" ? (
+      <div class="product-option-card__status">Unavailable</div>
+    ) : null}
     {product.status === "coming-soon" ? (
       <div class="product-option-card__status">Not on sale yet</div>
     ) : null}

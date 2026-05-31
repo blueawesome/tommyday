@@ -4,7 +4,6 @@ import Snipcart from "../components/Snipcart.astro";
 import artFiltersScript from "../scripts/artFilters.js?url";
 import shopFiltersScript from "../scripts/shopFilters.js?url";
 import preorderLightboxScript from "../scripts/preorderLightbox.js?url";
-import pjaxScript from "../scripts/pjax.js?url";
 const {
   title = "Tommy Day",
   description = "Analog collage, prints, cards, and strange paper goods by Tommy Day.",
@@ -21,6 +20,23 @@ const canonicalHref = resolvedCanonical
   ? new URL(resolvedCanonical, siteOrigin).href
   : undefined;
 const ogImageHref = ogImage ? new URL(ogImage, siteOrigin).href : undefined;
+const siteSchema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "url": siteOrigin,
+      "name": "Tommy Day Art",
+      "description": description
+    },
+    {
+      "@type": "Person",
+      "name": "Tommy Day",
+      "url": siteOrigin,
+      "sameAs": ["https://www.instagram.com/tommyday"]
+    }
+  ]
+};
 ---
 <!doctype html>
 <html lang="en">
@@ -50,33 +66,22 @@ const ogImageHref = ogImage ? new URL(ogImage, siteOrigin).href : undefined;
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Special+Elite&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
   <!-- Font Awesome kit (loads icons for the nav) -->
   <script src="https://kit.fontawesome.com/f0d3128641.js" crossorigin="anonymous"></script>
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-9V2CC0M35T"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){window.dataLayer.push(arguments);}
+    window.gtag = gtag;
+    gtag('js', new Date());
+    gtag('config', 'G-9V2CC0M35T');
+  </script>
     <!-- Structured data: WebSite and Person -->
-    <script type="application/ld+json">
-      {JSON.stringify({
-        "@context": "https://schema.org",
-        "@graph": [
-          {
-            "@type": "WebSite",
-            "url": siteOrigin,
-            "name": "Tommy Day Art",
-            "description": description
-          },
-          {
-            "@type": "Person",
-            "name": "Tommy Day",
-            "url": siteOrigin,
-            "sameAs": ["https://www.instagram.com/tommyday"]
-          }
-        ]
-      })}
-    </script>
+    <script type="application/ld+json" set:html={JSON.stringify(siteSchema)} />
     <link rel="icon" href="/favicon.svg" />
     <!-- Load Alpine helpers as an ES module from src so Vite can bundle and HMR during dev -->
     <script type="module" src={artFiltersScript}></script>
     <script type="module" src={shopFiltersScript}></script>
     <script type="module" src={preorderLightboxScript}></script>
-    <!-- PJAX for instant internal navigation and service-worker registration -->
-    <script type="module" src={pjaxScript}></script>
     <Snipcart />
   </head>
   <body class="bg-stone-100 text-neutral-950 antialiased">

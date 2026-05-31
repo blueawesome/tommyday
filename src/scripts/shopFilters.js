@@ -1,20 +1,25 @@
 document.addEventListener("alpine:init", () => {
   Alpine.data("shopFilters", () => ({
+    pageSize: 9,
+    visibleLimit: 9,
     selectedBase: "all",
     toggles: {
       card: false,
-      size8x10: false,
-      size5x7: false,
+      size9x12: false,
+      size11x14: false,
+      size425x55: false,
       bookmark: false,
       under25: false,
     },
 
     setBase(value) {
       this.selectedBase = value;
+      this.resetVisibleItems();
     },
 
     toggleFilter(key) {
       this.toggles[key] = !this.toggles[key];
+      this.resetVisibleItems();
     },
 
     isActive(key) {
@@ -25,11 +30,13 @@ document.addEventListener("alpine:init", () => {
       this.selectedBase = "all";
       this.toggles = {
         card: false,
-        size8x10: false,
-        size5x7: false,
+        size9x12: false,
+        size11x14: false,
+        size425x55: false,
         bookmark: false,
         under25: false,
       };
+      this.resetVisibleItems();
     },
 
     hasActiveFilters() {
@@ -37,16 +44,47 @@ document.addEventListener("alpine:init", () => {
       return Object.values(this.toggles).some(Boolean);
     },
 
-    resultCount() {
+    matchedItems() {
       return Array.from(this.$root.querySelectorAll("[data-shop-item]")).filter((el) =>
         this.matches(el)
-      ).length;
+      );
+    },
+
+    resultCount() {
+      return this.matchedItems().length;
     },
 
     resultLabel() {
       const count = this.resultCount();
+      const visible = Math.min(this.visibleLimit, count);
       const noun = count === 1 ? "piece" : "pieces";
-      return `Showing ${count} available ${noun}`;
+      return count > visible
+        ? `Showing ${visible} of ${count} available ${noun}`
+        : `Showing ${count} available ${noun}`;
+    },
+
+    resetVisibleItems() {
+      this.visibleLimit = this.pageSize;
+    },
+
+    visibleItems() {
+      return Math.min(this.visibleLimit, this.resultCount());
+    },
+
+    remainingCount() {
+      return Math.max(this.resultCount() - this.visibleLimit, 0);
+    },
+
+    hasMore() {
+      return this.remainingCount() > 0;
+    },
+
+    loadMore() {
+      this.visibleLimit += this.pageSize;
+    },
+
+    isVisible(el) {
+      return this.matchedItems().indexOf(el) < this.visibleLimit;
     },
 
     matches(el) {
@@ -72,11 +110,15 @@ document.addEventListener("alpine:init", () => {
         return false;
       }
 
-      if (this.toggles.size8x10 && !sizeTags.includes("8x10")) {
+      if (this.toggles.size9x12 && !sizeTags.includes("9x12")) {
         return false;
       }
 
-      if (this.toggles.size5x7 && !sizeTags.includes("5x7")) {
+      if (this.toggles.size11x14 && !sizeTags.includes("11x14")) {
+        return false;
+      }
+
+      if (this.toggles.size425x55 && !sizeTags.includes("4.25x5.5")) {
         return false;
       }
 

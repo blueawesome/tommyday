@@ -20,7 +20,9 @@ export function hasAvailableProductType(artwork: Artwork, type: ProductType) {
 
 export function hasSoldOriginal(artwork: Artwork) {
   return artwork.products.some(
-    (product) => product.type === "original" && product.status === "sold"
+    (product) =>
+      product.type === "original" &&
+      (product.status === "sold" || product.status === "sold-out")
   );
 }
 
@@ -110,6 +112,8 @@ export function getDetailPageDescription(artwork: Artwork) {
 }
 
 export function getProductDisplayPrice(product: ArtworkProduct) {
+  if (product.status === "sold-out") return "Sold out, but more on the way!";
+
   return formatPrice(product.price);
 }
 

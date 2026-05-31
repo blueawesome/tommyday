@@ -23,9 +23,12 @@ function xmlEscape(value: string) {
 }
 
 export function GET() {
+  const sitemapArtworks = publishedArtworks.filter(
+    (artwork) => artwork.showInGallery !== false || artwork.showInShop !== false
+  );
   const urls = [
     ...staticRoutes,
-    ...publishedArtworks.map((artwork) => `/collage/${artwork.slug}/`),
+    ...sitemapArtworks.map((artwork) => `/collage/${artwork.slug}/`),
   ];
 
   const body = `<?xml version="1.0" encoding="UTF-8"?>

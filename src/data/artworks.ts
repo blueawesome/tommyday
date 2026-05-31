@@ -1,3 +1,5 @@
+import productAvailability from "./productAvailability.json";
+
 export type ProductType =
   | "original"
   | "print"
@@ -8,6 +10,7 @@ export type ProductType =
 export type ProductStatus =
   | "available"
   | "sold"
+  | "sold-out"
   | "coming-soon"
   | "unavailable";
 
@@ -68,6 +71,7 @@ export type Artwork = {
   featured?: boolean;
   draft?: boolean;
   showInGallery?: boolean;
+  showInShop?: boolean;
   description?: string;
   products: ArtworkProduct[];
   filters: {
@@ -79,7 +83,7 @@ export type Artwork = {
   };
 };
 
-type ImportedArtworkStatus = "available" | "sold" | "archive-only";
+type ImportedArtworkStatus = "available" | "sold" | "unavailable" | "archive-only";
 
 type ImportedArtworkRow = {
   slug: string;
@@ -91,8 +95,28 @@ type ImportedArtworkRow = {
   status: ImportedArtworkStatus;
   price?: number;
   webFilename: string;
-  gridFilename: string;
+  gridFilename?: string;
+  showInGallery?: boolean;
+  showInShop?: boolean;
+  featured?: boolean;
+  additionalProducts?: ArtworkProduct[];
 };
+
+type ProductAvailabilityOverlay = {
+  products?: Record<string, Partial<Pick<ArtworkProduct, "status" | "inventory" | "note">>>;
+};
+
+const availabilityOverlay = productAvailability as ProductAvailabilityOverlay;
+
+function applyAvailabilityOverlay(product: ArtworkProduct): ArtworkProduct {
+  const override = availabilityOverlay.products?.[product.id];
+  if (!override) return product;
+
+  return {
+    ...product,
+    ...override,
+  };
+}
 
 const importedArtworkRows: ImportedArtworkRow[] = [
   {
@@ -100,10 +124,10 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     title: "Untitled",
     catalogId: "TD-001",
     year: "2026",
-    dimensions: "8x10",
+    dimensions: "8.5x11",
     aspect: "portrait",
-    status: "sold",
-    price: 150,
+    status: "unavailable",
+    price: 0,
     webFilename: "untitled-web.jpg",
     gridFilename: "untitled-grid.jpg",
   },
@@ -112,10 +136,10 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     title: "Step Into Tomorrow",
     catalogId: "TD-002",
     year: "2026",
-    dimensions: "6x9",
+    dimensions: "9.75x7.5",
     aspect: "landscape",
-    status: "available",
-    price: 75,
+    status: "unavailable",
+    price: 0,
     webFilename: "step-into-tomorrow-web.jpg",
     gridFilename: "step-into-tomorrow-grid.jpg",
   },
@@ -124,7 +148,7 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     title: "The Dinner Guest",
     catalogId: "TD-003",
     year: "2026",
-    dimensions: "6x9",
+    dimensions: "8.5x11",
     aspect: "portrait",
     status: "available",
     price: 75,
@@ -136,7 +160,7 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     title: "Such a Wilderness",
     catalogId: "TD-004",
     year: "2026",
-    dimensions: "6x9",
+    dimensions: "8.5x11",
     aspect: "portrait",
     status: "available",
     price: 50,
@@ -148,22 +172,42 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     title: "Somewhere Between Heaven and Hell",
     catalogId: "TD-005",
     year: "2026",
-    dimensions: "6x9",
+    dimensions: "11x14",
     aspect: "portrait",
     status: "available",
-    price: 75,
+    price: 125,
     webFilename: "somewhere-between-heaven-and-hell-web.jpg",
     gridFilename: "somewhere-between-heaven-and-hell-grid.jpg",
+    additionalProducts: [
+      {
+        id: "somewhere-between-heaven-and-hell-print-11x14",
+        type: "print",
+        label: "11x14 Print",
+        status: "available",
+        price: 35,
+        note: "Small-batch print on heavy matte paper.",
+        shippingCategory: "flat-print",
+      },
+      {
+        id: "somewhere-between-heaven-and-hell-print-8x10",
+        type: "print",
+        label: "8x10 Print",
+        status: "available",
+        price: 20,
+        note: "Small-batch print on heavy matte paper.",
+        shippingCategory: "flat-print",
+      },
+    ],
   },
   {
     slug: "pink-elephant",
     title: "Pink Elephant",
     catalogId: "TD-006",
     year: "2026",
-    dimensions: "6x9",
+    dimensions: "10x10",
     aspect: "portrait",
     status: "available",
-    price: 75,
+    price: 125,
     webFilename: "pink-elephant-web.jpg",
     gridFilename: "pink-elephant-grid.jpg",
   },
@@ -172,10 +216,10 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     title: "Let's Get Toasted",
     catalogId: "TD-007",
     year: "2026",
-    dimensions: "6x9",
+    dimensions: "4.25x5.5",
     aspect: "portrait",
     status: "available",
-    price: 75,
+    price: 15,
     webFilename: "lets-get-toasted-web.jpg",
     gridFilename: "lets-get-toasted-grid.jpg",
   },
@@ -184,10 +228,10 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     title: "Lady B Cool",
     catalogId: "TD-008",
     year: "2026",
-    dimensions: "6x9",
+    dimensions: "4.25x5.5",
     aspect: "portrait",
     status: "available",
-    price: 75,
+    price: 15,
     webFilename: "lady-be-cool-web.jpg",
     gridFilename: "lady-be-cool-grid.jpg",
   },
@@ -196,9 +240,10 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     title: "June 1985",
     catalogId: "TD-009",
     year: "2026",
-    dimensions: "8x10",
+    dimensions: "7x10",
     aspect: "portrait",
-    status: "archive-only",
+    status: "available",
+    price: 125,
     webFilename: "june_1985_web.jpg",
     gridFilename: "june_1985_web_grid.jpg",
   },
@@ -207,7 +252,7 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     title: "Godzilla vs. Louis",
     catalogId: "TD-010",
     year: "2026",
-    dimensions: "5x7",
+    dimensions: "9x12",
     aspect: "landscape",
     status: "available",
     price: 75,
@@ -219,10 +264,10 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     title: "Full Moon",
     catalogId: "TD-011",
     year: "2026",
-    dimensions: "6x9",
+    dimensions: "11x14",
     aspect: "portrait",
     status: "available",
-    price: 75,
+    price: 50,
     webFilename: "full-moon-web.jpg",
     gridFilename: "full-moon-grid.jpg",
   },
@@ -231,10 +276,10 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     title: "False Idol",
     catalogId: "TD-012",
     year: "2026",
-    dimensions: "6x9",
+    dimensions: "11x14",
     aspect: "portrait",
     status: "available",
-    price: 75,
+    price: 100,
     webFilename: "false-idol-web.jpg",
     gridFilename: "false-idol-grid.jpg",
   },
@@ -243,22 +288,22 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     title: "Dreams Are Made of Magic",
     catalogId: "TD-013",
     year: "2026",
-    dimensions: "6x9",
+    dimensions: "9x12",
     aspect: "portrait",
     status: "available",
-    price: 75,
-    webFilename: "Dreams_Are_Made_of_Magic_web.jpg",
-    gridFilename: "Dreams_Are_Made_of_Magic_web_grid.jpg",
+    price: 125,
+    webFilename: "dreams-are-made-of-magic-web.jpg",
+    gridFilename: "dreams-are-made-of-magic-grid.jpg",
   },
   {
     slug: "dream-house",
     title: "Dream House",
     catalogId: "TD-014",
     year: "2026",
-    dimensions: "6x9",
+    dimensions: "9x12",
     aspect: "landscape",
     status: "available",
-    price: 75,
+    price: 125,
     webFilename: "dream-house-web.jpg",
     gridFilename: "dream-house-grid.jpg",
   },
@@ -270,7 +315,7 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     dimensions: "6x9",
     aspect: "landscape",
     status: "available",
-    price: 75,
+    price: 25,
     webFilename: "dog-smoking-web.jpg",
     gridFilename: "dog-smoking-grid.jpg",
   },
@@ -279,10 +324,10 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     title: "Catch",
     catalogId: "TD-016",
     year: "2026",
-    dimensions: "6x9",
+    dimensions: "9x12",
     aspect: "landscape",
     status: "available",
-    price: 75,
+    price: 125,
     webFilename: "catch-web.jpg",
     gridFilename: "catch-grid.jpg",
   },
@@ -291,10 +336,10 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     title: "Can't Nobody Hide From God",
     catalogId: "TD-017",
     year: "2026",
-    dimensions: "6x9",
+    dimensions: "4.25x5.5",
     aspect: "landscape",
     status: "available",
-    price: 75,
+    price: 15,
     webFilename: "cant-nobody-hide-from-god-web.jpg",
     gridFilename: "cant-nobody-hide-from-god-grid.jpg",
   },
@@ -303,10 +348,10 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     title: "Camera Man",
     catalogId: "TD-018",
     year: "2026",
-    dimensions: "5x7",
+    dimensions: "9x12",
     aspect: "portrait",
     status: "available",
-    price: 50,
+    price: 125,
     webFilename: "camera-man-web.jpg",
     gridFilename: "camera-man-grid.jpg",
   },
@@ -315,12 +360,70 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     title: "Burlington Dream Factory",
     catalogId: "TD-019",
     year: "2026",
-    dimensions: "6x9",
+    dimensions: "9x12",
     aspect: "landscape",
     status: "available",
-    price: 75,
+    price: 125,
     webFilename: "burlington-dream-factory-web.jpg",
     gridFilename: "burlington-dream-factory-grid.jpg",
+  },
+  {
+    slug: "tread-carefully",
+    title: "Tread Carefully",
+    catalogId: "TD-020",
+    year: "2026",
+    dimensions: "13.75x10.25",
+    aspect: "landscape",
+    status: "available",
+    price: 125,
+    webFilename: "tread-carefully-web.jpg",
+    gridFilename: "tread-carefully-grid.jpg",
+    additionalProducts: [
+      {
+        id: "tread-carefully-print",
+        type: "print",
+        label: "Print",
+        status: "coming-soon",
+        note: "Print option may be available for preorder.",
+        shippingCategory: "flat-print",
+      },
+    ],
+  },
+  {
+    slug: "calm-lake",
+    title: "Calm Lake",
+    catalogId: "TD-021",
+    year: "2026",
+    dimensions: "13.5x10",
+    aspect: "landscape",
+    status: "available",
+    price: 100,
+    webFilename: "calm-lake-web.jpg",
+    gridFilename: "calm-lake-grid.jpg",
+  },
+  {
+    slug: "smurfs-on-the-ground",
+    title: "Smurfs on the Ground",
+    catalogId: "TD-022",
+    year: "2026",
+    dimensions: "9x12",
+    aspect: "portrait",
+    status: "available",
+    price: 75,
+    webFilename: "smurfs-on-the-ground-web.jpg",
+    showInGallery: false,
+    showInShop: false,
+    featured: false,
+    additionalProducts: [
+      {
+        id: "smurfs-on-the-ground-print",
+        type: "print",
+        label: "Print",
+        status: "coming-soon",
+        note: "Prints coming soon.",
+        shippingCategory: "flat-print",
+      },
+    ],
   },
 ];
 
@@ -340,21 +443,32 @@ function getOriginalProducts(row: ImportedArtworkRow): ArtworkProduct[] {
   ];
 }
 
-export const artworks: Artwork[] = importedArtworkRows.map((row) => ({
-  slug: row.slug,
-  catalogId: row.catalogId,
-  title: row.title,
-  year: row.year,
-  medium: "Analog collage",
-  dimensions: row.dimensions,
-  image: `/art/collage/${row.webFilename}`,
-  thumbnail: `/art/collage/${row.gridFilename}`,
-  alt: `${row.title} analog collage.`,
-  imageAspect: row.aspect,
-  featured: true,
-  products: getOriginalProducts(row),
-  filters: { formats: ["original"], sizes: [row.dimensions] },
-}));
+export const artworks: Artwork[] = importedArtworkRows.map((row) => {
+  const products = [...getOriginalProducts(row), ...(row.additionalProducts || [])].map(
+    applyAvailabilityOverlay
+  );
+  const formats = products
+    .map((product) => product.type)
+    .filter((format, index, array) => array.indexOf(format) === index);
+
+  return {
+    slug: row.slug,
+    catalogId: row.catalogId,
+    title: row.title,
+    year: row.year,
+    medium: "Analog collage",
+    dimensions: row.dimensions,
+    image: `/art/collage/${row.webFilename}`,
+    thumbnail: row.gridFilename ? `/art/collage/${row.gridFilename}` : undefined,
+    alt: `${row.title} analog collage.`,
+    imageAspect: row.aspect,
+    featured: row.featured ?? true,
+    showInGallery: row.showInGallery,
+    showInShop: row.showInShop,
+    products,
+    filters: { formats, sizes: [row.dimensions] },
+  };
+});
 
 export const publishedArtworks = artworks.filter((artwork) => !artwork.draft);
 
@@ -367,5 +481,6 @@ export const featuredArtworks = publishedArtworks.filter(
 );
 
 export const shopArtworks = publishedArtworks.filter((artwork) =>
+  artwork.showInShop !== false &&
   artwork.products.some((product) => product.status === "available")
 );

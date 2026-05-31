@@ -5,7 +5,6 @@ import PreorderProductCard from "../components/PreorderProductCard.astro";
 import {
   launchPreorder,
   launchPreorderProducts,
-  launchPreorderBundles,
   launchPreorderCardPacks,
   launchPreorderPrints,
 } from "../data/preorderProducts";
@@ -48,7 +47,7 @@ const preorderItemListSchema = {
 
 <BaseLayout
   title="Pre-Order Prints & Cards - Tommy Day"
-  description="Pre-order signed Tommy Day Art prints, greeting cards, and launch bundles from the initial small print run."
+  description="Pre-order signed Tommy Day Art prints and greeting cards from the initial small print run."
   canonicalUrl="/pre-order/"
 >
   <SiteShell>
@@ -60,17 +59,14 @@ const preorderItemListSchema = {
         <h1 class="preorder-hero__title">Pre-Order Prints & Cards</h1>
         <div class="preorder-hero__text">
           <p>
-            I'm opening a short preorder window for the first small run of Tommy Day Art prints,
-            cards, and bonus art cards.
+            A short launch preorder for the first small run of Tommy Day Art prints, cards, and
+            weird paper goods.
           </p>
           <p>
-            Orders from this preorder help fund the initial print run, packaging, and shop launch.
-            Printing begins after the preorder window closes, and orders are expected to ship around
-            {` ${launchPreorder.estimatedShipDate}`}.
+            Preorders close June 10. Orders are expected to ship in late June.
           </p>
           <p>
-            Every order containing at least one preorder print includes one free mystery 5x7 launch
-            art card.
+            Every preorder print includes one free random 5x7 print on thick cardstock.
           </p>
         </div>
       </div>
@@ -80,62 +76,68 @@ const preorderItemListSchema = {
           <span>Preorder closes</span>
           <strong>{preorderCloseDate}</strong>
         </div>
-
-        <aside class="preorder-local-note" aria-label="Local handoff pickup note">
-          <p>
-            Know me in real life? Choose Local handoff / pickup at checkout for free in-person delivery.
-          </p>
-        </aside>
       </div>
     </section>
 
-    <section class="preorder-section" aria-labelledby="preorder-prints">
+    <section class="preorder-section preorder-section--prints" aria-labelledby="preorder-prints">
       <div class="preorder-section__header">
         <p class="section-eyebrow">Signed preorder prints</p>
         <h2 id="preorder-prints">Signed Preorder Prints</h2>
+        <p>Archival quality signed prints. Each one includes a free random 5x7 print on thick cardstock.</p>
+      </div>
+
+      <div class="preorder-carousel" aria-label="Signed preorder print carousel">
+        <button
+          class="preorder-carousel__control preorder-carousel__control--prev"
+          type="button"
+          aria-label="Scroll preorder prints left"
+          onclick="this.closest('.preorder-carousel').querySelector('.preorder-carousel__track').scrollBy({ left: -420, behavior: 'smooth' })"
+        >
+          <span aria-hidden="true">←</span>
+        </button>
+        <div class="preorder-carousel__track" tabindex="0">
+          {launchPreorderPrints.map((product) => (
+            <div class="preorder-carousel__slide">
+              <PreorderProductCard product={product} />
+            </div>
+          ))}
+        </div>
+        <button
+          class="preorder-carousel__control preorder-carousel__control--next"
+          type="button"
+          aria-label="Scroll preorder prints right"
+          onclick="this.closest('.preorder-carousel').querySelector('.preorder-carousel__track').scrollBy({ left: 420, behavior: 'smooth' })"
+        >
+          <span aria-hidden="true">→</span>
+        </button>
+      </div>
+
+      <aside class="preorder-social-note" aria-label="Instagram preorder updates">
+        <p class="preorder-social-note__label">Follow along</p>
         <p>
-          Signed prints from the initial preorder batch. Each print order includes one free mystery
-          5x7 launch art card.
+          Follow
+          <a href="https://www.instagram.com/tommyday" target="_blank" rel="noopener noreferrer">@TommyDay</a>
+          on Instagram for process videos, closeups, and preorder updates.
         </p>
-      </div>
-
-      <div class="preorder-grid">
-        {launchPreorderPrints.map((product) => (
-          <PreorderProductCard product={product} />
-        ))}
-      </div>
+      </aside>
     </section>
 
-    <section class="preorder-section" aria-labelledby="preorder-cards">
-      <div class="preorder-section__header">
-        <p class="section-eyebrow">Folded cards</p>
-        <h2 id="preorder-cards">Greeting Card Pack</h2>
-        <p>A2 folded cards, blank inside, with envelopes included.</p>
-      </div>
+    <div class="preorder-secondary-sections preorder-secondary-sections--single">
+      <section class="preorder-section" aria-labelledby="preorder-cards">
+        <div class="preorder-section__header">
+          <p class="section-eyebrow">Folded cards</p>
+          <h2 id="preorder-cards">Greeting Card Pack</h2>
+          <p>A2 folded cards, blank inside, with envelopes included.</p>
+        </div>
 
-      <div class="preorder-grid preorder-grid--single">
-        {launchPreorderCardPacks.map((product) => (
-          <PreorderProductCard product={product} />
-        ))}
-      </div>
-    </section>
+        <div class="preorder-grid preorder-grid--single">
+          {launchPreorderCardPacks.map((product) => (
+            <PreorderProductCard product={product} />
+          ))}
+        </div>
+      </section>
 
-    <section class="preorder-section preorder-section--bundle" aria-labelledby="preorder-bundle">
-      <div class="preorder-section__header">
-        <p class="section-eyebrow">Everything together</p>
-        <h2 id="preorder-bundle">The Whole Dang Thing Bundle</h2>
-        <p>
-          For the true sickos, early supporters, and people who don't want to choose. This is its
-          own preorder product, not an automatic cart discount.
-        </p>
-      </div>
-
-      <div class="preorder-grid preorder-grid--single">
-        {launchPreorderBundles.map((product) => (
-          <PreorderProductCard product={product} featured />
-        ))}
-      </div>
-    </section>
+    </div>
 
     <section class="preorder-faq" aria-labelledby="preorder-faq">
       <div class="preorder-section__header">
@@ -156,10 +158,17 @@ const preorderItemListSchema = {
           </p>
         </div>
         <div>
-          <h3>What is the mystery 5x7 art card?</h3>
+          <h3>How much is shipping?</h3>
           <p>
-            It's a flat mini print selected at random from a separate launch batch. You don't need
-            to pick a design.
+            U.S. shipping is $8. Orders $100+ ship free. Local handoff is available for people I know
+            in real life.
+          </p>
+        </div>
+        <div>
+          <h3>What is the free random 5x7 print?</h3>
+          <p>
+            It's a free random 5x7 print on thick cardstock, selected from a separate launch batch.
+            You don't need to pick a design.
           </p>
         </div>
         <div>
