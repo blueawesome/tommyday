@@ -26,7 +26,7 @@ async function validateSnipcartRequest({ request, env }) {
   const validation = await fetch(
     `https://app.snipcart.com/api/requestvalidation/${encodeURIComponent(requestToken)}`,
     {
-      method: "POST",
+      method: "GET",
       headers: {
         Authorization: `Basic ${btoa(`${env.SNIPCART_SECRET_API_KEY}:`)}`,
         Accept: "application/json",
@@ -36,8 +36,10 @@ async function validateSnipcartRequest({ request, env }) {
 
   if (!validation.ok) return false;
 
-  const result = await validation.json();
-  return Boolean(result.isValid);
+  const result = await validation.json().catch(() => ({}));
+  if (typeof result.isValid === "boolean") return result.isValid;
+
+  return true;
 }
 
 function isCompletedOrder(payload) {
