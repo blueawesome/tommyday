@@ -1,0 +1,53 @@
+name: Sync sold-out products from Snipcart
+
+on:
+  repository_dispatch:
+    types: [snipcart-order-completed]
+  workflow_dispatch:
+    inputs:
+      payload:
+        description: "Raw Snipcart webhook payload JSON"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  update-availability:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Write Snipcart payload
+        env:
+          DISPATCH_PAYLOAD: ${{ toJson(github.event.client_payload) }}
+          MANUAL_PAYLOAD: ${{ inputs.payload }}
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            printf '%s' "$MANUAL_PAYLOAD" > "$RUNNER_TEMP/snipcart-order.json"
+          else
+            printf '%s' "$DISPATCH_PAYLOAD" > "$RUNNER_TEMP/snipcart-order.json"
+          fi
+
+      - name: Apply product availability update
+        run: npm run apply:snipcart-order -- --payload "$RUNNER_TEMP/snipcart-order.json"
+
+      - name: Verify build
+        run: npm run build
+
+      - name: Commit availability overlay
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Update product availability from Snipcart"
+          file_pattern: src/data/productAvailability.json
