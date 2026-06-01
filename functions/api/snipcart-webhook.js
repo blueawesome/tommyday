@@ -57,7 +57,11 @@ function isCompletedOrder(payload) {
 
 async function dispatchWorkflow({ env, payload }) {
   if (!env.GITHUB_DISPATCH_TOKEN) {
-    throw new Error("Missing GITHUB_DISPATCH_TOKEN.");
+    return {
+      ok: false,
+      status: 500,
+      reason: "Missing GITHUB_DISPATCH_TOKEN Cloudflare environment variable.",
+    };
   }
 
   const repository = env.GITHUB_REPOSITORY || DEFAULT_REPOSITORY;
@@ -77,23 +81,51 @@ async function dispatchWorkflow({ env, payload }) {
   });
 
   if (!response.ok) {
-    throw new Error(`GitHub dispatch failed (${response.status}): ${await response.text()}`);
+    return {
+      ok: false,
+      status: 502,
+      reason: "GitHub repository dispatch failed.",
+      githubStatus: response.status,
+      githubResponse: await response.text(),
+    };
   }
+
+  return { ok: true, repository };
 }
 
 export async function onRequestPost({ request, env }) {
-  const valid = await validateSnipcartRequest({ request, env });
-  if (!valid) {
-    return new Response("Unauthorized", { status: 401 });
-  }
+  try {
+    const valid = await validateSnipcartRequest({ request, env });
+    if (!valid) {
+      return new Response("Unauthorized", { status: 401 });
+    }
 
-  const payload = await readJson(request);
-  if (!isCompletedOrder(payload)) {
-    return Response.json({ ok: true, skipped: true, reason: "Not an order completion event." });
-  }
+    const payload = await readJson(request);
+    if (!isCompletedOrder(payload)) {
+      return Response.json({ ok: true, skipped: true, reason: "Not an order completion event." });
+    }
 
-  await dispatchWorkflow({ env, payload });
-  return Response.json({ ok: true });
+    const dispatchResult = await dispatchWorkflow({ env, payload });
+    if (!dispatchResult.ok) {
+      console.error("Snipcart webhook dispatch failed", dispatchResult);
+      return Response.json(dispatchResult, { status: dispatchResult.status });
+    }
+
+    return Response.json({
+      ok: true,
+      dispatched: true,
+      repository: dispatchResult.repository,
+    });
+  } catch (error) {
+    console.error("Snipcart webhook failed", error);
+    return Response.json(
+      {
+        ok: false,
+        reason: error instanceof Error ? error.message : "Unknown webhook error.",
+      },
+      { status: 500 }
+    );
+  }
 }
 
 export function onRequest() {
