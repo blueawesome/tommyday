@@ -68,6 +68,11 @@ export const artworkSeries = {
     name: "3 Cut",
     description: "Collage work made from only three pieces of cut paper.",
   },
+  twoCut: {
+    slug: "2-cut",
+    name: "2 Cut",
+    description: "Collage work made from only two pieces of cut paper.",
+  },
 } as const satisfies Record<string, ArtworkSeries>;
 
 export type Artwork = {
@@ -149,6 +154,7 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     price: 0,
     webFilename: "untitled-web.jpg",
     gridFilename: "untitled-grid.jpg",
+    series: artworkSeries.threeCut,
   },
   {
     slug: "step-into-tomorrow",
@@ -289,6 +295,7 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     price: 50,
     webFilename: "full-moon-web.jpg",
     gridFilename: "full-moon-grid.jpg",
+    series: artworkSeries.threeCut,
   },
   {
     slug: "false-idol",
@@ -397,6 +404,7 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     price: 125,
     webFilename: "tread-carefully-web.jpg",
     gridFilename: "tread-carefully-grid.jpg",
+    series: artworkSeries.twoCut,
     additionalProducts: [
       {
         id: "tread-carefully-print",

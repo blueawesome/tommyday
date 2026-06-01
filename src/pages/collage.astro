@@ -129,6 +129,14 @@ import {
             >
               {artworkSeries.threeCut.name}
             </button>
+            <button
+              type="button"
+              class="collage-filter-button"
+              :class="{ 'is-active': selectedSeries === '2-cut' }"
+              @click="setSeries('2-cut')"
+            >
+              {artworkSeries.twoCut.name}
+            </button>
           </div>
         </div>
 
