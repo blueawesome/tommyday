@@ -5,7 +5,24 @@ import SiteFooter from "../components/SiteFooter.astro";
 const isHomePage = Astro.url.pathname === "/";
 ---
   <div class:list={["site-shell min-h-screen md:grid md:grid-cols-[260px_1fr]", isHomePage && "site-shell--home"]}>
-    <aside class="bg-transparent md:sticky md:top-0 md:h-screen md:pt-8 md:pl-6">
+    <header class="mobile-site-header md:hidden">
+      <a href="/" class="mobile-site-header__logo-link">
+        <img src="/images/tommy-day-logo.png" alt="Tommy Day" class="mobile-site-header__logo" />
+      </a>
+
+      <details class="mobile-site-menu">
+        <summary class="mobile-site-menu__toggle" aria-label="Open navigation">
+          <i class="fa-sharp fa-solid fa-bars-staggered" aria-hidden="true"></i>
+          <span class="sr-only">Menu</span>
+        </summary>
+
+        <div class="mobile-site-menu__panel">
+          <SidebarNav />
+        </div>
+      </details>
+    </header>
+
+    <aside class="site-sidebar bg-transparent md:sticky md:top-0 md:h-screen md:pt-8 md:pl-6">
       <SidebarNav />
     </aside>
 
