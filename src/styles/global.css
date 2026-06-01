@@ -1187,6 +1187,17 @@ a.group { margin-bottom: 2rem; }
   text-underline-offset: 0.18rem;
 }
 
+.thank-you-page__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  margin-top: 1.75rem;
+}
+
+.thank-you-page__actions .hero-link {
+  text-decoration: none;
+}
+
 .content-stack {
   display: grid;
   gap: 2rem;
