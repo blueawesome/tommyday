@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1500" role="img" aria-labelledby="title desc">
+  <title id="title">Artwork coming soon</title>
+  <desc id="desc">A warm paper placeholder for artwork that has not been photographed yet.</desc>
+  <defs>
+    <filter id="paper">
+      <feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="4" seed="12"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer>
+        <feFuncA type="table" tableValues="0 0.14"/>
+      </feComponentTransfer>
+      <feBlend in="SourceGraphic" mode="multiply"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="1500" fill="#f4efe3"/>
+  <rect x="88" y="88" width="1024" height="1324" fill="#fbf7ed" stroke="#2e2b24" stroke-width="10"/>
+  <rect x="128" y="128" width="944" height="1244" fill="#f6f0df" stroke="#777064" stroke-width="4"/>
+  <g filter="url(#paper)">
+    <rect width="1200" height="1500" fill="#f4efe3"/>
+  </g>
+  <g font-family="IBM Plex Mono, Courier New, monospace" fill="#2e2b24" text-anchor="middle">
+    <text x="600" y="690" font-size="54" letter-spacing="8">ARTWORK</text>
+    <text x="600" y="770" font-size="54" letter-spacing="8">COMING SOON</text>
+  </g>
+  <path d="M421 842h358" stroke="#ff4fa3" stroke-width="10"/>
+</svg>

@@ -3048,6 +3048,31 @@ a.group { margin-bottom: 2rem; }
   color: rgba(46, 43, 36, 0.78);
 }
 
+.detail-title-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.7rem;
+}
+
+.detail-series-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.58rem 0.14rem;
+  border: 2px solid var(--ink);
+  background: var(--riso-pink);
+  box-shadow: 3px 3px 0 var(--ink);
+  transform: rotate(-1.2deg);
+  font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
 .detail-top-links {
   display: flex;
   flex-wrap: wrap;

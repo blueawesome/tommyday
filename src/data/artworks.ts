@@ -56,6 +56,20 @@ export type ArtworkGalleryImage = {
   productIds?: string[];
 };
 
+export type ArtworkSeries = {
+  slug: string;
+  name: string;
+  description?: string;
+};
+
+export const artworkSeries = {
+  threeCut: {
+    slug: "3-cut",
+    name: "3 Cut",
+    description: "Collage work made from only three pieces of cut paper.",
+  },
+} as const satisfies Record<string, ArtworkSeries>;
+
 export type Artwork = {
   slug: string;
   catalogId: string;
@@ -68,6 +82,7 @@ export type Artwork = {
   alt: string;
   galleryImages?: ArtworkGalleryImage[];
   imageAspect?: "portrait" | "landscape" | "square" | "free";
+  series?: ArtworkSeries;
   featured?: boolean;
   draft?: boolean;
   showInGallery?: boolean;
@@ -79,6 +94,7 @@ export type Artwork = {
     themes?: string[];
     formats?: ProductType[];
     sizes?: string[];
+    series?: string[];
     colors?: string[];
   };
 };
@@ -96,6 +112,9 @@ type ImportedArtworkRow = {
   price?: number;
   webFilename: string;
   gridFilename?: string;
+  imagePath?: string;
+  thumbnailPath?: string;
+  series?: ArtworkSeries;
   showInGallery?: boolean;
   showInShop?: boolean;
   featured?: boolean;
@@ -425,6 +444,68 @@ const importedArtworkRows: ImportedArtworkRow[] = [
       },
     ],
   },
+  {
+    slug: "star-boy",
+    title: "Star Boy",
+    catalogId: "TD-023",
+    year: "2026",
+    dimensions: "9x10",
+    aspect: "portrait",
+    status: "available",
+    price: 50,
+    webFilename: "star-boy-web.jpg",
+    gridFilename: "star-boy-grid.jpg",
+    imagePath: "/art/placeholders/art-coming-soon.svg",
+    thumbnailPath: "/art/placeholders/art-coming-soon.svg",
+    featured: false,
+  },
+  {
+    slug: "hang-in-there",
+    title: "Hang in There",
+    catalogId: "TD-024",
+    year: "2026",
+    dimensions: "11x14",
+    aspect: "portrait",
+    status: "available",
+    price: 100,
+    webFilename: "hang-in-there-web.jpg",
+    gridFilename: "hang-in-there-grid.jpg",
+    imagePath: "/art/placeholders/art-coming-soon.svg",
+    thumbnailPath: "/art/placeholders/art-coming-soon.svg",
+    featured: false,
+  },
+  {
+    slug: "the-descent",
+    title: "The Descent",
+    catalogId: "TD-025",
+    year: "2026",
+    dimensions: "9x12",
+    aspect: "portrait",
+    status: "available",
+    price: 75,
+    webFilename: "the-descent-web.jpg",
+    gridFilename: "the-descent-grid.jpg",
+    imagePath: "/art/placeholders/art-coming-soon.svg",
+    thumbnailPath: "/art/placeholders/art-coming-soon.svg",
+    series: artworkSeries.threeCut,
+    featured: false,
+  },
+  {
+    slug: "eyes-of-the-tiger",
+    title: "Eyes of the Tiger",
+    catalogId: "TD-026",
+    year: "2026",
+    dimensions: "9x12",
+    aspect: "portrait",
+    status: "available",
+    price: 75,
+    webFilename: "eyes-of-the-tiger-web.jpg",
+    gridFilename: "eyes-of-the-tiger-grid.jpg",
+    imagePath: "/art/placeholders/art-coming-soon.svg",
+    thumbnailPath: "/art/placeholders/art-coming-soon.svg",
+    series: artworkSeries.threeCut,
+    featured: false,
+  },
 ];
 
 function getOriginalProducts(row: ImportedArtworkRow): ArtworkProduct[] {
@@ -458,15 +539,20 @@ export const artworks: Artwork[] = importedArtworkRows.map((row) => {
     year: row.year,
     medium: "Analog collage",
     dimensions: row.dimensions,
-    image: `/art/collage/${row.webFilename}`,
-    thumbnail: row.gridFilename ? `/art/collage/${row.gridFilename}` : undefined,
+    image: row.imagePath ?? `/art/collage/${row.webFilename}`,
+    thumbnail: row.thumbnailPath ?? (row.gridFilename ? `/art/collage/${row.gridFilename}` : undefined),
     alt: `${row.title} analog collage.`,
     imageAspect: row.aspect,
+    series: row.series,
     featured: row.featured ?? true,
     showInGallery: row.showInGallery,
     showInShop: row.showInShop,
     products,
-    filters: { formats, sizes: [row.dimensions] },
+    filters: {
+      formats,
+      sizes: [row.dimensions],
+      series: row.series ? [row.series.slug] : undefined,
+    },
   };
 });
 

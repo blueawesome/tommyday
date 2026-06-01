@@ -70,6 +70,13 @@ const artworkSchema = {
   "dateCreated": artwork.year,
   "image": new URL(artwork.image, "https://tommyday.com").href,
   "url": `https://tommyday.com/collage/${artwork.slug}/`,
+  ...(artwork.series ? {
+    "isPartOf": {
+      "@type": "CreativeWorkSeries",
+      "name": artwork.series.name,
+      ...(artwork.series.description ? { "description": artwork.series.description } : {})
+    }
+  } : {}),
   ...(artwork.description ? { "description": artwork.description } : {}),
   ...(pricedAvailableProducts.length
     ? {
@@ -149,6 +156,11 @@ const artworkSchema = {
 
       <div>
         <h1 class="text-2xl font-serif">{artwork.title}</h1>
+        {artwork.series ? (
+          <div class="detail-title-badges" aria-label="Artwork series">
+            <span class="detail-series-badge">{artwork.series.name} Series</span>
+          </div>
+        ) : null}
         <div class="detail-meta-line">
           {artwork.medium}{artwork.dimensions ? ` · ${artwork.dimensions}` : ""} · {artwork.year}
         </div>
