@@ -427,6 +427,7 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     price: 100,
     webFilename: "calm-lake-web.jpg",
     gridFilename: "calm-lake-grid.jpg",
+    series: artworkSeries.twoCut,
   },
   {
     slug: "smurfs-on-the-ground",
