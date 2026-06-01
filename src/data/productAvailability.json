@@ -6,7 +6,8 @@
       "updatedProductIds": [
         "the-dinner-guest-original"
       ],
-      "ignoredProductIds": []
+      "ignoredProductIds": [],
+      "note": "Test order reverted; kept processed to avoid replaying the webhook."
     },
     "53fc0e372b250501": {
       "processedAt": "2026-06-01T10:43:18.964Z",
@@ -15,13 +16,5 @@
       "ignoredProductIds": []
     }
   },
-  "products": {
-    "the-dinner-guest-original": {
-      "status": "sold",
-      "inventory": 0,
-      "source": "snipcart-webhook",
-      "orderId": "5821b6ad-29c0-4050-9e38-46719bf57d19",
-      "updatedAt": "2026-06-01T10:35:53.007Z"
-    }
-  }
+  "products": {}
 }
