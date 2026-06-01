@@ -124,6 +124,10 @@ body::before {
   height: auto;
 }
 
+.mobile-site-header--home .mobile-site-header__logo-link {
+  max-width: min(70vw, 16.25rem);
+}
+
 .mobile-site-menu {
   position: relative;
   flex: 0 0 auto;
@@ -1155,6 +1159,10 @@ a.group { margin-bottom: 2rem; }
 @media (max-width: 640px) {
   .home-brand-hero {
     gap: 0.95rem;
+  }
+
+  .site-shell--home .home-brand-hero__top {
+    display: none;
   }
 
   .home-brand-hero__logo {

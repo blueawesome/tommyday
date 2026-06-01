@@ -3,11 +3,13 @@ import SidebarNav from "../components/SidebarNav.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 
 const isHomePage = Astro.url.pathname === "/";
+const mobileLogo = isHomePage ? "/images/tommy-day-art-small.png" : "/images/tommy-day-logo.png";
+const mobileLogoAlt = isHomePage ? "Tommy Day Art" : "Tommy Day";
 ---
   <div class:list={["site-shell min-h-screen md:grid md:grid-cols-[260px_1fr]", isHomePage && "site-shell--home"]}>
-    <header class="mobile-site-header md:hidden">
+    <header class:list={["mobile-site-header md:hidden", isHomePage && "mobile-site-header--home"]}>
       <a href="/" class="mobile-site-header__logo-link">
-        <img src="/images/tommy-day-logo.png" alt="Tommy Day" class="mobile-site-header__logo" />
+        <img src={mobileLogo} alt={mobileLogoAlt} class="mobile-site-header__logo" />
       </a>
 
       <details class="mobile-site-menu">
