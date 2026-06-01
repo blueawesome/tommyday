@@ -89,10 +89,18 @@ body::before {
   justify-content: space-between;
   gap: 1rem;
   padding: 0.7rem 1.1rem 0.55rem 1.32rem;
-  border: 0;
+  border: 0 !important;
+  border-bottom: 0 !important;
   background: none !important;
-  box-shadow: none;
-  backdrop-filter: none;
+  box-shadow: none !important;
+  filter: none;
+  backdrop-filter: none !important;
+}
+
+.mobile-site-header::before,
+.mobile-site-header::after {
+  content: none !important;
+  display: none !important;
 }
 
 .mobile-site-header__logo-link {
