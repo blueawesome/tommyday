@@ -1,4 +1,21 @@
 {
-  "processedOrders": {},
-  "products": {}
+  "processedOrders": {
+    "5821b6ad-29c0-4050-9e38-46719bf57d19": {
+      "processedAt": "2026-06-01T10:35:53.007Z",
+      "itemCount": 1,
+      "updatedProductIds": [
+        "the-dinner-guest-original"
+      ],
+      "ignoredProductIds": []
+    }
+  },
+  "products": {
+    "the-dinner-guest-original": {
+      "status": "sold",
+      "inventory": 0,
+      "source": "snipcart-webhook",
+      "orderId": "5821b6ad-29c0-4050-9e38-46719bf57d19",
+      "updatedAt": "2026-06-01T10:35:53.007Z"
+    }
+  }
 }
