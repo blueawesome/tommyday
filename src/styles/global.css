@@ -81,7 +81,7 @@ body::before {
 }
 
 .mobile-site-header {
-  position: sticky;
+  position: relative;
   top: 0;
   z-index: 30;
   display: flex;
@@ -89,8 +89,10 @@ body::before {
   justify-content: space-between;
   gap: 1rem;
   padding: 0.7rem 1.1rem 0.55rem 1.32rem;
-  border-bottom: 1.5px solid rgba(17, 16, 13, 0.28);
-  background: transparent;
+  border: 0;
+  background: none !important;
+  box-shadow: none;
+  backdrop-filter: none;
 }
 
 .mobile-site-header__logo-link {
@@ -183,6 +185,7 @@ body::before {
 
 .mobile-site-menu__panel .sidebar-nav {
   padding: 0;
+  margin-top: 12px !important;
 }
 
 .mobile-site-menu__panel .sidebar-nav ul {
