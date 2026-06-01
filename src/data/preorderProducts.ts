@@ -1,4 +1,7 @@
+import productAvailability from "./productAvailability.json";
+
 export type PreorderProductType = "print" | "card-pack" | "bundle";
+export type PreorderProductStatus = "available" | "sold-out" | "unavailable";
 
 export type PreorderProduct = {
   id: string;
@@ -22,7 +25,15 @@ export type PreorderProduct = {
   snipcartName?: string;
   snipcartDescription?: string;
   featured?: boolean;
+  status?: PreorderProductStatus;
+  inventory?: number;
 };
+
+type ProductAvailabilityOverlay = {
+  products?: Record<string, Partial<Pick<PreorderProduct, "status" | "inventory">>>;
+};
+
+const availabilityOverlay = productAvailability as ProductAvailabilityOverlay;
 
 export const launchPreorder = {
   campaign: "launch-preorder",
@@ -31,7 +42,7 @@ export const launchPreorder = {
   openedAt: "2026-06-03",
 };
 
-export const preorderProducts: PreorderProduct[] = [
+const basePreorderProducts: PreorderProduct[] = [
   {
     id: "preorder-heaven-and-hell-11x14",
     title: "Somewhere Between Heaven and Hell",
@@ -193,6 +204,18 @@ export const preorderProducts: PreorderProduct[] = [
       "Preorder 5-pack of A2 folded greeting cards. Blank inside with envelopes included. Estimated shipping: Late June 2026.",
   },
 ];
+
+function applyPreorderAvailabilityOverlay(product: PreorderProduct): PreorderProduct {
+  const override = availabilityOverlay.products?.[product.id];
+  if (!override) return product;
+
+  return {
+    ...product,
+    ...override,
+  };
+}
+
+export const preorderProducts = basePreorderProducts.map(applyPreorderAvailabilityOverlay);
 
 export const launchPreorderProducts = preorderProducts.filter(
   (product) => product.preorderCampaign === launchPreorder.campaign

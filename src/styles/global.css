@@ -2649,6 +2649,16 @@ a.group { margin-bottom: 2rem; }
   transition: background-color 140ms ease;
 }
 
+.preorder-card__status {
+  width: fit-content;
+  margin-top: auto;
+  margin-bottom: 10px;
+  font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
 .preorder-lightbox {
   width: min(92vw, 68rem);
   max-width: 68rem;

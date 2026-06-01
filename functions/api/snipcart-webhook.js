@@ -1,5 +1,6 @@
 const DEFAULT_REPOSITORY = "blueawesome/tommyday";
 const DISPATCH_EVENT = "snipcart-order-completed";
+const SNIPCART_API_BASE = "https://app.snipcart.com/api";
 
 async function readJson(request) {
   const text = await request.text();
@@ -55,6 +56,125 @@ function isCompletedOrder(payload) {
   );
 }
 
+function getOrder(payload) {
+  return payload?.content || payload?.order || payload?.invoice || payload;
+}
+
+function getLineItems(order) {
+  const candidates = [
+    order?.items,
+    order?.products,
+    order?.cart?.items,
+    order?.details?.items,
+  ];
+
+  return candidates.find((candidate) => Array.isArray(candidate)) || [];
+}
+
+function getLineItemId(item) {
+  return (
+    item?.id ||
+    item?.uniqueId ||
+    item?.productId ||
+    item?.userDefinedId ||
+    item?.sku ||
+    item?.metadata?.id ||
+    item?.customFields?.id ||
+    null
+  );
+}
+
+function getProductId(product) {
+  return product?.userDefinedId || product?.id || product?.uniqueId || product?.sku || null;
+}
+
+function getProductStock(product) {
+  const stock =
+    product?.stock ??
+    product?.inventory ??
+    product?.quantity ??
+    product?.availableStock ??
+    product?.availableQuantity ??
+    product?.stockCount ??
+    null;
+
+  const numericStock = Number(stock);
+  return Number.isFinite(numericStock) ? numericStock : null;
+}
+
+function getProductsFromResponse(response) {
+  const products = response?.items || response?.data || response?.products || response;
+  return Array.isArray(products) ? products : [];
+}
+
+async function snipcartApiFetch(env, path) {
+  const response = await fetch(`${SNIPCART_API_BASE}${path}`, {
+    headers: {
+      Authorization: `Basic ${btoa(`${env.SNIPCART_SECRET_API_KEY}:`)}`,
+      Accept: "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Snipcart API request failed (${response.status}): ${await response.text()}`);
+  }
+
+  return response.json();
+}
+
+async function fetchSnipcartProductsById(env, productIds) {
+  if (!env.SNIPCART_SECRET_API_KEY || !productIds.length) return {};
+
+  const productsResponse = await snipcartApiFetch(env, "/products");
+  const products = getProductsFromResponse(productsResponse);
+  const wanted = new Set(productIds);
+  const stockByProductId = {};
+
+  for (const product of products) {
+    const id = getProductId(product);
+    if (!id || !wanted.has(id)) continue;
+
+    const inventory = getProductStock(product);
+    if (inventory === null) continue;
+
+    stockByProductId[id] = {
+      inventory,
+      source: "snipcart-products-api",
+    };
+  }
+
+  return stockByProductId;
+}
+
+async function enrichPayloadWithSnipcartStock({ env, payload }) {
+  const order = getOrder(payload);
+  const itemIds = [
+    ...new Set(getLineItems(order).map(getLineItemId).filter(Boolean)),
+  ];
+
+  try {
+    const stockByProductId = await fetchSnipcartProductsById(env, itemIds);
+    return {
+      ...payload,
+      _tommyDay: {
+        ...payload._tommyDay,
+        snipcartStock: stockByProductId,
+      },
+    };
+  } catch (error) {
+    console.error("Snipcart stock lookup failed", error);
+    return {
+      ...payload,
+      _tommyDay: {
+        ...payload._tommyDay,
+        snipcartStock: {},
+        snipcartStockLookupError:
+          error instanceof Error ? error.message : "Unknown Snipcart stock lookup error.",
+      },
+    };
+  }
+}
+
 async function dispatchWorkflow({ env, payload }) {
   if (!env.GITHUB_DISPATCH_TOKEN) {
     return {
@@ -105,7 +225,8 @@ export async function onRequestPost({ request, env }) {
       return Response.json({ ok: true, skipped: true, reason: "Not an order completion event." });
     }
 
-    const dispatchResult = await dispatchWorkflow({ env, payload });
+    const enrichedPayload = await enrichPayloadWithSnipcartStock({ env, payload });
+    const dispatchResult = await dispatchWorkflow({ env, payload: enrichedPayload });
     if (!dispatchResult.ok) {
       console.error("Snipcart webhook dispatch failed", dispatchResult);
       return Response.json(dispatchResult, { status: dispatchResult.status });

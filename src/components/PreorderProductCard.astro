@@ -9,6 +9,10 @@ const { product, featured = false } = Astro.props as {
 
 const buttonLabel = product.preorderButtonLabel || "Pre-Order Now";
 const formattedPrice = formatPrice(product.price);
+const unavailable = product.status === "sold-out" || product.status === "unavailable";
+const statusLabel = product.status === "sold-out"
+  ? "Sold out, but more on the way!"
+  : "Not available";
 const sharedCardDetails = new Set([
   "Signed 11x14 print",
   "Signed 8x10 print",
@@ -58,16 +62,21 @@ const visibleIncludes = product.includes?.filter((item) => !sharedCardDetails.ha
       ) : null}
     </div>
 
-    <button
-      class="preorder-card__button snipcart-add-item"
-      data-item-id={product.id}
-      data-item-name={product.snipcartName || `Pre-Order: ${product.title}`}
-      data-item-price={product.price}
-      data-item-url="/pre-order/"
-      data-item-description={product.snipcartDescription || product.description}
-      data-item-image={product.image}
-    >
-      {buttonLabel}
-    </button>
+    {unavailable ? (
+      <div class="preorder-card__status">{statusLabel}</div>
+    ) : (
+      <button
+        class="preorder-card__button snipcart-add-item"
+        data-item-id={product.id}
+        data-item-name={product.snipcartName || `Pre-Order: ${product.title}`}
+        data-item-price={product.price}
+        data-item-url="/pre-order/"
+        data-item-description={product.snipcartDescription || product.description}
+        data-item-image={product.image}
+        data-item-max-quantity={typeof product.inventory === "number" ? product.inventory : undefined}
+      >
+        {buttonLabel}
+      </button>
+    )}
   </div>
 </article>

@@ -35,7 +35,9 @@ const preorderItemListSchema = {
         "@type": "Offer",
         "price": product.price,
         "priceCurrency": "USD",
-        "availability": "https://schema.org/PreOrder",
+        "availability": product.status === "sold-out" || product.status === "unavailable"
+          ? "https://schema.org/OutOfStock"
+          : "https://schema.org/PreOrder",
         "url": "https://tommyday.com/pre-order/",
         "availabilityStarts": launchPreorder.openedAt,
         "availabilityEnds": launchPreorder.closesAt

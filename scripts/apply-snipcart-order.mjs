@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const availabilityPath = resolve(root, "src/data/productAvailability.json");
 const artworksPath = resolve(root, "src/data/artworks.ts");
+const preorderProductsPath = resolve(root, "src/data/preorderProducts.ts");
 
 function readArg(name) {
   const index = process.argv.indexOf(name);
@@ -21,7 +22,10 @@ function stableHash(value) {
 }
 
 async function getKnownProductIds() {
-  const source = await readFile(artworksPath, "utf8");
+  const source = [
+    await readFile(artworksPath, "utf8"),
+    await readFile(preorderProductsPath, "utf8"),
+  ].join("\n");
   const slugs = [...source.matchAll(/slug:\s*"([^"]+)"/g)].map((match) => match[1]);
   const explicitIds = [...source.matchAll(/id:\s*"([^"]+)"/g)].map((match) => match[1]);
 
@@ -89,7 +93,16 @@ function getLineItemQuantity(item) {
   return Number.isFinite(quantity) && quantity > 0 ? quantity : 1;
 }
 
-function applyItemToOverlay({ overlay, itemId, quantity, orderId, now }) {
+function getSnipcartStockForProduct(payload, itemId) {
+  const stockEntry = payload?._tommyDay?.snipcartStock?.[itemId];
+  const inventory = Number(
+    typeof stockEntry === "number" ? stockEntry : stockEntry?.inventory
+  );
+
+  return Number.isFinite(inventory) ? inventory : null;
+}
+
+function applyItemToOverlay({ overlay, itemId, quantity, orderId, now, snipcartInventory }) {
   const current = overlay.products[itemId] || {};
 
   if (itemId.endsWith("-original")) {
@@ -102,6 +115,21 @@ function applyItemToOverlay({ overlay, itemId, quantity, orderId, now }) {
       updatedAt: now,
     };
     return "marked original sold";
+  }
+
+  if (snipcartInventory !== null) {
+    const inventory = Math.max(snipcartInventory, 0);
+    overlay.products[itemId] = {
+      ...current,
+      inventory,
+      status: inventory === 0 ? "sold-out" : "available",
+      source: "snipcart-webhook-stock",
+      orderId,
+      updatedAt: now,
+    };
+    return inventory === 0
+      ? "marked product sold-out from Snipcart stock"
+      : `synced Snipcart inventory to ${inventory}`;
   }
 
   if (typeof current.inventory === "number") {
@@ -148,7 +176,15 @@ for (const item of items) {
   }
 
   const quantity = getLineItemQuantity(item);
-  const result = applyItemToOverlay({ overlay, itemId, quantity, orderId, now });
+  const snipcartInventory = getSnipcartStockForProduct(payload, itemId);
+  const result = applyItemToOverlay({
+    overlay,
+    itemId,
+    quantity,
+    orderId,
+    now,
+    snipcartInventory,
+  });
   updates.push({ itemId, quantity, result });
 }
 

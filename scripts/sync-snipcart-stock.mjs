@@ -28,8 +28,15 @@ function getProductId(product) {
 }
 
 function getProductStock(product) {
-  const stock = product.stock ?? product.inventory ?? product.quantity ?? product.availableStock;
-  return typeof stock === "number" ? stock : null;
+  const stock =
+    product.stock ??
+    product.inventory ??
+    product.quantity ??
+    product.availableStock ??
+    product.availableQuantity ??
+    product.stockCount;
+  const numericStock = Number(stock);
+  return Number.isFinite(numericStock) ? numericStock : null;
 }
 
 const overlay = JSON.parse(await readFile(availabilityPath, "utf8"));
