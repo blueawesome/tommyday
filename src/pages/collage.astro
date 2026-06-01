@@ -2,7 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SiteShell from "../components/SiteShell.astro";
 import ArtCard from "../components/ArtCard.astro";
-import { galleryArtworks } from "../data/artworks";
+import { artworkSeries, galleryArtworks } from "../data/artworks";
 import {
   getArtworkScopeStatus,
   hasAvailableProductType,
@@ -110,6 +110,28 @@ import {
           </div>
         </div>
 
+        <div class="collage-filter-panel__row">
+          <span class="collage-filter-panel__label">Series</span>
+          <div class="collage-filter-panel__buttons" role="group" aria-label="Artwork series">
+            <button
+              type="button"
+              class="collage-filter-button"
+              :class="{ 'is-active': selectedSeries === 'all' }"
+              @click="setSeries('all')"
+            >
+              All series
+            </button>
+            <button
+              type="button"
+              class="collage-filter-button"
+              :class="{ 'is-active': selectedSeries === '3-cut' }"
+              @click="setSeries('3-cut')"
+            >
+              {artworkSeries.threeCut.name}
+            </button>
+          </div>
+        </div>
+
         <div class="collage-filter-panel__footer">
           <p class="collage-filter-panel__count" aria-live="polite" x-text="resultLabel()"></p>
           <button
@@ -143,6 +165,7 @@ import {
               data-status={status}
               data-available-as={availableAs}
               data-sizes={art.filters && art.filters.sizes ? art.filters.sizes.join(',') : ''}
+              data-series={art.filters && art.filters.series ? art.filters.series.join(',') : ''}
               data-archive-item
               x-show="matches($el)"
               x-cloak

@@ -6,6 +6,7 @@ document.addEventListener("alpine:init", () => {
     selectedFormat: "any",
     // size is not used for now but kept for future
     selectedSize: "all",
+    selectedSeries: "all",
 
     setScope(value) {
       this.scope = value;
@@ -19,11 +20,16 @@ document.addEventListener("alpine:init", () => {
       this.selectedSize = size;
     },
 
+    setSeries(series) {
+      this.selectedSeries = series;
+    },
+
     // UI helpers
     hasActiveFilters() {
       return (
         this.scope !== "all" ||
         (this.selectedSize && this.selectedSize !== "all") ||
+        (this.selectedSeries && this.selectedSeries !== "all") ||
         (this.selectedFormat && this.selectedFormat !== "any")
       );
     },
@@ -31,6 +37,7 @@ document.addEventListener("alpine:init", () => {
     clearFilters() {
       this.scope = "all";
       this.selectedSize = "all";
+      this.selectedSeries = "all";
       this.selectedFormat = "any";
     },
 
@@ -58,6 +65,7 @@ document.addEventListener("alpine:init", () => {
       // scope handling using top-level status
       const status = (el.dataset.status || '').trim();
       const availableAs = (el.dataset.availableAs || '').split(',').map(s => s.trim()).filter(Boolean);
+      const series = (el.dataset.series || '').split(',').map(s => s.trim()).filter(Boolean);
 
       if (this.scope === 'available') {
         if (status !== 'available') return false;
@@ -75,6 +83,10 @@ document.addEventListener("alpine:init", () => {
         const sizes = el.dataset.sizes || '';
         const list = sizes.split(',').map((s) => s.trim()).filter(Boolean);
         if (!list.includes(this.selectedSize)) return false;
+      }
+
+      if (this.selectedSeries && this.selectedSeries !== 'all') {
+        if (!series.includes(this.selectedSeries)) return false;
       }
 
       return true;
