@@ -35,6 +35,10 @@ const statusLabel = product.status === "available"
 const sizeLabel = product.type === "original" && artwork.dimensions
   ? `${artwork.dimensions}"`
   : "";
+const productTitle = product.type === "original" ? "Original Analog Collage" : product.label;
+const productNote = product.type === "original"
+  ? product.note || "One-of-one hand-cut paper collage. Signed by the artist."
+  : product.note;
 ---
 
 <article
@@ -45,13 +49,13 @@ const sizeLabel = product.type === "original" && artwork.dimensions
   @focusin="selectImageById($el.dataset.productImageId)"
   @click="if (!$event.target.closest('.product-option-card__button')) selectImageById($el.dataset.productImageId)"
 >
-  {product.type === "original" ? <span class="product-option-card__badge">Original</span> : null}
+  {product.type === "original" ? <span class="product-option-card__badge">1 of 1</span> : null}
   <div class="product-option-card__copy">
     <div class="product-option-card__heading">
-      <h3 class="product-option-card__title">{product.label}</h3>
+      <h3 class="product-option-card__title">{productTitle}</h3>
       {sizeLabel ? <span class="product-option-card__size">{sizeLabel}</span> : null}
     </div>
-    {product.note ? <p class="product-option-card__note">{product.note}</p> : null}
+    {productNote ? <p class="product-option-card__note">{productNote}</p> : null}
     {product.imageId ? <p class="product-option-card__photo-cue">View photo</p> : null}
   </div>
 

@@ -1578,6 +1578,26 @@ a.group { margin-bottom: 2rem; }
   color: #3d392f;
 }
 
+.purchase-panel__group + .purchase-panel__group {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px dashed rgba(17, 16, 13, 0.28);
+}
+
+.purchase-panel__group-label {
+  margin: 0 0 0.55rem;
+  font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(61, 57, 47, 0.82);
+}
+
+.purchase-panel__group--original .purchase-panel__group-label {
+  color: var(--ink);
+}
+
 .purchase-panel__trust {
   margin: 0.95rem 0 0;
   padding-top: 0.65rem;
@@ -1604,8 +1624,9 @@ a.group { margin-bottom: 2rem; }
 .product-option-card--original {
   border-color: var(--ink);
   background:
-    linear-gradient(135deg, rgba(255, 91, 164, 0.12), rgba(247, 244, 237, 0.96) 38%),
+    linear-gradient(135deg, rgba(255, 91, 164, 0.18), rgba(247, 244, 237, 0.98) 42%),
     rgba(247, 244, 237, 0.96);
+  box-shadow: 6px 6px 0 rgba(17, 16, 13, 0.9);
 }
 
 .product-option-card__badge {

@@ -63,15 +63,10 @@ export type ArtworkSeries = {
 };
 
 export const artworkSeries = {
-  threeCut: {
-    slug: "3-cut",
-    name: "3 Cut",
-    description: "Collage work made from only three pieces of cut paper.",
-  },
-  twoCut: {
-    slug: "2-cut",
-    name: "2 Cut",
-    description: "Collage work made from only two pieces of cut paper.",
+  minimalCutStudy: {
+    slug: "minimal-cut-study",
+    name: "Minimal Cut Study",
+    description: "Collage work made from a minimal number of cut paper pieces.",
   },
 } as const satisfies Record<string, ArtworkSeries>;
 
@@ -154,7 +149,7 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     price: 0,
     webFilename: "untitled-web.jpg",
     gridFilename: "untitled-grid.jpg",
-    series: artworkSeries.threeCut,
+    series: artworkSeries.minimalCutStudy,
   },
   {
     slug: "step-into-tomorrow",
@@ -200,10 +195,19 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     dimensions: "11x14",
     aspect: "portrait",
     status: "available",
-    price: 125,
+    price: 175,
     webFilename: "somewhere-between-heaven-and-hell-web.jpg",
     gridFilename: "somewhere-between-heaven-and-hell-grid.jpg",
     additionalProducts: [
+      {
+        id: "somewhere-between-heaven-and-hell-print-8x10",
+        type: "print",
+        label: "8x10 Print",
+        status: "available",
+        price: 25,
+        note: "Small-batch print on heavy matte paper.",
+        shippingCategory: "flat-print",
+      },
       {
         id: "somewhere-between-heaven-and-hell-print-11x14",
         type: "print",
@@ -213,15 +217,7 @@ const importedArtworkRows: ImportedArtworkRow[] = [
         note: "Small-batch print on heavy matte paper.",
         shippingCategory: "flat-print",
       },
-      {
-        id: "somewhere-between-heaven-and-hell-print-8x10",
-        type: "print",
-        label: "8x10 Print",
-        status: "available",
-        price: 20,
-        note: "Small-batch print on heavy matte paper.",
-        shippingCategory: "flat-print",
-      },
+      
     ],
   },
   {
@@ -295,7 +291,7 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     price: 50,
     webFilename: "full-moon-web.jpg",
     gridFilename: "full-moon-grid.jpg",
-    series: artworkSeries.threeCut,
+    series: artworkSeries.minimalCutStudy,
   },
   {
     slug: "false-idol",
@@ -404,7 +400,7 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     price: 125,
     webFilename: "tread-carefully-web.jpg",
     gridFilename: "tread-carefully-grid.jpg",
-    series: artworkSeries.twoCut,
+    series: artworkSeries.minimalCutStudy,
     additionalProducts: [
       {
         id: "tread-carefully-print",
@@ -427,7 +423,7 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     price: 100,
     webFilename: "calm-lake-web.jpg",
     gridFilename: "calm-lake-grid.jpg",
-    series: artworkSeries.twoCut,
+    series: artworkSeries.minimalCutStudy,
   },
   {
     slug: "smurfs-on-the-ground",
@@ -490,7 +486,7 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     price: 75,
     webFilename: "the-descent-web.jpg",
     gridFilename: "the-descent-grid.jpg",
-    series: artworkSeries.threeCut,
+    series: artworkSeries.minimalCutStudy,
     featured: false,
   },
   {
@@ -504,7 +500,7 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     price: 75,
     webFilename: "eyes-of-the-tiger-web.jpg",
     gridFilename: "eyes-of-the-tiger-grid.jpg",
-    series: artworkSeries.threeCut,
+    series: artworkSeries.minimalCutStudy,
     featured: false,
   },
 ];

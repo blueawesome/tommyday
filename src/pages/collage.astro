@@ -124,18 +124,10 @@ import {
             <button
               type="button"
               class="collage-filter-button"
-              :class="{ 'is-active': selectedSeries === '3-cut' }"
-              @click="setSeries('3-cut')"
+              :class="{ 'is-active': selectedSeries === 'minimal-cut-study' }"
+              @click="setSeries('minimal-cut-study')"
             >
-              {artworkSeries.threeCut.name}
-            </button>
-            <button
-              type="button"
-              class="collage-filter-button"
-              :class="{ 'is-active': selectedSeries === '2-cut' }"
-              @click="setSeries('2-cut')"
-            >
-              {artworkSeries.twoCut.name}
+              {artworkSeries.minimalCutStudy.name}
             </button>
           </div>
         </div>

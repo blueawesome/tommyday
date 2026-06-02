@@ -5,6 +5,9 @@ import { getAvailableProducts, getUnavailableProducts } from "../data/artworkHel
 const { artwork } = Astro.props as { artwork: Artwork };
 const available = getAvailableProducts(artwork);
 const unavailable = getUnavailableProducts(artwork);
+const availableOriginals = available.filter((product) => product.type === "original");
+const availableReproductions = available.filter((product) => product.type !== "original");
+const hasMixedAvailableProducts = availableOriginals.length > 0 && availableReproductions.length > 0;
 ---
 
 <div class="mt-6">
@@ -16,11 +19,27 @@ const unavailable = getUnavailableProducts(artwork);
         <p class="purchase-panel__copy">Choose from the current formats below. Available formats are stocked in small batches.</p>
       </div>
 
-      <div class="product-options-grid">
-        {available.map((product) => (
-          <ProductOptionCard artwork={artwork} product={product} />
-        ))}
-      </div>
+      {availableOriginals.length > 0 ? (
+        <div class="purchase-panel__group purchase-panel__group--original">
+          {hasMixedAvailableProducts ? <p class="purchase-panel__group-label">Original Artwork</p> : null}
+          <div class="product-options-grid">
+            {availableOriginals.map((product) => (
+              <ProductOptionCard artwork={artwork} product={product} />
+            ))}
+          </div>
+        </div>
+      ) : null}
+
+      {availableReproductions.length > 0 ? (
+        <div class="purchase-panel__group">
+          {hasMixedAvailableProducts ? <p class="purchase-panel__group-label">Reproductions</p> : null}
+          <div class="product-options-grid">
+            {availableReproductions.map((product) => (
+              <ProductOptionCard artwork={artwork} product={product} />
+            ))}
+          </div>
+        </div>
+      ) : null}
 
       <p class="purchase-panel__trust">Ships flat from Indianapolis. Packed with care.</p>
     </section>
