@@ -1594,6 +1594,22 @@ a.group { margin-bottom: 2rem; }
   color: rgba(61, 57, 47, 0.82);
 }
 
+.purchase-panel__group-heading {
+  margin-bottom: 0.75rem;
+}
+
+.purchase-panel__group-heading .purchase-panel__group-label {
+  margin-bottom: 0.35rem;
+}
+
+.purchase-panel__group-description {
+  margin: 0;
+  max-width: 38rem;
+  font-size: 0.96rem;
+  line-height: 1.35;
+  color: rgba(61, 57, 47, 0.82);
+}
+
 .purchase-panel__group--original .purchase-panel__group-label {
   color: var(--ink);
 }
@@ -2201,7 +2217,7 @@ a.group { margin-bottom: 2rem; }
 .shop-card__image-wrap {
   --shop-mat-pad: clamp(0.85rem, 2vw, 1.2rem);
   position: relative;
-  aspect-ratio: 5 / 4;
+  aspect-ratio: 6 / 5;
   overflow: hidden;
   border: 1.5px solid rgba(17, 16, 13, 0.72);
   background:
@@ -2220,6 +2236,28 @@ a.group { margin-bottom: 2rem; }
   object-position: center;
   display: block;
   filter: drop-shadow(0 5px 6px rgba(17, 16, 13, 0.16));
+}
+
+.shop-card__badge {
+  position: absolute;
+  top: 0.7rem;
+  left: 0.7rem;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.18rem 0.48rem 0.14rem;
+  border: 2px solid var(--ink);
+  background: var(--riso-pink);
+  box-shadow: 3px 3px 0 var(--ink);
+  transform: rotate(-1.5deg);
+  font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.64rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
 .shop-card__body {

@@ -18,10 +18,11 @@ const preorderCount = launchPreorderProducts.length;
     <section class="shop-hero">
       <div class="shop-hero__copy">
         <h1 class="shop-hero__title">Shop</h1>
+       
         <p class="shop-hero__description">
-          Original analog collage, small-batch prints, greeting cards, and paper goods made by hand in Indianapolis, Indiana.
-        </p>
-        <p class="shop-hero__trust">Ships from Indianapolis * Packed flat</p>
+  Original analog collage and strange paper goods made by hand in Indianapolis, Indiana.
+  Originals are available below; launch prints and cards are on the preorder page.
+</p>
       </div>
 
       <div class="shop-hero__visual" aria-hidden="true">
@@ -54,28 +55,30 @@ const preorderCount = launchPreorderProducts.length;
                 >
                   Originals
                 </button>
-                <button
+                <!-- Hidden for launch while the shop grid is original-focused. Keep the filter logic in place for later print drops. -->
+                <!-- <button
                   type="button"
                   class="shop-segmented__button"
                   :class="{ 'is-active': selectedBase === 'print' }"
                   @click="setBase('print')"
                 >
                   Prints
-                </button>
+                </button> -->
               </div>
             </div>
 
             <div class="shop-filter-panel__row">
               <span class="shop-filter-panel__label">Narrow by</span>
               <div class="shop-toggle-list">
-                <button
+                <!-- Hidden for launch until smaller prints/cards are part of the main shop flow. -->
+                <!-- <button
                   type="button"
                   class="shop-toggle-button"
                   :class="{ 'is-active': isActive('under25') }"
                   @click="toggleFilter('under25')"
                 >
                   Under $25
-                </button>
+                </button> -->
                 <button
                   type="button"
                   class="shop-toggle-button"
@@ -92,14 +95,15 @@ const preorderCount = launchPreorderProducts.length;
                 >
                   11x14
                 </button>
-                <button
+                <!-- Hidden for launch; this size is not part of the current main shop browsing flow. -->
+                <!-- <button
                   type="button"
                   class="shop-toggle-button"
                   :class="{ 'is-active': isActive('size425x55') }"
                   @click="toggleFilter('size425x55')"
                 >
                   4.25x5.5
-                </button>
+                </button> -->
               </div>
               <button
                 x-show="hasActiveFilters()"
@@ -124,7 +128,7 @@ const preorderCount = launchPreorderProducts.length;
             <p class="shop-preorder__kicker">Pre-order window</p>
             <h2 id="shop-preorder-heading">Pre-orders</h2>
             <p>
-              There is a Pre-Order window open now that ends on June 10! Every order includes a free 5x7 print!
+              Signed archival matte prints and a greeting card 5-pack are available for a short launch preorder. Preorders close June 12.
             </p>
             <a href="/pre-order/" class="shop-preorder__link">Learn More</a>
           </div>

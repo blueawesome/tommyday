@@ -61,21 +61,15 @@ const preorderItemListSchema = {
         <h1 class="preorder-hero__title">Pre-Order Prints & Cards</h1>
         <div class="preorder-hero__text">
           <p>
-            A short launch preorder for the first small run of Tommy Day Art prints, cards, and
-            weird paper goods.
-          </p>
-          <p>
-            Preorders close June 10. Orders are expected to ship in late June.
-          </p>
-          <p>
-            Every preorder print includes one free random 5x7 print on thick cardstock.
+            A short launch preorder for the first small run of Tommy Day Art prints, cards,
+            and strange little paper goods. Preorders close June 12. Orders are expected to ship in late June. Every paid preorder print includes a free random 5x7 postcard!
           </p>
         </div>
       </div>
 
       <div class="preorder-hero__side">
         <div class="preorder-hero__stamp" aria-label={`Preorder closes ${preorderCloseDate}`}>
-          <span>Preorder closes</span>
+          <span>Preorders close</span>
           <strong>{preorderCloseDate}</strong>
         </div>
       </div>
@@ -85,7 +79,9 @@ const preorderItemListSchema = {
       <div class="preorder-section__header">
         <p class="section-eyebrow">Signed preorder prints</p>
         <h2 id="preorder-prints">Signed Preorder Prints</h2>
-        <p>Archival quality signed prints. Each one includes a free random 5x7 print on thick cardstock.</p>
+        <p>
+  Signed archival matte prints from the first launch batch. Each order includes a free random 5x7 mini print.
+</p>
       </div>
 
       <div class="preorder-carousel" aria-label="Signed preorder print carousel">
@@ -142,57 +138,76 @@ const preorderItemListSchema = {
     </div>
 
     <section class="preorder-faq" aria-labelledby="preorder-faq">
-      <div class="preorder-section__header">
-        <p class="section-eyebrow">Tiny FAQ</p>
-        <h2 id="preorder-faq">Preorder FAQ</h2>
-      </div>
+  <div class="preorder-section__header">
+    <p class="section-eyebrow">Tiny FAQ</p>
+    <h2 id="preorder-faq">Preorder FAQ</h2>
+  </div>
 
-      <div class="preorder-faq__grid">
-        <div>
-          <h3>Is this a preorder?</h3>
-          <p>Yes. These items are ordered now and produced after the preorder window closes.</p>
-        </div>
-        <div>
-          <h3>When will my order ship?</h3>
-          <p>
-            Orders are expected to ship around {launchPreorder.estimatedShipDate}. I'll send an
-            update if timing changes.
-          </p>
-        </div>
-        <div>
-          <h3>How much is shipping?</h3>
-          <p>
-            Standard U.S. shipping is $7.95. Orders over $50 ship free. Local handoff is available
-            for people I know in real life.
-          </p>
-        </div>
-        <div>
-          <h3>What is the free random 5x7 print?</h3>
-          <p>
-            It's a free random 5x7 print on thick cardstock, selected from a separate launch batch.
-            You don't need to pick a design.
-          </p>
-        </div>
-        <div>
-          <h3>Are the prints signed?</h3>
-          <p>Yes, preorder prints are signed unless a product specifically says otherwise.</p>
-        </div>
-        <div>
-          <h3>Are these limited editions?</h3>
-          <p>
-            This is a signed preorder batch, not necessarily a permanently limited edition unless a
-            product specifically says so.
-          </p>
-        </div>
-        <div>
-          <h3>Can I order regular shop items with preorder items?</h3>
-          <p>
-            For launch, preorder items should be treated as shipping together when the preorder
-            batch is ready.
-          </p>
-        </div>
-      </div>
-    </section>
+  <div class="preorder-faq__grid">
+    <div>
+      <h3>When will this ship?</h3>
+      <p>
+        Preorders are expected to ship around {launchPreorder.estimatedShipDate}. Once the preorder
+        window closes, I'll order proofs, approve the final batch, sign everything, and pack orders
+        from Indianapolis. I'll send an update if timing changes.
+      </p>
+    </div>
+
+    <div>
+      <h3>What kind of prints are these?</h3>
+      <p>
+        Launch prints are small-batch reproductions of my original analog collages, printed on
+        archival uncoated matte paper with a smooth matte finish.
+      </p>
+    </div>
+
+    <div>
+      <h3>Are the prints signed?</h3>
+      <p>
+        Yep.  I've been practicing!
+      </p>
+    </div>
+
+    <div>
+      <h3>Are these limited editions?</h3>
+      <p>
+        Not exactly. This is a signed preorder batch, not necessarily a permanently limited edition.
+        Some designs may come back later unless a product specifically says otherwise.
+      </p>
+    </div>
+
+    <div>
+      <h3>What is the free random 5x7 print?</h3>
+      <p>
+        Every preorder includes a free random 5x7 print of a piece not available for preorder. You
+        don't need to pick a design — I'll choose one and include it with your order! 
+      </p>
+    </div>
+
+    <div>
+      <h3>How much is shipping?</h3>
+      <p>
+        Standard U.S. shipping is $7.95. Orders over $50 ship free. Local handoff is available for
+        people I know in real life.
+      </p>
+    </div>
+
+    <div>
+      <h3>Can I order regular shop items with preorder items?</h3>
+      <p>
+        Yes, but the whole order will ship together when the preorder batch is ready.
+      </p>
+    </div>
+
+    <div>
+      <h3>What if the proofs need changes?</h3>
+      <p>
+        I'm ordering physical proofs before the full batch. If something needs fixing, I'll fix it
+        before production. If that changes the timeline, I'll send an update.
+      </p>
+    </div>
+  </div>
+</section>
 
     <dialog class="preorder-lightbox" id="preorder-lightbox" aria-labelledby="preorder-lightbox-title">
       <div class="preorder-lightbox__panel">

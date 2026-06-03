@@ -53,7 +53,6 @@ const visibleIncludes = product.includes?.filter((item) => !sharedCardDetails.ha
 
       <h3 class="preorder-card__title">{product.title}</h3>
       {product.size ? <p class="preorder-card__size">{product.size}</p> : null}
-      <p class="preorder-card__description">{product.description}</p>
 
       {visibleIncludes.length ? (
         <ul class="preorder-card__includes" aria-label={`${product.title} includes`}>

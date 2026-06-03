@@ -16,7 +16,7 @@ const hasMixedAvailableProducts = availableOriginals.length > 0 && availableRepr
   ) : (
     <section class="purchase-panel">
       <div class="purchase-panel__intro">
-        <p class="purchase-panel__copy">Choose from the current formats below. Available formats are stocked in small batches.</p>
+        <p class="purchase-panel__copy">Originals are one-of-a-kind. Reproductions are printed in small batches, signed by me, and shipped flat from Indianapolis.</p>
       </div>
 
       {availableOriginals.length > 0 ? (
@@ -32,10 +32,15 @@ const hasMixedAvailableProducts = availableOriginals.length > 0 && availableRepr
 
       {availableReproductions.length > 0 ? (
         <div class="purchase-panel__group">
-          {hasMixedAvailableProducts ? <p class="purchase-panel__group-label">Reproductions</p> : null}
+          {hasMixedAvailableProducts ? (
+            <div class="purchase-panel__group-heading">
+              <p class="purchase-panel__group-label">Reproductions</p>
+              <p class="purchase-panel__group-description">Archival matte reproductions of the original collage, signed by me.</p>
+            </div>
+          ) : null}
           <div class="product-options-grid">
             {availableReproductions.map((product) => (
-              <ProductOptionCard artwork={artwork} product={product} />
+              <ProductOptionCard artwork={artwork} product={product} hideNote />
             ))}
           </div>
         </div>

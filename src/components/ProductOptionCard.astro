@@ -6,9 +6,10 @@ import {
   getSnipcartName,
 } from "../data/artworkHelpers";
 
-const { artwork, product } = Astro.props as {
+const { artwork, product, hideNote = false } = Astro.props as {
   artwork: Artwork;
   product: ArtworkProduct;
+  hideNote?: boolean;
 };
 
 const snipcartEnabled = Boolean(import.meta.env.PUBLIC_SNIPCART_API_KEY);
@@ -37,7 +38,7 @@ const sizeLabel = product.type === "original" && artwork.dimensions
   : "";
 const productTitle = product.type === "original" ? "Original Analog Collage" : product.label;
 const productNote = product.type === "original"
-  ? product.note || "One-of-one hand-cut paper collage. Signed by the artist."
+  ? product.note || "One-of-one hand-cut paper collage. Signed by me."
   : product.note;
 ---
 
@@ -55,7 +56,7 @@ const productNote = product.type === "original"
       <h3 class="product-option-card__title">{productTitle}</h3>
       {sizeLabel ? <span class="product-option-card__size">{sizeLabel}</span> : null}
     </div>
-    {productNote ? <p class="product-option-card__note">{productNote}</p> : null}
+    {productNote && !hideNote ? <p class="product-option-card__note">{productNote}</p> : null}
     {product.imageId ? <p class="product-option-card__photo-cue">View photo</p> : null}
   </div>
 

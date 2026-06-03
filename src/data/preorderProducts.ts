@@ -37,7 +37,7 @@ const availabilityOverlay = productAvailability as ProductAvailabilityOverlay;
 
 export const launchPreorder = {
   campaign: "launch-preorder",
-  closesAt: "2026-06-10",
+  closesAt: "2026-06-12",
   estimatedShipDate: "Late June 2026",
   openedAt: "2026-06-03",
 };
@@ -53,7 +53,7 @@ const basePreorderProducts: PreorderProduct[] = [
     imageAlt: "Somewhere Between Heaven and Hell collage.",
     size: "11x14 signed print",
     badge: "Pre-Order",
-    description: "Archival quality signed print from the launch preorder batch.",
+    description: "Signed archival matte print from the launch preorder batch.",
     includes: ["Signed 11x14 print", "Archival quality print", "Free random 5x7 cardstock print included"],
     isPreorder: true,
     preorderCampaign: launchPreorder.campaign,

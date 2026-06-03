@@ -4,11 +4,18 @@ import {
   formatPrice,
   getAvailableProducts,
   getLowestAvailablePrice,
+  hasAvailableProductType,
 } from "../data/artworkHelpers";
 
 const { artwork } = Astro.props as { artwork: Artwork };
 const lowestPrice = getLowestAvailablePrice(artwork);
-const compactSummary = getAvailableProducts(artwork)
+const hasAvailableOriginal = hasAvailableProductType(artwork, "original");
+const availableProducts = getAvailableProducts(artwork);
+const hasOnlyAvailableOriginal = availableProducts.length === 1 && availableProducts[0].type === "original";
+const priceLabel = lowestPrice
+  ? `${hasOnlyAvailableOriginal ? "" : "From "}${formatPrice(lowestPrice)}`
+  : "View piece";
+const compactSummary = availableProducts
   .map((product) => product.label)
   .filter((value, index, array) => array.indexOf(value) === index)
   .join(" · ");
@@ -16,6 +23,7 @@ const compactSummary = getAvailableProducts(artwork)
 
 <a href={`/collage/${artwork.slug}/`} class="shop-card">
   <div class="shop-card__image-wrap">
+    {hasAvailableOriginal ? <span class="shop-card__badge">Original available</span> : null}
     <img
       src={artwork.thumbnail || artwork.image}
       alt={artwork.alt}
@@ -26,10 +34,10 @@ const compactSummary = getAvailableProducts(artwork)
 
   <div class="shop-card__body">
     <div class="shop-card__meta">
-      <span>{lowestPrice ? `From ${formatPrice(lowestPrice)}` : "View options"}</span>
+      <span>{priceLabel}</span>
     </div>
     <h2 class="shop-card__title">{artwork.title}</h2>
     <p class="shop-card__summary">{compactSummary || "Not currently available"}</p>
-    <span class="shop-card__cta">View options</span>
+    <span class="shop-card__cta">View piece</span>
   </div>
 </a>
