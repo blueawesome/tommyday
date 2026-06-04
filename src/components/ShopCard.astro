@@ -16,7 +16,13 @@ const priceLabel = lowestPrice
   ? `${hasOnlyAvailableOriginal ? "" : "From "}${formatPrice(lowestPrice)}`
   : "View piece";
 const compactSummary = availableProducts
-  .map((product) => product.label)
+  .map((product) => {
+    if (product.type === "original" && artwork.dimensions) {
+      return `Original · ${artwork.dimensions}`;
+    }
+
+    return product.label;
+  })
   .filter((value, index, array) => array.indexOf(value) === index)
   .join(" · ");
 ---

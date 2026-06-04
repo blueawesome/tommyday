@@ -1,0 +1,71 @@
+---
+import type { Artwork } from "../data/artworks";
+import type { PreorderProduct } from "../data/preorderProducts";
+import { formatPrice } from "../data/artworkHelpers";
+
+const { artwork, products } = Astro.props as {
+  artwork: Artwork;
+  products: PreorderProduct[];
+};
+
+const snipcartEnabled = Boolean(import.meta.env.PUBLIC_SNIPCART_API_KEY);
+const visibleProducts = products.filter((product) => product.status !== "unavailable");
+---
+
+{visibleProducts.length ? (
+  <section class="detail-preorder-panel" aria-labelledby="detail-preorder-heading">
+    <div class="detail-preorder-panel__intro">
+      <h3 id="detail-preorder-heading">Preorder Prints</h3>
+      <p>
+        This piece is part of the current preorder window. Preorder prints are produced after
+        the window closes and ship in late June.
+      </p>
+    </div>
+
+    <div class="detail-preorder-options">
+      {visibleProducts.map((product) => {
+        const unavailable = product.status === "sold-out";
+        const statusLabel = product.status === "sold-out"
+          ? "Sold out, but more on the way!"
+          : "Not available";
+
+        return (
+          <article class:list={["detail-preorder-option", unavailable && "detail-preorder-option--unavailable"]}>
+            <span class="detail-preorder-option__badge">{product.badge || "Pre-Order"}</span>
+            <div class="detail-preorder-option__copy">
+              <div class="detail-preorder-option__heading">
+                <h4>{product.size || product.title}</h4>
+                <span>{formatPrice(product.price)}</span>
+              </div>
+              <p>{product.description}</p>
+              {product.preorderNote ? <p class="detail-preorder-option__note">{product.preorderNote}</p> : null}
+            </div>
+
+            <div class="detail-preorder-option__actions">
+              {unavailable ? (
+                <p class="detail-preorder-option__status">{statusLabel}</p>
+              ) : snipcartEnabled ? (
+                <button
+                  class="detail-preorder-option__button snipcart-add-item"
+                  data-item-id={product.id}
+                  data-item-name={product.snipcartName || `Pre-Order: ${product.title}`}
+                  data-item-price={product.price}
+                  data-item-url={`/collage/${artwork.slug}/`}
+                  data-item-description={product.snipcartDescription || product.description}
+                  data-item-image={product.image}
+                  data-item-max-quantity={typeof product.inventory === "number" ? product.inventory : undefined}
+                >
+                  {product.preorderButtonLabel || "Pre-Order Now"}
+                </button>
+              ) : (
+                <div class="detail-preorder-option__status">
+                  Cart unavailable until Snipcart is configured.
+                </div>
+              )}
+            </div>
+          </article>
+        );
+      })}
+    </div>
+  </section>
+) : null}

@@ -2,7 +2,9 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SiteShell from "../../components/SiteShell.astro";
 import ArtworkPurchaseOptions from "../../components/ArtworkPurchaseOptions.astro";
+import ArtworkPreorderOptions from "../../components/ArtworkPreorderOptions.astro";
 import { publishedArtworks } from "../../data/artworks";
+import { getPreorderProductsForArtwork } from "../../data/preorderProducts";
 import {
   getDetailPageDescription,
   getAvailableProducts,
@@ -54,6 +56,7 @@ const galleryState = `{
   }
 }`;
 const availableProducts = getAvailableProducts(artwork);
+const relatedPreorderProducts = getPreorderProductsForArtwork(artwork.slug);
 const isSecretArtwork = artwork.showInGallery === false && artwork.showInShop === false;
 const pricedAvailableProducts = availableProducts.filter(
   (product) => typeof product.price === "number"
@@ -170,6 +173,7 @@ const artworkSchema = {
         <div class="mt-6">
           <h2 class="font-semibold text-xl">Available As</h2>
           <ArtworkPurchaseOptions artwork={artwork} />
+          <ArtworkPreorderOptions artwork={artwork} products={relatedPreorderProducts} />
         </div>
       </div>
     </div>

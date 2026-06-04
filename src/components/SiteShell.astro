@@ -20,12 +20,14 @@ const mobileLogoAlt = isHomePage ? "Tommy Day Art" : "Tommy Day";
 
         <div class="mobile-site-menu__panel">
           <SidebarNav />
+          <slot name="mobile-menu-extra" />
         </div>
       </details>
     </header>
 
     <aside class="site-sidebar bg-transparent md:sticky md:top-0 md:h-screen md:pt-8 md:pl-6">
       <SidebarNav />
+      <slot name="sidebar-extra" />
     </aside>
 
     <main class="px-6 py-8">

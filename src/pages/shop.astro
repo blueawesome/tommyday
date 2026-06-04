@@ -15,6 +15,28 @@ const preorderCount = launchPreorderProducts.length;
   canonicalUrl="/shop/"
 >
   <SiteShell>
+    <div slot="sidebar-extra" class="shop-sidebar-notes" aria-label="Shop notes">
+      <section class="shop-sidebar-note">
+        <p class="shop-sidebar-note__kicker">Pre-order window</p>
+        <h2>Pre-orders</h2>
+        <p>Signed archival matte prints and a greeting card 5-pack are available through June 12.</p>
+        <a href="/pre-order/">Learn More</a>
+      </section>
+
+      <p class="commerce-note shop-sidebar-note__handoff">Real Life Handoff is free for people I know in real life.</p>
+    </div>
+
+    <div slot="mobile-menu-extra" class="shop-sidebar-notes shop-sidebar-notes--mobile" aria-label="Shop notes">
+      <section class="shop-sidebar-note">
+        <p class="shop-sidebar-note__kicker">Pre-order window</p>
+        <h2>Pre-orders</h2>
+        <p>Signed archival matte prints and a greeting card 5-pack are available through June 12.</p>
+        <a href="/pre-order/">Learn More</a>
+      </section>
+
+      <p class="commerce-note shop-sidebar-note__handoff">Real Life Handoff is free for people I know in real life.</p>
+    </div>
+
     <section class="shop-hero">
       <div class="shop-hero__copy">
         <h1 class="shop-hero__title">Shop</h1>
@@ -82,16 +104,16 @@ const preorderCount = launchPreorderProducts.length;
                 <button
                   type="button"
                   class="shop-toggle-button"
-                  :class="{ 'is-active': isActive('size9x12') }"
-                  @click="toggleFilter('size9x12')"
+                  :class="{ 'is-active': isSizeActive('9x12') }"
+                  @click="setSize('9x12')"
                 >
                   9x12
                 </button>
                 <button
                   type="button"
                   class="shop-toggle-button"
-                  :class="{ 'is-active': isActive('size11x14') }"
-                  @click="toggleFilter('size11x14')"
+                  :class="{ 'is-active': isSizeActive('11x14') }"
+                  @click="setSize('11x14')"
                 >
                   11x14
                 </button>
@@ -115,6 +137,28 @@ const preorderCount = launchPreorderProducts.length;
               </button>
             </div>
 
+            <div class="shop-filter-panel__row">
+              <span class="shop-filter-panel__label">Sort by</span>
+              <div class="shop-toggle-list" role="group" aria-label="Sort shop pieces">
+                <button
+                  type="button"
+                  class="shop-toggle-button"
+                  :class="{ 'is-active': selectedSort === 'oldest' }"
+                  @click="setSort('oldest')"
+                >
+                  Oldest
+                </button>
+                <button
+                  type="button"
+                  class="shop-toggle-button"
+                  :class="{ 'is-active': selectedSort === 'newest' }"
+                  @click="setSort('newest')"
+                >
+                  Newest
+                </button>
+              </div>
+            </div>
+
             <p
               class="shop-filter-panel__count"
               aria-live="polite"
@@ -122,17 +166,6 @@ const preorderCount = launchPreorderProducts.length;
             ></p>
           </div>
         </div>
-
-        <section class="shop-preorder" aria-labelledby="shop-preorder-heading">
-          <div class="shop-preorder__header">
-            <p class="shop-preorder__kicker">Pre-order window</p>
-            <h2 id="shop-preorder-heading">Pre-orders</h2>
-            <p>
-              Signed archival matte prints and a greeting card 5-pack are available for a short launch preorder. Preorders close June 12.
-            </p>
-            <a href="/pre-order/" class="shop-preorder__link">Learn More</a>
-          </div>
-        </section>
       </div>
 
       <div class="shop-grid">
@@ -154,14 +187,17 @@ const preorderCount = launchPreorderProducts.length;
             .filter((value, index, array) => value && array.indexOf(value) === index)
             .join(",");
           const lowestPrice = getLowestAvailablePrice(art);
+          const catalogSort = Number(art.catalogId.replace(/\D/g, "")) || 0;
 
           return (
             <div
               data-available-as={availableAs}
               data-size-tags={sizeTags}
               data-under-25={lowestPrice !== null && lowestPrice <= 25 ? "true" : "false"}
+              data-catalog-sort={catalogSort}
               data-shop-item
               x-show="matches($el) && isVisible($el)"
+              x-bind:style="{ order: sortOrder($el) }"
               x-cloak
               class="h-full"
             >

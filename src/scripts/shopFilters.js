@@ -3,6 +3,8 @@ document.addEventListener("alpine:init", () => {
     pageSize: 9,
     visibleLimit: 9,
     selectedBase: "all",
+    selectedSize: "all",
+    selectedSort: "oldest",
     toggles: {
       card: false,
       size9x12: false,
@@ -17,9 +19,23 @@ document.addEventListener("alpine:init", () => {
       this.resetVisibleItems();
     },
 
+    setSize(value) {
+      this.selectedSize = this.selectedSize === value ? "all" : value;
+      this.resetVisibleItems();
+    },
+
+    setSort(value) {
+      this.selectedSort = value;
+      this.resetVisibleItems();
+    },
+
     toggleFilter(key) {
       this.toggles[key] = !this.toggles[key];
       this.resetVisibleItems();
+    },
+
+    isSizeActive(value) {
+      return this.selectedSize === value;
     },
 
     isActive(key) {
@@ -28,6 +44,7 @@ document.addEventListener("alpine:init", () => {
 
     clearFilters() {
       this.selectedBase = "all";
+      this.selectedSize = "all";
       this.toggles = {
         card: false,
         size9x12: false,
@@ -41,13 +58,24 @@ document.addEventListener("alpine:init", () => {
 
     hasActiveFilters() {
       if (this.selectedBase !== "all") return true;
+      if (this.selectedSize !== "all") return true;
       return Object.values(this.toggles).some(Boolean);
     },
 
     matchedItems() {
-      return Array.from(this.$root.querySelectorAll("[data-shop-item]")).filter((el) =>
-        this.matches(el)
-      );
+      return Array.from(this.$root.querySelectorAll("[data-shop-item]"))
+        .filter((el) => this.matches(el))
+        .sort((a, b) => {
+          const aSort = Number(a.dataset.catalogSort || 0);
+          const bSort = Number(b.dataset.catalogSort || 0);
+
+          return this.selectedSort === "newest" ? bSort - aSort : aSort - bSort;
+        });
+    },
+
+    sortOrder(el) {
+      const index = this.matchedItems().indexOf(el);
+      return index === -1 ? 9999 : index + 1;
     },
 
     resultCount() {
@@ -107,6 +135,10 @@ document.addEventListener("alpine:init", () => {
       }
 
       if (this.toggles.bookmark && !availableAs.includes("bookmark")) {
+        return false;
+      }
+
+      if (this.selectedSize !== "all" && !sizeTags.includes(this.selectedSize)) {
         return false;
       }
 

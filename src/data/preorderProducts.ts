@@ -7,6 +7,8 @@ export type PreorderProduct = {
   id: string;
   title: string;
   slug: string;
+  artworkSlug?: string;
+  showOnPreorderPage?: boolean;
   type: PreorderProductType;
   price: number;
   image: string;
@@ -47,6 +49,8 @@ const basePreorderProducts: PreorderProduct[] = [
     id: "preorder-heaven-and-hell-11x14",
     title: "Somewhere Between Heaven and Hell",
     slug: "heaven-and-hell-11x14-print",
+    artworkSlug: "somewhere-between-heaven-and-hell",
+    showOnPreorderPage: true,
     type: "print",
     price: 35,
     image: "/art/collage/somewhere-between-heaven-and-hell-web.jpg",
@@ -70,6 +74,8 @@ const basePreorderProducts: PreorderProduct[] = [
     id: "preorder-step-into-tomorrow-8x10",
     title: "Step Into Tomorrow",
     slug: "step-into-tomorrow-8x10-print",
+    artworkSlug: "step-into-tomorrow",
+    showOnPreorderPage: true,
     type: "print",
     price: 25,
     image: "/art/collage/step-into-tomorrow-web.jpg",
@@ -93,6 +99,8 @@ const basePreorderProducts: PreorderProduct[] = [
     id: "preorder-dreams-magic-8x10",
     title: "Dreams Are Made of Magic",
     slug: "dreams-are-made-of-magic-8x10-print",
+    artworkSlug: "dreams-are-made-of-magic",
+    showOnPreorderPage: true,
     type: "print",
     price: 25,
     image: "/art/collage/dreams-are-made-of-magic-web.jpg",
@@ -116,6 +124,8 @@ const basePreorderProducts: PreorderProduct[] = [
     id: "preorder-dinner-guest-8x10",
     title: "The Dinner Guest",
     slug: "the-dinner-guest-8x10-print",
+    artworkSlug: "the-dinner-guest",
+    showOnPreorderPage: true,
     type: "print",
     price: 25,
     image: "/art/collage/the-dinner-guest-web.jpg",
@@ -139,6 +149,8 @@ const basePreorderProducts: PreorderProduct[] = [
     id: "preorder-burlington-dream-factory-11x14",
     title: "Burlington Dream Factory",
     slug: "burlington-dream-factory-11x14-print",
+    artworkSlug: "burlington-dream-factory",
+    showOnPreorderPage: true,
     type: "print",
     price: 35,
     image: "/art/collage/burlington-dream-factory-web.jpg",
@@ -162,6 +174,8 @@ const basePreorderProducts: PreorderProduct[] = [
     id: "preorder-catch-8x10",
     title: "Catch",
     slug: "catch-8x10-print",
+    artworkSlug: "catch",
+    showOnPreorderPage: true,
     type: "print",
     price: 25,
     image: "/art/collage/catch-web.jpg",
@@ -182,9 +196,35 @@ const basePreorderProducts: PreorderProduct[] = [
       "Archival quality signed preorder print. Estimated shipping: Late June 2026. Includes one free random 5x7 print on thick cardstock.",
   },
   {
+    id: "preorder-smurfs-on-the-ground-8x10",
+    title: "Smurfs on the Ground",
+    slug: "smurfs-on-the-ground-8x10-print",
+    artworkSlug: "smurfs-on-the-ground",
+    showOnPreorderPage: false,
+    type: "print",
+    price: 25,
+    image: "/art/collage/smurfs-on-the-ground-web.jpg",
+    imageAlt: "Smurfs on the Ground collage.",
+    size: "8x10 signed print",
+    badge: "Pre-Order",
+    description: "Archival quality signed print from the launch preorder batch.",
+    includes: ["Signed 8x10 print", "Archival quality print", "Free random 5x7 cardstock print included"],
+    isPreorder: true,
+    preorderCampaign: launchPreorder.campaign,
+    preorderClosesAt: launchPreorder.closesAt,
+    estimatedShipDate: launchPreorder.estimatedShipDate,
+    preorderNote: "Includes one free random 5x7 print on thick cardstock.",
+    preorderBonusEligible: true,
+    preorderButtonLabel: "Pre-Order Now",
+    snipcartName: "Pre-Order: Smurfs on the Ground 8x10 Signed Print",
+    snipcartDescription:
+      "Archival quality signed preorder print. Estimated shipping: Late June 2026. Includes one free random 5x7 print on thick cardstock.",
+  },
+  {
     id: "preorder-greeting-card-5-pack",
     title: "Greeting Card 5-Pack",
     slug: "greeting-card-5-pack",
+    showOnPreorderPage: true,
     type: "card-pack",
     price: 25,
     image: "/art/placeholders/godzilla-vs-louis-armstrong.jpg",
@@ -218,8 +258,14 @@ function applyPreorderAvailabilityOverlay(product: PreorderProduct): PreorderPro
 export const preorderProducts = basePreorderProducts.map(applyPreorderAvailabilityOverlay);
 
 export const launchPreorderProducts = preorderProducts.filter(
-  (product) => product.preorderCampaign === launchPreorder.campaign
+  (product) =>
+    product.preorderCampaign === launchPreorder.campaign &&
+    product.showOnPreorderPage === true
 );
+
+export function getPreorderProductsForArtwork(artworkSlug: string) {
+  return preorderProducts.filter((product) => product.artworkSlug === artworkSlug);
+}
 
 export const launchPreorderPrints = launchPreorderProducts.filter(
   (product) => product.type === "print"
