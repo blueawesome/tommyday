@@ -5,6 +5,7 @@ import artFiltersScript from "../scripts/artFilters.js?url";
 import shopFiltersScript from "../scripts/shopFilters.js?url";
 import preorderLightboxScript from "../scripts/preorderLightbox.js?url";
 import snipcartCheckoutScript from "../scripts/snipcartCheckout.js?url";
+import legacyServiceWorkerCleanupScript from "../scripts/legacyServiceWorkerCleanup.js?url";
 const {
   title = "Tommy Day",
   description = "Analog collage, prints, cards, and strange paper goods by Tommy Day.",
@@ -49,25 +50,20 @@ const siteSchema = {
   {canonicalHref ? <link rel="canonical" href={canonicalHref} /> : null}
   <meta name="robots" content={robots} />
   <meta name="theme-color" content="#fff12f" />
-  <!-- Open Graph -->
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />
   <meta property="og:type" content={ogType} />
   <meta property="og:site_name" content="Tommy Day Art" />
   {canonicalHref ? <meta property="og:url" content={canonicalHref} /> : null}
   {ogImageHref ? <meta property="og:image" content={ogImageHref} /> : null}
-  <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content={title} />
   <meta name="twitter:description" content={description} />
   {ogImageHref ? <meta name="twitter:image" content={ogImageHref} /> : null}
-  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Special+Elite&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
-  <!-- Font Awesome kit (loads icons for the nav) -->
   <script src="https://kit.fontawesome.com/f0d3128641.js" crossorigin="anonymous"></script>
-  <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-9V2CC0M35T"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -76,10 +72,8 @@ const siteSchema = {
     gtag('js', new Date());
     gtag('config', 'G-9V2CC0M35T');
   </script>
-    <!-- Structured data: WebSite and Person -->
     <script type="application/ld+json" set:html={JSON.stringify(siteSchema)} />
     <link rel="icon" href="/favicon.svg" />
-    <!-- Load Alpine helpers as an ES module from src so Vite can bundle and HMR during dev -->
     <script type="module" src={artFiltersScript}></script>
     <script type="module" src={shopFiltersScript}></script>
     <script type="module" src={preorderLightboxScript}></script>
@@ -88,19 +82,6 @@ const siteSchema = {
   </head>
   <body class="bg-stone-100 text-neutral-950 antialiased">
     <slot />
-    <script>
-      // Launch-safe cleanup: keep static inventory pages from being served by an old service worker cache.
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations()
-          .then((registrations) => Promise.all(registrations.map((registration) => registration.unregister())))
-          .catch(() => {});
-      }
-
-      if ('caches' in window) {
-        caches.keys()
-          .then((keys) => Promise.all(keys.map((key) => caches.delete(key))))
-          .catch(() => {});
-      }
-    </script>
+    <script type="module" src={legacyServiceWorkerCleanupScript}></script>
   </body>
 </html>

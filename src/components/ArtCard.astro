@@ -9,7 +9,6 @@ const displaySize = artwork.dimensions || (artwork.filters?.sizes ? artwork.filt
 const imageClass = compact ? "home-art-card__image" : "card-image archive-card__image";
 ---
 <a href={`/collage/${artwork.slug}/`} class:list={["group h-full flex flex-col", { "card--compact": compact, "card--archive": !compact }]}>
-  <!-- prefer thumbnail if present -->
   <div class:list={[compact ? "home-art-card__image-wrap" : "card-media flex-none rounded overflow-hidden"]}>
     <img
       src={artwork.thumbnail || artwork.image}

@@ -77,30 +77,12 @@ const preorderCount = launchPreorderProducts.length;
                 >
                   Originals
                 </button>
-                <!-- Hidden for launch while the shop grid is original-focused. Keep the filter logic in place for later print drops. -->
-                <!-- <button
-                  type="button"
-                  class="shop-segmented__button"
-                  :class="{ 'is-active': selectedBase === 'print' }"
-                  @click="setBase('print')"
-                >
-                  Prints
-                </button> -->
               </div>
             </div>
 
             <div class="shop-filter-panel__row">
               <span class="shop-filter-panel__label">Narrow by</span>
               <div class="shop-toggle-list">
-                <!-- Hidden for launch until smaller prints/cards are part of the main shop flow. -->
-                <!-- <button
-                  type="button"
-                  class="shop-toggle-button"
-                  :class="{ 'is-active': isActive('under25') }"
-                  @click="toggleFilter('under25')"
-                >
-                  Under $25
-                </button> -->
                 <button
                   type="button"
                   class="shop-toggle-button"
@@ -117,15 +99,6 @@ const preorderCount = launchPreorderProducts.length;
                 >
                   11x14
                 </button>
-                <!-- Hidden for launch; this size is not part of the current main shop browsing flow. -->
-                <!-- <button
-                  type="button"
-                  class="shop-toggle-button"
-                  :class="{ 'is-active': isActive('size425x55') }"
-                  @click="toggleFilter('size425x55')"
-                >
-                  4.25x5.5
-                </button> -->
               </div>
               <button
                 x-show="hasActiveFilters()"
