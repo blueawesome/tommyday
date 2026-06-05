@@ -7,7 +7,14 @@ import alpinejs from '@astrojs/alpinejs';
 
 // https://astro.build/config
 export default defineConfig({
+  build: {
+    inlineStylesheets: 'never',
+  },
+
   vite: {
+    build: {
+      assetsInlineLimit: 0,
+    },
     plugins: [tailwindcss()]
   },
 
