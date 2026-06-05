@@ -63,12 +63,12 @@ const basePreorderProducts: PreorderProduct[] = [
     preorderCampaign: launchPreorder.campaign,
     preorderClosesAt: launchPreorder.closesAt,
     estimatedShipDate: launchPreorder.estimatedShipDate,
-    preorderNote: "Includes one free random 5x7 print on thick cardstock.",
+    preorderNote: "Includes a free random 5x7 cardstock print.",
     preorderBonusEligible: true,
     preorderButtonLabel: "Pre-Order Now",
     snipcartName: "Pre-Order: Somewhere Between Heaven and Hell 11x14 Signed Print",
     snipcartDescription:
-      "Archival quality signed preorder print. Estimated shipping: Late June 2026. Includes one free random 5x7 print on thick cardstock.",
+      "Archival quality signed preorder print. Estimated shipping: Late June 2026. Includes a free random 5x7 cardstock print.",
   },
   {
     id: "preorder-step-into-tomorrow-8x10",
@@ -88,12 +88,12 @@ const basePreorderProducts: PreorderProduct[] = [
     preorderCampaign: launchPreorder.campaign,
     preorderClosesAt: launchPreorder.closesAt,
     estimatedShipDate: launchPreorder.estimatedShipDate,
-    preorderNote: "Includes one free random 5x7 print on thick cardstock.",
+    preorderNote: "Includes a free random 5x7 cardstock print.",
     preorderBonusEligible: true,
     preorderButtonLabel: "Pre-Order Now",
     snipcartName: "Pre-Order: Step Into Tomorrow 8x10 Signed Print",
     snipcartDescription:
-      "Archival quality signed preorder print. Estimated shipping: Late June 2026. Includes one free random 5x7 print on thick cardstock.",
+      "Archival quality signed preorder print. Estimated shipping: Late June 2026. Includes a free random 5x7 cardstock print.",
   },
   {
     id: "preorder-dreams-magic-8x10",
@@ -113,12 +113,12 @@ const basePreorderProducts: PreorderProduct[] = [
     preorderCampaign: launchPreorder.campaign,
     preorderClosesAt: launchPreorder.closesAt,
     estimatedShipDate: launchPreorder.estimatedShipDate,
-    preorderNote: "Includes one free random 5x7 print on thick cardstock.",
+    preorderNote: "Includes a free random 5x7 cardstock print.",
     preorderBonusEligible: true,
     preorderButtonLabel: "Pre-Order Now",
     snipcartName: "Pre-Order: Dreams Are Made of Magic 8x10 Signed Print",
     snipcartDescription:
-      "Archival quality signed preorder print. Estimated shipping: Late June 2026. Includes one free random 5x7 print on thick cardstock.",
+      "Archival quality signed preorder print. Estimated shipping: Late June 2026. Includes a free random 5x7 cardstock print.",
   },
   {
     id: "preorder-dinner-guest-8x10",
@@ -138,12 +138,12 @@ const basePreorderProducts: PreorderProduct[] = [
     preorderCampaign: launchPreorder.campaign,
     preorderClosesAt: launchPreorder.closesAt,
     estimatedShipDate: launchPreorder.estimatedShipDate,
-    preorderNote: "Includes one free random 5x7 print on thick cardstock.",
+    preorderNote: "Includes a free random 5x7 cardstock print.",
     preorderBonusEligible: true,
     preorderButtonLabel: "Pre-Order Now",
     snipcartName: "Pre-Order: The Dinner Guest 8x10 Signed Print",
     snipcartDescription:
-      "Archival quality signed preorder print. Estimated shipping: Late June 2026. Includes one free random 5x7 print on thick cardstock.",
+      "Archival quality signed preorder print. Estimated shipping: Late June 2026. Includes a free random 5x7 cardstock print.",
   },
   {
     id: "preorder-burlington-dream-factory-11x14",
@@ -163,12 +163,12 @@ const basePreorderProducts: PreorderProduct[] = [
     preorderCampaign: launchPreorder.campaign,
     preorderClosesAt: launchPreorder.closesAt,
     estimatedShipDate: launchPreorder.estimatedShipDate,
-    preorderNote: "Includes one free random 5x7 print on thick cardstock.",
+    preorderNote: "Includes a free random 5x7 cardstock print.",
     preorderBonusEligible: true,
     preorderButtonLabel: "Pre-Order Now",
     snipcartName: "Pre-Order: Burlington Dream Factory 11x14 Signed Print",
     snipcartDescription:
-      "Archival quality signed preorder print. Estimated shipping: Late June 2026. Includes one free random 5x7 print on thick cardstock.",
+      "Archival quality signed preorder print. Estimated shipping: Late June 2026. Includes a free random 5x7 cardstock print.",
   },
   {
     id: "preorder-catch-8x10",
@@ -188,12 +188,12 @@ const basePreorderProducts: PreorderProduct[] = [
     preorderCampaign: launchPreorder.campaign,
     preorderClosesAt: launchPreorder.closesAt,
     estimatedShipDate: launchPreorder.estimatedShipDate,
-    preorderNote: "Includes one free random 5x7 print on thick cardstock.",
+    preorderNote: "Includes a free random 5x7 cardstock print.",
     preorderBonusEligible: true,
     preorderButtonLabel: "Pre-Order Now",
     snipcartName: "Pre-Order: Catch 8x10 Signed Print",
     snipcartDescription:
-      "Archival quality signed preorder print. Estimated shipping: Late June 2026. Includes one free random 5x7 print on thick cardstock.",
+      "Archival quality signed preorder print. Estimated shipping: Late June 2026. Includes a free random 5x7 cardstock print.",
   },
   {
     id: "preorder-smurfs-on-the-ground-8x10",
@@ -213,12 +213,12 @@ const basePreorderProducts: PreorderProduct[] = [
     preorderCampaign: launchPreorder.campaign,
     preorderClosesAt: launchPreorder.closesAt,
     estimatedShipDate: launchPreorder.estimatedShipDate,
-    preorderNote: "Includes one free random 5x7 print on thick cardstock.",
+    preorderNote: "Includes a free random 5x7 cardstock print.",
     preorderBonusEligible: true,
     preorderButtonLabel: "Pre-Order Now",
     snipcartName: "Pre-Order: Smurfs on the Ground 8x10 Signed Print",
     snipcartDescription:
-      "Archival quality signed preorder print. Estimated shipping: Late June 2026. Includes one free random 5x7 print on thick cardstock.",
+      "Archival quality signed preorder print. Estimated shipping: Late June 2026. Includes a free random 5x7 cardstock print.",
   },
   {
     id: "preorder-greeting-card-5-pack",

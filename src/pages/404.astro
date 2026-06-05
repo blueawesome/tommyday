@@ -1,0 +1,27 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteShell from "../components/SiteShell.astro";
+---
+
+<BaseLayout
+  title="Page Not Found — Tommy Day Art"
+  description="This Tommy Day Art page could not be found."
+  canonicalUrl="/404/"
+  robots="noindex,follow"
+>
+  <SiteShell>
+    <section class="page-intro-copy not-found-page">
+      <p class="section-eyebrow">Wrong scrap pile</p>
+      <h1 class="text-2xl font-serif">Page not found</h1>
+      <p>
+        This page wandered off somewhere between the paper cutter and the scanner.
+      </p>
+
+      <div class="thank-you-page__actions" aria-label="Helpful links">
+        <a href="/pre-order/" class="hero-link hero-link--primary">Pre-Order Prints & Cards</a>
+        <a href="/shop/" class="hero-link">Shop Available Work</a>
+        <a href="/collage/" class="hero-link">Browse Collage Work</a>
+      </div>
+    </section>
+  </SiteShell>
+</BaseLayout>

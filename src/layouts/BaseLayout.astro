@@ -89,51 +89,17 @@ const siteSchema = {
   <body class="bg-stone-100 text-neutral-950 antialiased">
     <slot />
     <script>
+      // Launch-safe cleanup: keep static inventory pages from being served by an old service worker cache.
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js').then((reg) => {
-          if (reg && reg.waiting) {
-            // show update available
-            showSWUpdate();
-          }
-          reg.addEventListener('updatefound', () => {
-            const installing = reg.installing;
-            if (!installing) return;
-            installing.addEventListener('statechange', (evt) => {
-              const s = evt && evt.target && (evt.target as any).state ? (evt.target as any).state : null;
-              if (s === 'installed' && navigator.serviceWorker.controller) {
-                showSWUpdate();
-              }
-            });
-          });
-        }).catch(() => {
-          // ignore registration errors
-        });
+        navigator.serviceWorker.getRegistrations()
+          .then((registrations) => Promise.all(registrations.map((registration) => registration.unregister())))
+          .catch(() => {});
       }
-      
-      function showSWUpdate() {
-        if (document.getElementById('sw-update')) return;
-        const el = document.createElement('div');
-        el.id = 'sw-update';
-        el.className = 'sw-update';
-        el.innerHTML = 'New version available.' +
-          '<button id="sw-reload">Reload</button>' +
-          '<button id="sw-dismiss">Dismiss</button>';
-        document.body.appendChild(el);
-        const reloadBtn = document.getElementById('sw-reload');
-        const dismissBtn = document.getElementById('sw-dismiss');
-        if (reloadBtn) {
-          reloadBtn.addEventListener('click', () => {
-            navigator.serviceWorker.getRegistration().then((reg) => {
-              if (!reg || !reg.waiting) return location.reload();
-              reg.waiting.postMessage({ type: 'SKIP_WAITING' });
-              reg.waiting.addEventListener('statechange', (e) => {
-                const st = e && e.target && (e.target as any).state ? (e.target as any).state : null;
-                if (st === 'activated') location.reload();
-              });
-            });
-          });
-        }
-        if (dismissBtn) dismissBtn.addEventListener('click', () => el.remove());
+
+      if ('caches' in window) {
+        caches.keys()
+          .then((keys) => Promise.all(keys.map((key) => caches.delete(key))))
+          .catch(() => {});
       }
     </script>
   </body>

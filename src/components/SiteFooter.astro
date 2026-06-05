@@ -11,41 +11,49 @@ const links = [
 ---
 
 <footer class="site-footer">
-  <div class="site-footer__brand">
-    <img
-      src="/images/tommy-day-art-small.png"
-      alt="Tommy Day Art"
-      class="site-footer__logo"
-      loading="lazy"
-    />
-    <p>Hand-Cut Analog Collage</p>
-  </div>
+  <div class="site-footer__primary">
+    <div class="site-footer__brand">
+      <img
+        src="/images/tommy-day-art-small.png"
+        alt="Tommy Day Art"
+        class="site-footer__logo"
+        loading="lazy"
+      />
+      <p>Hand-Cut Analog Collage</p>
+    </div>
 
-  <nav class="site-footer__nav" aria-label="Footer">
-    {links.map((link) => (
-      <a href={link.href}>{link.label}</a>
-    ))}
-    <a href="#snipcart" class="snipcart-checkout">Cart</a>
-  </nav>
+    <nav class="site-footer__nav" aria-label="Footer">
+      {links.map((link) => (
+        <a href={link.href}>{link.label}</a>
+      ))}
+      <a href="#snipcart" class="snipcart-checkout">Cart</a>
+    </nav>
 
-  <div class="site-footer__meta">
-    <a
-      href="https://www.instagram.com/tommyday"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="site-footer__social"
-    >
-      <svg
-        class="site-footer__social-icon"
-        aria-hidden="true"
-        viewBox="0 0 24 24"
-        focusable="false"
+    <div class="site-footer__meta">
+      <a
+        href="https://www.instagram.com/tommyday"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="site-footer__social"
       >
-        <rect x="4" y="4" width="16" height="16" rx="4"></rect>
-        <circle cx="12" cy="12" r="3.5"></circle>
-        <circle cx="16.6" cy="7.4" r="1.1"></circle>
-      </svg>
-      @TommyDay
-    </a>
+        <svg
+          class="site-footer__social-icon"
+          aria-hidden="true"
+          viewBox="0 0 24 24"
+          focusable="false"
+        >
+          <rect x="4" y="4" width="16" height="16" rx="4"></rect>
+          <circle cx="12" cy="12" r="3.5"></circle>
+          <circle cx="16.6" cy="7.4" r="1.1"></circle>
+        </svg>
+        @TommyDay
+      </a>
+    </div>
   </div>
+
+  <!-- Revertable footer legal row: remove this paragraph and the .site-footer__legal-row CSS block to undo. -->
+  <p class="site-footer__legal-row">
+    © {new Date().getFullYear()} Tommy Day. All artwork and images reserved.
+    Powered by Astro + Snipcart. Built by me.
+  </p>
 </footer>
