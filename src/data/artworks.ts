@@ -534,6 +534,20 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     webFilename: "dash-of-red-web.jpg",
     gridFilename: "dash-of-red-grid.jpg",
     featured: false,
+  },
+  {
+    slug: "chillaz",
+    title: "Chillaz",
+    catalogId: "TD-028",
+    year: "2026",
+    dimensions: "6x9",
+    aspect: "portrait",
+    showInGallery: false,
+    showInShop: false,
+    status: "available",
+    price: 25,
+    webFilename: "chillaz-web.jpg",
+    featured: false,
   }
 ];
 
