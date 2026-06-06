@@ -224,7 +224,7 @@ const basePreorderProducts: PreorderProduct[] = [
     id: "preorder-greeting-card-5-pack",
     title: "Greeting Card 5-Pack",
     slug: "greeting-card-5-pack",
-    showOnPreorderPage: true,
+    showOnPreorderPage: false,
     type: "card-pack",
     price: 25,
     image: "/art/placeholders/godzilla-vs-louis-armstrong.jpg",

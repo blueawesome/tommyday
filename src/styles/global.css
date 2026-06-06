@@ -523,6 +523,11 @@ main > section + section {
   font-size: clamp(1.28rem, 2.9vw, 2rem) !important;
   line-height: 1.08 !important;
   color: var(--ink) !important;
+  margin-bottom: 1rem !important;
+}
+
+.home-brand-hero__text {
+  margin-bottom: 0.8rem !important;
 }
 
 .home-brand-hero__actions {
@@ -3494,7 +3499,167 @@ a.group { margin-bottom: 2rem; }
   text-transform: uppercase;
 }
 
+.contact-page {
+  display: grid;
+  gap: 2rem;
+  max-width: 58rem;
+}
+
+.contact-page__intro {
+  max-width: 42rem;
+}
+
+.contact-page__intro h1 {
+  margin: 0.35rem 0 0.65rem;
+  font-size: clamp(2.35rem, 6vw, 4rem);
+  line-height: 0.92;
+}
+
+.contact-page__intro p {
+  margin: 0;
+  color: rgba(17, 16, 13, 0.78);
+  font-size: clamp(1.05rem, 1.45vw, 1.22rem);
+  line-height: 1.5;
+}
+
+.contact-page__intro a {
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: var(--riso-pink);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.15em;
+}
+
+.contact-page__note {
+  margin-top: 0.8rem !important;
+  font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.72rem !important;
+  color: var(--muted) !important;
+}
+
+.contact-form {
+  display: grid;
+  gap: 1rem;
+  padding: clamp(1rem, 3vw, 1.55rem);
+  border: 2px solid var(--ink);
+  background:
+    linear-gradient(rgba(247, 244, 237, 0.9), rgba(238, 230, 215, 0.84)),
+    url("/images/paper.jpg");
+  background-size: auto, 520px auto;
+  box-shadow: 7px 7px 0 rgba(17, 16, 13, 0.88);
+}
+
+.contact-form__honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.contact-form__field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.contact-form__field span {
+  font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.contact-form input,
+.contact-form select,
+.contact-form textarea {
+  width: 100%;
+  border: 1.75px solid var(--ink);
+  background: rgba(255, 253, 246, 0.66);
+  color: var(--ink);
+  font: inherit;
+  line-height: 1.35;
+  padding: 0.65rem 0.72rem;
+  box-shadow: inset 2px 2px 0 rgba(17, 16, 13, 0.08);
+}
+
+.contact-form textarea {
+  resize: vertical;
+  min-height: 9rem;
+}
+
+.contact-form input:focus,
+.contact-form select:focus,
+.contact-form textarea:focus {
+  outline: 3px solid rgba(255, 79, 163, 0.35);
+  outline-offset: 2px;
+}
+
+.contact-form__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.9rem;
+  margin-top: 0.55rem;
+}
+
+.contact-form__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.7rem;
+  padding: 0.58rem 1.3rem 0.5rem;
+  border: 2px solid var(--ink);
+  background: var(--riso-yellow);
+  box-shadow: 5px 5px 0 rgba(17, 16, 13, 0.95);
+  color: var(--ink);
+  cursor: pointer;
+  font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-weight: 800;
+  line-height: 1.1;
+  text-decoration: none;
+  transition: background-color 140ms ease, transform 140ms ease, box-shadow 140ms ease;
+}
+
+.contact-form__button:hover,
+.contact-form__button:focus-visible {
+  background: var(--riso-pink);
+  transform: translate(-1px, -1px);
+  box-shadow: 6px 6px 0 rgba(17, 16, 13, 0.95);
+}
+
+.contact-form__button:disabled {
+  cursor: wait;
+  opacity: 0.66;
+}
+
+.contact-form__status {
+  margin: 0;
+  color: var(--muted);
+  font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.82rem;
+}
+
+.contact-form__status[data-state="success"] {
+  color: var(--ink);
+}
+
+.contact-form__status[data-state="error"] {
+  color: #8a1d1d;
+}
+
 @media (min-width: 860px) {
+  .contact-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .contact-form__field--full,
+  .contact-form__actions {
+    grid-column: 1 / -1;
+  }
+
   .collage-hero {
     grid-template-columns: minmax(0, 1fr) minmax(11.5rem, 0.28fr);
   }

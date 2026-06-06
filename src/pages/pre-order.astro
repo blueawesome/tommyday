@@ -5,7 +5,6 @@ import PreorderProductCard from "../components/PreorderProductCard.astro";
 import {
   launchPreorder,
   launchPreorderProducts,
-  launchPreorderCardPacks,
   launchPreorderPrints,
 } from "../data/preorderProducts";
 
@@ -61,11 +60,9 @@ const preorderItemListSchema = {
         <h1 class="preorder-hero__title">Pre-Order Prints & Cards</h1>
         <div class="preorder-hero__text">
           <p>
-            A short launch preorder for the first small run of Tommy Day Art prints, cards,
-            and strange little paper goods. Preorders close June 12. Orders are expected to ship in late June. Every paid preorder print includes a free random 5x7 cardstock print!
+            To help kick off the shop, I'm doing a short preorder window for the first batch of prints and greeting cards. Preorders close June 12. Orders are expected to ship in late June, and every order includes a free random 5x7 print! Free local handoff is available for people I know in real life!
           </p>
         </div>
-        <p class="commerce-note preorder-hero__handoff">Real Life Handoff is free for people I know in real life.</p>
       </div>
 
       <div class="preorder-hero__side">
@@ -79,10 +76,11 @@ const preorderItemListSchema = {
     <section class="preorder-section preorder-section--prints" aria-labelledby="preorder-prints">
       <div class="preorder-section__header">
         <p class="section-eyebrow">Signed preorder prints</p>
-        <h2 id="preorder-prints">Signed Preorder Prints</h2>
+        <h2 id="preorder-prints">Signed Launch Prints</h2>
         <p>
-  Signed archival matte prints from the first launch batch. Each paid preorder print includes a free random 5x7 cardstock print.
-</p>
+          Archival matte prints, signed on the back by me.  
+        </p>
+        
       </div>
 
       <div class="preorder-carousel" aria-label="Signed preorder print carousel">
@@ -122,20 +120,13 @@ const preorderItemListSchema = {
     </section>
 
     <div class="preorder-secondary-sections preorder-secondary-sections--single">
-      <section class="preorder-section" aria-labelledby="preorder-cards">
+      <section class="preorder-section preorder-section--teaser" aria-labelledby="preorder-cards">
         <div class="preorder-section__header">
           <p class="section-eyebrow">Folded cards</p>
-          <h2 id="preorder-cards">Greeting Card Pack</h2>
-          <p>A2 folded cards, blank inside, with envelopes included.</p>
-        </div>
-
-        <div class="preorder-grid preorder-grid--single">
-          {launchPreorderCardPacks.map((product) => (
-            <PreorderProductCard product={product} />
-          ))}
+          <h2 id="preorder-cards">Greeting Card Pack Coming Soon</h2>
+          <p>A 5-pack of folded greeting cards are still getting dialed in but will be available to preorder for $25 soon. Blank inside, envelopes included, and weird enough to send for almost any occasion.</p>
         </div>
       </section>
-
     </div>
 
     <section class="preorder-faq" aria-labelledby="preorder-faq">
@@ -165,7 +156,7 @@ const preorderItemListSchema = {
     <div>
       <h3>Are the prints signed?</h3>
       <p>
-        Yep.  I've been practicing!
+        Yep. I've been practicing! Prints will be signed on the back by me or by my trusted robot assistant (kidding).
       </p>
     </div>
 
@@ -200,13 +191,7 @@ const preorderItemListSchema = {
       </p>
     </div>
 
-    <div>
-      <h3>What if the proofs need changes?</h3>
-      <p>
-        I'm ordering physical proofs before the full batch. If something needs fixing, I'll fix it
-        before production. If that changes the timeline, I'll send an update.
-      </p>
-    </div>
+
   </div>
 </section>
 
