@@ -14,7 +14,23 @@
       "itemCount": 0,
       "updatedProductIds": [],
       "ignoredProductIds": []
+    },
+    "d2c05efb-2823-4e44-a610-c15363f8eb03": {
+      "processedAt": "2026-06-07T19:41:04.008Z",
+      "itemCount": 1,
+      "updatedProductIds": [
+        "chillaz-original"
+      ],
+      "ignoredProductIds": []
     }
   },
-  "products": {}
+  "products": {
+    "chillaz-original": {
+      "status": "sold",
+      "inventory": 0,
+      "source": "snipcart-webhook",
+      "orderId": "d2c05efb-2823-4e44-a610-c15363f8eb03",
+      "updatedAt": "2026-06-07T19:41:04.008Z"
+    }
+  }
 }
