@@ -39,7 +39,7 @@ const availabilityOverlay = productAvailability as ProductAvailabilityOverlay;
 
 export const launchPreorder = {
   campaign: "launch-preorder",
-  closesAt: "2026-06-12",
+  closesAt: "2026-06-19",
   estimatedShipDate: "Late June 2026",
   openedAt: "2026-06-03",
 };
