@@ -74,5 +74,50 @@ const featured = featuredArtworks.slice(0, 9);
         </button>
       </div>
     </section>
+
+    <section class="home-notes" aria-label="Updates and local shopping">
+      <div class="home-newsletter paper-card">
+        <p class="section-eyebrow">Mailing list</p>
+        <h2>Studio notes, shop drops, and weird paper updates</h2>
+        <p>
+          Get a note when new originals, preorder windows, and small-batch paper goods go live.
+        </p>
+        <form class="newsletter-form" action="/api/newsletter" method="post" data-newsletter-form>
+          <div class="newsletter-form__honeypot" hidden>
+            <label for="newsletter-website">Website</label>
+            <input id="newsletter-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+          </div>
+          <label class="newsletter-form__field" for="newsletter-email">
+            <span>Email address</span>
+            <input
+              id="newsletter-email"
+              name="email"
+              type="email"
+              autocomplete="email"
+              placeholder="you@example.com"
+              required
+            />
+          </label>
+          <button class="newsletter-form__button" type="submit">Sign up</button>
+          <p class="newsletter-form__status" data-newsletter-status aria-live="polite"></p>
+        </form>
+      </div>
+
+      <a
+        class="home-stockist paper-card"
+        href="https://www.facebook.com/p/Harlot-Apothecary-61580071557051/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <img src="/images/harlot.png" alt="Harlot Apothecary" loading="lazy" />
+        <div>
+          <p class="section-eyebrow">Shop local</p>
+          <h2>Find my work at Harlot Apothecary</h2>
+          <p>
+            Select Tommy Day Art pieces are available in person at Harlot Apothecary in Indianapolis.
+          </p>
+        </div>
+      </a>
+    </section>
   </SiteShell>
 </BaseLayout>

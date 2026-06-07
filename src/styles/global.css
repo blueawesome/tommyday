@@ -541,6 +541,162 @@ main > section + section {
   background: var(--riso-yellow);
 }
 
+.paper-card {
+  border: 2px solid var(--ink);
+  background: rgba(255, 252, 244, 0.84);
+  box-shadow: 5px 5px 0 rgba(17, 16, 13, 0.9);
+}
+
+.home-notes {
+  display: grid;
+  gap: 1.1rem;
+  align-items: stretch;
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+}
+
+.home-newsletter,
+.home-stockist {
+  padding: clamp(1rem, 2.5vw, 1.35rem);
+}
+
+.home-newsletter {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.home-newsletter h2,
+.home-stockist h2 {
+  margin: 0;
+  font-family: 'Special Elite', 'Space Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: clamp(1.25rem, 2.7vw, 1.85rem);
+  line-height: 1.05;
+  color: var(--ink);
+}
+
+.home-newsletter p:not(.section-eyebrow),
+.home-stockist p:not(.section-eyebrow) {
+  margin: 0;
+  color: #3d392f;
+  line-height: 1.35;
+}
+
+.home-stockist {
+  display: grid;
+  grid-template-columns: minmax(5.25rem, 7.5rem) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: center;
+  color: inherit;
+  text-decoration: none;
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+
+.home-stockist:hover,
+.home-stockist:focus-visible {
+  transform: translate(-1px, -1px);
+  box-shadow: 7px 7px 0 rgba(17, 16, 13, 0.9);
+}
+
+.home-stockist:focus-visible {
+  outline: 3px solid var(--riso-pink);
+  outline-offset: 5px;
+}
+
+.home-stockist img {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: var(--paper);
+  border: 1px solid rgba(17, 16, 13, 0.28);
+}
+
+.newsletter-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.7rem;
+  align-items: end;
+  margin-top: 0.2rem;
+}
+
+.newsletter-form__honeypot {
+  display: none;
+}
+
+.newsletter-form__field {
+  display: grid;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.newsletter-form__field span {
+  font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(61, 57, 47, 0.78);
+}
+
+.newsletter-form input {
+  width: 100%;
+  border: 2px solid var(--ink);
+  border-radius: 0;
+  background: rgba(255, 252, 244, 0.92);
+  padding: 0.72rem 0.8rem;
+  font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.9rem;
+  color: var(--ink);
+  box-shadow: 3px 3px 0 rgba(17, 16, 13, 0.9);
+}
+
+.newsletter-form input:focus {
+  outline: 3px solid var(--riso-pink);
+  outline-offset: 3px;
+}
+
+.newsletter-form__button {
+  border: 2px solid var(--ink);
+  border-radius: 0;
+  background: var(--riso-yellow);
+  box-shadow: 4px 4px 0 var(--ink);
+  padding: 0.72rem 0.95rem;
+  font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--ink);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 140ms ease, transform 140ms ease, box-shadow 140ms ease;
+}
+
+.newsletter-form__button:hover,
+.newsletter-form__button:focus-visible {
+  background: var(--riso-pink);
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0 var(--ink);
+}
+
+.newsletter-form__button:disabled {
+  cursor: wait;
+  opacity: 0.68;
+}
+
+.newsletter-form__status {
+  grid-column: 1 / -1;
+  min-height: 1.1rem;
+  margin: 0;
+  font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.74rem;
+  color: rgba(61, 57, 47, 0.82);
+}
+
+.newsletter-form__status[data-state="success"] {
+  color: #25552d;
+}
+
+.newsletter-form__status[data-state="error"] {
+  color: #7a241f;
+}
+
 .home-featured {
   margin-top: clamp(3.75rem, 7vw, 5.5rem);
 }
@@ -1113,6 +1269,10 @@ a.group { margin-bottom: 2rem; }
     display: grid;
   }
 
+  .home-notes {
+    grid-template-columns: minmax(0, 1.08fr) minmax(20rem, 0.92fr);
+  }
+
   .home-featured__grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -1171,6 +1331,22 @@ a.group { margin-bottom: 2rem; }
 
   .home-brand-hero__logo {
     width: min(100%, 27rem);
+  }
+
+  .home-notes {
+    gap: 0.9rem;
+  }
+
+  .home-stockist {
+    grid-template-columns: minmax(4.75rem, 6.25rem) minmax(0, 1fr);
+  }
+
+  .newsletter-form {
+    grid-template-columns: 1fr;
+  }
+
+  .newsletter-form__button {
+    width: fit-content;
   }
 
   .home-featured__grid {

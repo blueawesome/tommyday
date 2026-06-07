@@ -6,6 +6,7 @@ import shopFiltersScript from "../scripts/shopFilters.js?url";
 import preorderLightboxScript from "../scripts/preorderLightbox.js?url";
 import snipcartCheckoutScript from "../scripts/snipcartCheckout.js?url";
 import legacyServiceWorkerCleanupScript from "../scripts/legacyServiceWorkerCleanup.js?url";
+import newsletterFormScript from "../scripts/newsletterForm.js?url";
 const {
   title = "Tommy Day",
   description = "Analog collage, prints, cards, and strange paper goods by Tommy Day.",
@@ -78,6 +79,7 @@ const siteSchema = {
     <script type="module" src={shopFiltersScript}></script>
     <script type="module" src={preorderLightboxScript}></script>
     <script type="module" src={snipcartCheckoutScript}></script>
+    <script type="module" src={newsletterFormScript}></script>
     <Snipcart />
   </head>
   <body class="bg-stone-100 text-neutral-950 antialiased">
