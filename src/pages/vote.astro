@@ -1,0 +1,204 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteShell from "../components/SiteShell.astro";
+import { voteItems } from "../data/voteItems";
+import voteFormScript from "../scripts/voteForm.js?url";
+import "../styles/vote.css";
+
+const printItems = voteItems.filter((item) => item.printCandidate);
+const cardItems = voteItems.filter((item) => item.cardCandidate);
+const serializedItems = JSON.stringify(
+  voteItems.map(({ id, title }) => ({
+    id,
+    title,
+  }))
+);
+const maxVotes = 5;
+---
+
+<BaseLayout
+  title="Help Me Pick What to Print — Tommy Day"
+  description="A private voting page to help Tommy Day choose which artwork should become prints and greeting cards."
+  canonicalUrl="/vote/"
+  robots="noindex,nofollow"
+>
+  <SiteShell>
+    <section class="vote-page" x-data={`voteForm({ max: ${maxVotes} })`} aria-labelledby="vote-heading">
+      <script id="vote-items-data" type="application/json" set:html={serializedItems} />
+
+      <div class="vote-hero">
+        <p class="section-eyebrow">Friends + family vote</p>
+        <h1 id="vote-heading">Help me pick what to print</h1>
+        <p>
+          Before I officially announce the shop, I'm trying to decide which pieces should become prints and greeting cards.
+          Pick the ones you'd most want to see in real life, or the ones you think other people would actually buy.
+        </p>
+      </div>
+
+      <template x-if="!submitted">
+        <div>
+          <section class="vote-section" aria-labelledby="print-vote-heading">
+            <div class="vote-section__header">
+              <div>
+                <h2 id="print-vote-heading">Which pieces should become prints?</h2>
+                <p>Pick up to 5 pieces that feel strongest as wall prints. These will be printed with archival inks on high-quality paper. 8x10s will be $25 and 11x14s will be $35.</p>
+              </div>
+              <span class="vote-section__counter" aria-live="polite" x-text="`${printChoices.length} / ${max} selected`">
+                0 / 5 selected
+              </span>
+            </div>
+
+            <div class="vote-grid">
+              {printItems.map((item) => (
+                <article
+                  class="vote-card"
+                  x-bind:class={`{ 'is-selected': isSelected('print', '${item.id}'), 'is-locked': isLocked('print', '${item.id}') }`}
+                >
+                  <button
+                    class="vote-card__image-wrap vote-card__image-button"
+                    type="button"
+                    data-preorder-lightbox-trigger
+                    data-lightbox-src={item.image}
+                    data-lightbox-alt={`${item.title} artwork`}
+                    data-lightbox-title={item.title}
+                    aria-label={`View ${item.title} larger`}
+                  >
+                    <img src={item.image} alt={`${item.title} artwork`} loading="lazy" />
+                    <span class="vote-card__image-cue">View larger</span>
+                    <span class="vote-card__badge" aria-hidden="true">✓ Selected</span>
+                  </button>
+                  <h3 class="vote-card__title">{item.title}</h3>
+                  {(item.size || item.year) && (
+                    <p class="vote-card__meta">{[item.size, item.year].filter(Boolean).join(" / ")}</p>
+                  )}
+                  <button
+                    class="vote-card__select"
+                    type="button"
+                    x-bind:aria-pressed={`isSelected('print', '${item.id}').toString()`}
+                    x-bind:disabled={`isLocked('print', '${item.id}')`}
+                    x-on:click={`toggle('print', '${item.id}')`}
+                    x-text={`isSelected('print', '${item.id}') ? 'Selected' : (isLocked('print', '${item.id}') ? '5 picked' : 'Select')`}
+                  >
+                    Select
+                  </button>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section class="vote-section" aria-labelledby="card-vote-heading">
+            <div class="vote-section__header">
+              <div>
+                <h2 id="card-vote-heading">Which pieces would make the best greeting cards?</h2>
+                <p>Pick up to 5 designs that feel like they'd work best as greeting cards. These will be folded cardstock cards that are blank on the inside and come with envelopes. These will be $6 or available in packs of 5 for $30.</p>
+              </div>
+              <span class="vote-section__counter" aria-live="polite" x-text="`${cardChoices.length} / ${max} selected`">
+                0 / 5 selected
+              </span>
+            </div>
+
+            <div class="vote-grid">
+              {cardItems.map((item) => (
+                <article
+                  class="vote-card"
+                  x-bind:class={`{ 'is-selected': isSelected('card', '${item.id}'), 'is-locked': isLocked('card', '${item.id}') }`}
+                >
+                  <button
+                    class="vote-card__image-wrap vote-card__image-button"
+                    type="button"
+                    data-preorder-lightbox-trigger
+                    data-lightbox-src={item.image}
+                    data-lightbox-alt={`${item.title} artwork`}
+                    data-lightbox-title={item.title}
+                    aria-label={`View ${item.title} larger`}
+                  >
+                    <img src={item.image} alt={`${item.title} artwork`} loading="lazy" />
+                    <span class="vote-card__image-cue">View larger</span>
+                    <span class="vote-card__badge" aria-hidden="true">✓ Selected</span>
+                  </button>
+                  <h3 class="vote-card__title">{item.title}</h3>
+                  {(item.size || item.year) && (
+                    <p class="vote-card__meta">{[item.size, item.year].filter(Boolean).join(" / ")}</p>
+                  )}
+                  <button
+                    class="vote-card__select"
+                    type="button"
+                    x-bind:aria-pressed={`isSelected('card', '${item.id}').toString()`}
+                    x-bind:disabled={`isLocked('card', '${item.id}')`}
+                    x-on:click={`toggle('card', '${item.id}')`}
+                    x-text={`isSelected('card', '${item.id}') ? 'Selected' : (isLocked('card', '${item.id}') ? '5 picked' : 'Select')`}
+                  >
+                    Select
+                  </button>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <form
+            class="vote-form"
+            action="/api/vote"
+            method="post"
+            novalidate
+            x-ref="form"
+            x-on:submit.prevent="submit"
+          >
+            <div class="contact-form__honeypot" hidden>
+              <label for="vote-website">Website</label>
+              <input id="vote-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+            </div>
+
+            <input type="hidden" name="printVotes" x-bind:value="choiceTitles('print')" />
+            <input type="hidden" name="cardVotes" x-bind:value="choiceTitles('card')" />
+            <input type="hidden" name="printVoteIds" x-bind:value="choiceIds('print')" />
+            <input type="hidden" name="cardVoteIds" x-bind:value="choiceIds('card')" />
+            <input type="hidden" name="source" value="/vote/" />
+            <input type="hidden" name="timestamp" x-bind:value="new Date().toISOString()" />
+
+            <label class="vote-form__field" for="vote-name">
+              <span>Name</span>
+              <input id="vote-name" name="name" type="text" autocomplete="name" required x-model="name" />
+            </label>
+
+            <label class="vote-form__field" for="vote-email">
+              <span>Email, optional</span>
+              <input id="vote-email" name="email" type="email" autocomplete="email" x-model="email" />
+            </label>
+
+            <label class="vote-form__field vote-form__field--full" for="vote-comments">
+              <span>Any notes? Favorite piece? Anything you would actually buy as a print/card?</span>
+              <textarea id="vote-comments" name="comments" rows="5" x-model="comments"></textarea>
+            </label>
+
+            <div class="vote-form__actions">
+              <button class="vote-form__button" type="submit" x-bind:disabled="isSubmitting">
+                <span x-text="isSubmitting ? 'Sending...' : 'Send my picks'">Send my picks</span>
+              </button>
+              <p class="vote-form__status" data-vote-status aria-live="polite" x-bind:data-state="statusState" x-text="statusMessage"></p>
+            </div>
+          </form>
+        </div>
+      </template>
+
+      <template x-if="submitted">
+        <section class="vote-thanks" tabindex="-1" aria-live="polite">
+          <h2>Thank you</h2>
+          <p>Thank you — this genuinely helps me decide what to print first.</p>
+        </section>
+      </template>
+
+      <dialog class="preorder-lightbox" id="preorder-lightbox" aria-labelledby="preorder-lightbox-title">
+        <div class="preorder-lightbox__panel">
+          <button class="preorder-lightbox__close" type="button" data-preorder-lightbox-close>
+            Close
+          </button>
+          <figure class="preorder-lightbox__figure">
+            <img src="" alt="" class="preorder-lightbox__image" data-preorder-lightbox-image />
+            <figcaption class="preorder-lightbox__caption" id="preorder-lightbox-title" data-preorder-lightbox-caption></figcaption>
+          </figure>
+        </div>
+      </dialog>
+    </section>
+  </SiteShell>
+  <script type="module" src={voteFormScript}></script>
+</BaseLayout>
