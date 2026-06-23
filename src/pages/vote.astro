@@ -174,7 +174,20 @@ const maxVotes = 5;
               <button class="vote-form__button" type="submit" x-bind:disabled="isSubmitting">
                 <span x-text="isSubmitting ? 'Sending...' : 'Send my picks'">Send my picks</span>
               </button>
-              <p class="vote-form__status" data-vote-status aria-live="polite" x-bind:data-state="statusState" x-text="statusMessage"></p>
+              <div class="vote-form__status" data-vote-status aria-live="polite" x-bind:data-state="statusState">
+                <p x-text="statusMessage"></p>
+                <div class="vote-form__fallback" x-show="statusState === 'error' && hasChoices()" x-cloak>
+                  <p>Your picks are still here:</p>
+                  <p x-show="printChoices.length > 0">
+                    <strong>Prints:</strong>
+                    <span x-text="choiceTitles('print')"></span>
+                  </p>
+                  <p x-show="cardChoices.length > 0">
+                    <strong>Cards:</strong>
+                    <span x-text="choiceTitles('card')"></span>
+                  </p>
+                </div>
+              </div>
             </div>
           </form>
         </div>

@@ -2,6 +2,8 @@ const WEB3FORMS_API_URL = "https://api.web3forms.com/submit";
 const MAX_FIELD_LENGTH = 250;
 const MAX_MESSAGE_LENGTH = 4000;
 const MAX_VOTES = 5;
+const FALLBACK_ERROR_MESSAGE =
+  "Something went sideways sending those picks. Please screenshot this page or text Tommy your picks.";
 
 function clean(value, maxLength = MAX_FIELD_LENGTH) {
   return String(value || "").trim().slice(0, maxLength);
@@ -21,6 +23,29 @@ function isValidEmail(email) {
 
 function json(data, status = 200) {
   return Response.json(data, { status });
+}
+
+async function readWeb3FormsResult(response) {
+  const body = await response.text();
+  if (!body) return {};
+
+  try {
+    return JSON.parse(body);
+  } catch {
+    return { body };
+  }
+}
+
+function logWeb3FormsFailure({ response, result, form, submittedAt, error }) {
+  console.error("Web3Forms vote submission failed", {
+    status: response?.status,
+    result,
+    error: error instanceof Error ? error.message : error ? String(error) : undefined,
+    name: form.name,
+    printVoteIds: form.printVoteIds,
+    cardVoteIds: form.cardVoteIds,
+    submittedAt,
+  });
 }
 
 async function readForm(request) {
@@ -84,36 +109,52 @@ export async function onRequestPost({ request, env }) {
       .filter(Boolean)
       .join("\n");
 
-    const response = await fetch(WEB3FORMS_API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({
-        access_key: env.WEB3FORMS_ACCESS_KEY,
-        from_name: "Tommy Day Art",
-        subject: `Artwork vote from ${form.name}`,
-        name: form.name,
-        email: form.email || "vote@tommyday.com",
-        replyto: form.email || undefined,
-        print_votes: form.printVotes.join(", "),
-        print_vote_ids: form.printVoteIds.join(", "),
-        card_votes: form.cardVotes.join(", "),
-        card_vote_ids: form.cardVoteIds.join(", "),
-        comments: form.comments,
-        source: form.source || "/vote/",
-        submitted_at: submittedAt,
-        message,
-      }),
-    });
+    const web3FormsData = new FormData();
+    web3FormsData.set("access_key", env.WEB3FORMS_ACCESS_KEY);
+    web3FormsData.set("from_name", "Tommy Day Art");
+    web3FormsData.set("subject", `Artwork vote from ${form.name}`);
+    web3FormsData.set("name", form.name);
+    web3FormsData.set("message", message);
+    web3FormsData.set("print_votes", form.printVotes.join(", "));
+    web3FormsData.set("print_vote_ids", form.printVoteIds.join(", "));
+    web3FormsData.set("card_votes", form.cardVotes.join(", "));
+    web3FormsData.set("card_vote_ids", form.cardVoteIds.join(", "));
+    web3FormsData.set("comments", form.comments);
+    web3FormsData.set("source", form.source || "/vote/");
+    web3FormsData.set("submitted_at", submittedAt);
 
-    const result = await response.json().catch(() => ({}));
-    if (!response.ok || result.success === false) {
+    if (form.email) {
+      web3FormsData.set("email", form.email);
+      web3FormsData.set("replyto", form.email);
+    }
+
+    let response;
+    try {
+      response = await fetch(WEB3FORMS_API_URL, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+        },
+        body: web3FormsData,
+      });
+    } catch (error) {
+      logWeb3FormsFailure({ form, submittedAt, error });
       return json(
         {
           ok: false,
-          message: "Something went sideways sending those picks. Please try again in a minute.",
+          message: FALLBACK_ERROR_MESSAGE,
+        },
+        502
+      );
+    }
+
+    const result = await readWeb3FormsResult(response);
+    if (!response.ok || result.success === false) {
+      logWeb3FormsFailure({ response, result, form, submittedAt });
+      return json(
+        {
+          ok: false,
+          message: FALLBACK_ERROR_MESSAGE,
         },
         502
       );
@@ -125,7 +166,7 @@ export async function onRequestPost({ request, env }) {
     return json(
       {
         ok: false,
-        message: "Something went sideways sending those picks. Please try again in a minute.",
+        message: FALLBACK_ERROR_MESSAGE,
       },
       500
     );

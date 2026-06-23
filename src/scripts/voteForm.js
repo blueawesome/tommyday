@@ -1,4 +1,7 @@
 document.addEventListener("alpine:init", () => {
+  const fallbackErrorMessage =
+    "Something went sideways sending those picks. Please screenshot this page or text Tommy your picks.";
+
   Alpine.data("voteForm", ({ max = 5 } = {}) => ({
     max,
     items: [],
@@ -91,7 +94,7 @@ document.addEventListener("alpine:init", () => {
         const result = await response.json().catch(() => ({}));
 
         if (!response.ok || result.ok === false) {
-          throw new Error(result.message || "Those picks did not send.");
+          throw new Error(result.message || fallbackErrorMessage);
         }
 
         this.submitted = true;
@@ -104,7 +107,7 @@ document.addEventListener("alpine:init", () => {
         this.statusMessage =
           error instanceof Error
             ? error.message
-            : "Something went sideways. Please try again in a minute.";
+            : fallbackErrorMessage;
         this.statusState = "error";
       } finally {
         this.isSubmitting = false;
