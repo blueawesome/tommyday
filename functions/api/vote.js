@@ -1,4 +1,4 @@
-const WEB3FORMS_API_URL = "https://api.web3forms.com/submit";
+const RESEND_API_URL = "https://api.resend.com/emails";
 const MAX_FIELD_LENGTH = 250;
 const MAX_MESSAGE_LENGTH = 4000;
 const MAX_VOTES = 5;
@@ -23,29 +23,6 @@ function isValidEmail(email) {
 
 function json(data, status = 200) {
   return Response.json(data, { status });
-}
-
-async function readWeb3FormsResult(response) {
-  const body = await response.text();
-  if (!body) return {};
-
-  try {
-    return JSON.parse(body);
-  } catch {
-    return { body };
-  }
-}
-
-function logWeb3FormsFailure({ response, result, form, submittedAt, error }) {
-  console.error("Web3Forms vote submission failed", {
-    status: response?.status,
-    result,
-    error: error instanceof Error ? error.message : error ? String(error) : undefined,
-    name: form.name,
-    printVoteIds: form.printVoteIds,
-    cardVoteIds: form.cardVoteIds,
-    submittedAt,
-  });
 }
 
 async function insertVote({ db, form, submittedAt, userAgent }) {
@@ -79,60 +56,69 @@ async function insertVote({ db, form, submittedAt, userAgent }) {
     .run();
 }
 
-async function notifyWeb3Forms({ form, submittedAt, env }) {
-  if (!env.WEB3FORMS_ACCESS_KEY) return;
-
-  const message = [
-    `Name: ${form.name}`,
-    form.email ? `Email: ${form.email}` : null,
-    `Print votes: ${form.printVotes.join(", ") || "None"}`,
-    `Print vote IDs: ${form.printVoteIds.join(", ") || "None"}`,
-    `Card votes: ${form.cardVotes.join(", ") || "None"}`,
-    `Card vote IDs: ${form.cardVoteIds.join(", ") || "None"}`,
-    form.comments ? `Notes: ${form.comments}` : null,
-    `Source: ${form.source || "/vote/"}`,
-    `Submitted: ${submittedAt}`,
-  ]
-    .filter(Boolean)
-    .join("\n");
-
-  const web3FormsData = new FormData();
-  web3FormsData.set("access_key", env.WEB3FORMS_ACCESS_KEY);
-  web3FormsData.set("from_name", "Tommy Day Art");
-  web3FormsData.set("subject", `Artwork vote from ${form.name}`);
-  web3FormsData.set("name", form.name);
-  web3FormsData.set("message", message);
-  web3FormsData.set("print_votes", form.printVotes.join(", "));
-  web3FormsData.set("print_vote_ids", form.printVoteIds.join(", "));
-  web3FormsData.set("card_votes", form.cardVotes.join(", "));
-  web3FormsData.set("card_vote_ids", form.cardVoteIds.join(", "));
-  web3FormsData.set("comments", form.comments);
-  web3FormsData.set("source", form.source || "/vote/");
-  web3FormsData.set("submitted_at", submittedAt);
-
-  if (form.email) {
-    web3FormsData.set("email", form.email);
-    web3FormsData.set("replyto", form.email);
-  }
-
-  let response;
-  try {
-    response = await fetch(WEB3FORMS_API_URL, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-      },
-      body: web3FormsData,
+async function notifyResend({ env, form, submittedAt }) {
+  if (!env.RESEND_API_KEY || !env.VOTE_NOTIFICATION_TO || !env.VOTE_NOTIFICATION_FROM) {
+    console.warn("Vote notification skipped: missing Resend env vars", {
+      hasApiKey: Boolean(env.RESEND_API_KEY),
+      hasTo: Boolean(env.VOTE_NOTIFICATION_TO),
+      hasFrom: Boolean(env.VOTE_NOTIFICATION_FROM),
     });
-  } catch (error) {
-    logWeb3FormsFailure({ form, submittedAt, error });
     return;
   }
 
-  const result = await readWeb3FormsResult(response);
-  if (!response.ok || result.success === false) {
-    logWeb3FormsFailure({ response, result, form, submittedAt });
+  const printLines = form.printVotes.length ? form.printVotes.map((item) => `- ${item}`).join("\n") : "- None";
+  const cardLines = form.cardVotes.length ? form.cardVotes.map((item) => `- ${item}`).join("\n") : "- None";
+
+  const text = [
+    "New artwork vote submitted.",
+    "",
+    `Name: ${form.name}`,
+    `Email: ${form.email || "none"}`,
+    "",
+    "Print picks:",
+    printLines,
+    "",
+    "Card picks:",
+    cardLines,
+    "",
+    "Comments:",
+    form.comments || "none",
+    "",
+    `Submitted: ${submittedAt}`,
+    `Source: ${form.source || "/vote/"}`,
+  ].join("\n");
+
+  const response = await fetch(RESEND_API_URL, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${env.RESEND_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: env.VOTE_NOTIFICATION_FROM,
+      to: [env.VOTE_NOTIFICATION_TO],
+      subject: `Artwork vote from ${form.name}`,
+      text,
+      reply_to: form.email || undefined,
+    }),
+  });
+
+  const resultText = await response.text();
+
+  if (!response.ok) {
+    console.error("Resend vote notification failed", {
+      status: response.status,
+      body: resultText,
+      name: form.name,
+      submittedAt,
+    });
+    return;
   }
+
+  console.log("Resend vote notification sent", {
+    name: form.name,
+    submittedAt,
+  });
 }
 
 async function readForm(request) {
@@ -207,8 +193,12 @@ export async function onRequestPost({ request, env, waitUntil }) {
       );
     }
 
-    const notification = notifyWeb3Forms({ form, submittedAt, env }).catch((error) => {
-      logWeb3FormsFailure({ form, submittedAt, error });
+    const notification = notifyResend({ form, submittedAt, env }).catch((error) => {
+      console.error("Resend vote notification failed", {
+        error: error instanceof Error ? error.message : String(error),
+        name: form.name,
+        submittedAt,
+      });
     });
     if (typeof waitUntil === "function") {
       waitUntil(notification);
