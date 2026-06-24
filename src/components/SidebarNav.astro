@@ -1,4 +1,16 @@
 ---
+const showVoteInPrimaryNav = true;
+const featuredNavItem = showVoteInPrimaryNav
+  ? {
+      href: "/vote/",
+      icon: "fa-check",
+      label: "Vote",
+    }
+  : {
+      href: "/pre-order/",
+      icon: "fa-wand-magic-sparkles",
+      label: "Pre-Order",
+    };
 ---
 <div class="max-w-[260px]">
   <a href="/" class="inline-block w-full sidebar-logo-link">
@@ -20,10 +32,10 @@
         </a>
       </li>
       <li>
-        <a class="flex items-center gap-3" href="/pre-order/">
-          <i class="fa-sharp fa-solid fa-wand-magic-sparkles nav-icon" aria-hidden="true"></i>
-          <span class="sr-only">Pre-Order</span>
-          <span class="nav-label">Pre-Order</span>
+        <a class="flex items-center gap-3" href={featuredNavItem.href}>
+          <i class={`fa-sharp fa-solid ${featuredNavItem.icon} nav-icon`} aria-hidden="true"></i>
+          <span class="sr-only">{featuredNavItem.label}</span>
+          <span class="nav-label">{featuredNavItem.label}</span>
         </a>
       </li>
       <li>
