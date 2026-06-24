@@ -117,9 +117,6 @@ const maxVotes = 5;
                     <span class="vote-card__badge" aria-hidden="true">✓ Selected</span>
                   </button>
                   <h3 class="vote-card__title">{item.title}</h3>
-                  {(item.size || item.year) && (
-                    <p class="vote-card__meta">{[item.size, item.year].filter(Boolean).join(" / ")}</p>
-                  )}
                   <button
                     class="vote-card__select"
                     type="button"
