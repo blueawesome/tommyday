@@ -4,22 +4,6 @@ const MAX_MESSAGE_LENGTH = 4000;
 const MAX_VOTES = 5;
 const FALLBACK_ERROR_MESSAGE =
   "Something went sideways sending those picks. Please screenshot this page or text Tommy your picks.";
-const CREATE_ARTWORK_VOTES_TABLE_SQL = `
-CREATE TABLE IF NOT EXISTS artwork_votes (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name TEXT NOT NULL,
-  email TEXT,
-  print_votes TEXT NOT NULL,
-  print_vote_ids TEXT NOT NULL,
-  card_votes TEXT NOT NULL,
-  card_vote_ids TEXT NOT NULL,
-  comments TEXT,
-  source TEXT,
-  submitted_at TEXT NOT NULL,
-  user_agent TEXT,
-  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-`;
 
 function clean(value, maxLength = MAX_FIELD_LENGTH) {
   return String(value || "").trim().slice(0, maxLength);
@@ -64,13 +48,7 @@ function logWeb3FormsFailure({ response, result, form, submittedAt, error }) {
   });
 }
 
-async function ensureVotesTable(db) {
-  await db.exec(CREATE_ARTWORK_VOTES_TABLE_SQL);
-}
-
 async function insertVote({ db, form, submittedAt, userAgent }) {
-  await ensureVotesTable(db);
-
   return db
     .prepare(
       `INSERT INTO artwork_votes (
