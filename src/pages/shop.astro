@@ -4,9 +4,8 @@ import SiteShell from "../components/SiteShell.astro";
 import ShopCard from "../components/ShopCard.astro";
 import { getLowestAvailablePrice } from "../data/artworkHelpers";
 import { shopArtworks } from "../data/artworks";
-import { launchPreorderProducts } from "../data/preorderProducts";
 
-const preorderCount = launchPreorderProducts.length;
+const showPreorderSidebarNote = false;
 ---
 
 <BaseLayout
@@ -16,23 +15,27 @@ const preorderCount = launchPreorderProducts.length;
 >
   <SiteShell>
     <div slot="sidebar-extra" class="shop-sidebar-notes" aria-label="Shop notes">
-      <section class="shop-sidebar-note">
-        <p class="shop-sidebar-note__kicker">Pre-order window</p>
-        <h2>Pre-orders</h2>
-        <p>Signed archival matte prints and a greeting card 5-pack are available through June 19.</p>
-        <a href="/pre-order/">Learn More</a>
-      </section>
+      {showPreorderSidebarNote && (
+        <section class="shop-sidebar-note">
+          <p class="shop-sidebar-note__kicker">Pre-order window</p>
+          <h2>Pre-orders</h2>
+          <p>Signed archival matte prints and a greeting card 5-pack are available through June 19.</p>
+          <a href="/pre-order/">Learn More</a>
+        </section>
+      )}
 
       <p class="commerce-note shop-sidebar-note__handoff">Real Life Handoff is free for people I know in real life.</p>
     </div>
 
     <div slot="mobile-menu-extra" class="shop-sidebar-notes shop-sidebar-notes--mobile" aria-label="Shop notes">
-      <section class="shop-sidebar-note">
-        <p class="shop-sidebar-note__kicker">Pre-order window</p>
-        <h2>Pre-orders</h2>
-        <p>Signed archival matte prints and a greeting card 5-pack are available through June 19.</p>
-        <a href="/pre-order/">Learn More</a>
-      </section>
+      {showPreorderSidebarNote && (
+        <section class="shop-sidebar-note">
+          <p class="shop-sidebar-note__kicker">Pre-order window</p>
+          <h2>Pre-orders</h2>
+          <p>Signed archival matte prints and a greeting card 5-pack are available through June 19.</p>
+          <a href="/pre-order/">Learn More</a>
+        </section>
+      )}
 
       <p class="commerce-note shop-sidebar-note__handoff">Real Life Handoff is free for people I know in real life.</p>
     </div>
