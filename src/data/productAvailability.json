@@ -31,6 +31,12 @@
       "source": "snipcart-webhook",
       "orderId": "d2c05efb-2823-4e44-a610-c15363f8eb03",
       "updatedAt": "2026-06-07T19:41:04.008Z"
+    },
+    "somewhere-between-heaven-and-hell-original": {
+      "status": "sold",
+      "inventory": 0,
+      "source": "manual",
+      "updatedAt": "2026-06-24T00:00:00.000Z"
     }
   }
 }
