@@ -2,13 +2,25 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SiteShell from "../components/SiteShell.astro";
 import ShopCard from "../components/ShopCard.astro";
-import { getLowestAvailablePrice } from "../data/artworkHelpers";
+import ShopGreetingCard from "../components/ShopGreetingCard.astro";
 import { shopArtworks } from "../data/artworks";
+import { getAvailableCards } from "../data/cardHelpers";
+
+const availableCards = getAvailableCards();
+const availableCardArtworkSlugs = new Set(
+  availableCards
+    .map((card) => card.relatedArtworkSlug)
+    .filter((slug): slug is string => Boolean(slug))
+);
+const shopArtworkSlugs = new Set(shopArtworks.map((artwork) => artwork.slug));
+const standaloneShopCards = availableCards.filter(
+  (card) => !card.relatedArtworkSlug || !shopArtworkSlugs.has(card.relatedArtworkSlug)
+);
 ---
 
 <BaseLayout
   title="Shop Collage Prints, Cards, and Originals — Tommy Day"
-  description="Shop available analog collage work, small-batch prints, greeting cards, bookmarks, and original pieces by Tommy Day."
+  description="Shop available original collage artwork, small-batch prints, and greeting cards by Tommy Day."
   canonicalUrl="/shop/"
 >
   <SiteShell>
@@ -37,36 +49,52 @@ import { shopArtworks } from "../data/artworks";
           <div class="shop-filter-panel">
             <div class="shop-filter-panel__row">
               <span class="shop-filter-panel__label">Show me</span>
-              <div class="shop-segmented" role="tablist" aria-label="Shop base filter">
+              <div class="shop-segmented" role="tablist" aria-label="Shop category filter">
                 <button
                   type="button"
                   class="shop-segmented__button"
-                  :class="{ 'is-active': selectedBase === 'all' }"
-                  @click="setBase('all')"
+                  :class="{ 'is-active': selectedCategory === 'all' }"
+                  @click="setCategory('all')"
                 >
                   All available
                 </button>
                 <button
                   type="button"
                   class="shop-segmented__button"
-                  :class="{ 'is-active': selectedBase === 'original' }"
-                  @click="setBase('original')"
+                  :class="{ 'is-active': selectedCategory === 'original' }"
+                  @click="setCategory('original')"
                 >
                   Originals
+                </button>
+                <button
+                  type="button"
+                  class="shop-segmented__button"
+                  :class="{ 'is-active': selectedCategory === 'print' }"
+                  @click="setCategory('print')"
+                >
+                  Prints
+                </button>
+                <button
+                  type="button"
+                  class="shop-segmented__button"
+                  :class="{ 'is-active': selectedCategory === 'card' }"
+                  @click="setCategory('card')"
+                >
+                  Greeting Cards
                 </button>
               </div>
             </div>
 
-            <div class="shop-filter-panel__row">
-              <span class="shop-filter-panel__label">Narrow by</span>
+            <div class="shop-filter-panel__row" x-show="selectedCategory !== 'card'">
+              <span class="shop-filter-panel__label">Print size</span>
               <div class="shop-toggle-list">
                 <button
                   type="button"
                   class="shop-toggle-button"
-                  :class="{ 'is-active': isSizeActive('9x12') }"
-                  @click="setSize('9x12')"
+                  :class="{ 'is-active': isSizeActive('8x10') }"
+                  @click="setSize('8x10')"
                 >
-                  9x12
+                  8x10
                 </button>
                 <button
                   type="button"
@@ -121,29 +149,29 @@ import { shopArtworks } from "../data/artworks";
       <div class="shop-grid">
         {shopArtworks.map((art) => {
           const availableProducts = art.products.filter((product) => product.status === "available");
-          const availableAs = availableProducts
+          const availableAs = [
+            ...availableProducts
             .map((product) => product.type)
-            .filter((value, index, array) => array.indexOf(value) === index)
+            .filter((value, index, array) => array.indexOf(value) === index),
+            availableCardArtworkSlugs.has(art.slug) ? "card" : null,
+          ]
+            .filter((value, index, array) => value && array.indexOf(value) === index)
             .join(",");
           const sizeTags = availableProducts
             .map((product) => {
-              if (product.type === "original") return art.dimensions;
+              if (product.type !== "print") return null;
               if (product.label.includes("8x10")) return "8x10";
-              if (product.label.includes("5x7")) return "5x7";
-              if (product.label.includes("9x12")) return "9x12";
               if (product.label.includes("11x14")) return "11x14";
               return null;
             })
             .filter((value, index, array) => value && array.indexOf(value) === index)
             .join(",");
-          const lowestPrice = getLowestAvailablePrice(art);
           const catalogSort = Number(art.catalogId.replace(/\D/g, "")) || 0;
 
           return (
             <div
               data-available-as={availableAs}
               data-size-tags={sizeTags}
-              data-under-25={lowestPrice !== null && lowestPrice <= 25 ? "true" : "false"}
               data-catalog-sort={catalogSort}
               data-shop-item
               x-show="matches($el) && isVisible($el)"
@@ -152,6 +180,25 @@ import { shopArtworks } from "../data/artworks";
               class="h-full"
             >
               <ShopCard artwork={art} />
+            </div>
+          );
+        })}
+
+        {standaloneShopCards.map((card) => {
+          const catalogSort = 10000 + (card.sortOrder || 999);
+
+          return (
+            <div
+              data-available-as="card"
+              data-size-tags=""
+              data-catalog-sort={catalogSort}
+              data-shop-item
+              x-show="matches($el) && isVisible($el)"
+              x-bind:style="{ order: sortOrder($el) }"
+              x-cloak
+              class="h-full"
+            >
+              <ShopGreetingCard card={card} />
             </div>
           );
         })}

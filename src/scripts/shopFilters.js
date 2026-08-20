@@ -2,20 +2,15 @@ document.addEventListener("alpine:init", () => {
   Alpine.data("shopFilters", () => ({
     pageSize: 9,
     visibleLimit: 9,
-    selectedBase: "all",
+    selectedCategory: "all",
     selectedSize: "all",
     selectedSort: "oldest",
-    toggles: {
-      card: false,
-      size9x12: false,
-      size11x14: false,
-      size425x55: false,
-      bookmark: false,
-      under25: false,
-    },
 
-    setBase(value) {
-      this.selectedBase = value;
+    setCategory(value) {
+      this.selectedCategory = value;
+      if (value === "card") {
+        this.selectedSize = "all";
+      }
       this.resetVisibleItems();
     },
 
@@ -29,37 +24,20 @@ document.addEventListener("alpine:init", () => {
       this.resetVisibleItems();
     },
 
-    toggleFilter(key) {
-      this.toggles[key] = !this.toggles[key];
-      this.resetVisibleItems();
-    },
-
     isSizeActive(value) {
       return this.selectedSize === value;
     },
 
-    isActive(key) {
-      return Boolean(this.toggles[key]);
-    },
-
     clearFilters() {
-      this.selectedBase = "all";
+      this.selectedCategory = "all";
       this.selectedSize = "all";
-      this.toggles = {
-        card: false,
-        size9x12: false,
-        size11x14: false,
-        size425x55: false,
-        bookmark: false,
-        under25: false,
-      };
       this.resetVisibleItems();
     },
 
     hasActiveFilters() {
-      if (this.selectedBase !== "all") return true;
+      if (this.selectedCategory !== "all") return true;
       if (this.selectedSize !== "all") return true;
-      return Object.values(this.toggles).some(Boolean);
+      return false;
     },
 
     matchedItems() {
@@ -124,37 +102,11 @@ document.addEventListener("alpine:init", () => {
         .split(",")
         .map((value) => value.trim())
         .filter(Boolean);
-      const under25 = el.getAttribute("data-under-25") === "true";
-
-      if (this.selectedBase !== "all" && !availableAs.includes(this.selectedBase)) {
-        return false;
-      }
-
-      if (this.toggles.card && !availableAs.includes("card")) {
-        return false;
-      }
-
-      if (this.toggles.bookmark && !availableAs.includes("bookmark")) {
+      if (this.selectedCategory !== "all" && !availableAs.includes(this.selectedCategory)) {
         return false;
       }
 
       if (this.selectedSize !== "all" && !sizeTags.includes(this.selectedSize)) {
-        return false;
-      }
-
-      if (this.toggles.size9x12 && !sizeTags.includes("9x12")) {
-        return false;
-      }
-
-      if (this.toggles.size11x14 && !sizeTags.includes("11x14")) {
-        return false;
-      }
-
-      if (this.toggles.size425x55 && !sizeTags.includes("4.25x5.5")) {
-        return false;
-      }
-
-      if (this.toggles.under25 && !under25) {
         return false;
       }
 
