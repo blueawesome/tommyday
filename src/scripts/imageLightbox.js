@@ -1,15 +1,15 @@
 function getLightboxParts() {
-  const dialog = document.getElementById("preorder-lightbox");
+  const dialog = document.getElementById("image-lightbox");
   if (!dialog) return null;
 
   return {
     dialog,
-    image: dialog.querySelector("[data-preorder-lightbox-image]"),
-    caption: dialog.querySelector("[data-preorder-lightbox-caption]"),
+    image: dialog.querySelector("[data-image-lightbox-image]"),
+    caption: dialog.querySelector("[data-image-lightbox-caption]"),
   };
 }
 
-function openPreorderLightbox(trigger) {
+function openImageLightbox(trigger) {
   const parts = getLightboxParts();
   if (!parts || !parts.image || !parts.caption) return;
 
@@ -30,7 +30,7 @@ function openPreorderLightbox(trigger) {
   }
 }
 
-function closePreorderLightbox() {
+function closeImageLightbox() {
   const parts = getLightboxParts();
   if (!parts) return;
 
@@ -42,22 +42,22 @@ function closePreorderLightbox() {
 }
 
 document.addEventListener("click", (event) => {
-  const trigger = event.target.closest("[data-preorder-lightbox-trigger]");
+  const trigger = event.target.closest("[data-image-lightbox-trigger]");
   if (trigger) {
     event.preventDefault();
-    openPreorderLightbox(trigger);
+    openImageLightbox(trigger);
     return;
   }
 
-  if (event.target.closest("[data-preorder-lightbox-close]")) {
+  if (event.target.closest("[data-image-lightbox-close]")) {
     event.preventDefault();
-    closePreorderLightbox();
+    closeImageLightbox();
     return;
   }
 
   const parts = getLightboxParts();
   if (parts && event.target === parts.dialog) {
-    closePreorderLightbox();
+    closeImageLightbox();
   }
 });
 

@@ -1,0 +1,35 @@
+---
+import type { GreetingCard } from "../../data/cards";
+import { getCardOccasionLabel } from "../../data/cardHelpers";
+import CardPurchasePanel from "./CardPurchasePanel.astro";
+
+const { card } = Astro.props as { card: GreetingCard };
+---
+
+<section class="card-product-hero">
+  <div class="card-product-hero__media">
+    <img src={card.frontImage} alt={card.alt} />
+  </div>
+
+  <div class="card-product-hero__copy">
+    <nav class="detail-breadcrumb" aria-label="Breadcrumb">
+      <a href="/cards/">Cards</a>
+      <span aria-hidden="true">/</span>
+      <span>{card.title}</span>
+    </nav>
+
+    <p class="section-eyebrow">Greeting card</p>
+    <h1>{card.title}</h1>
+    <p class="card-product-hero__description">{card.productDescription}</p>
+
+    <div class="card-chip-list" aria-label={`${card.title} categories`}>
+      {card.occasions.slice(0, 4).map((occasion) => (
+        <a class="card-chip-link" href={`/cards/${occasion}/`}>
+          {getCardOccasionLabel(occasion)}
+        </a>
+      ))}
+    </div>
+
+    <CardPurchasePanel card={card} />
+  </div>
+</section>

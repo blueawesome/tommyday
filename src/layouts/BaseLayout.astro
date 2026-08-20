@@ -3,7 +3,9 @@ import "../styles/global.css";
 import Snipcart from "../components/Snipcart.astro";
 import artFiltersScript from "../scripts/artFilters.js?url";
 import shopFiltersScript from "../scripts/shopFilters.js?url";
-import preorderLightboxScript from "../scripts/preorderLightbox.js?url";
+import cardFiltersScript from "../scripts/cardFilters.js?url";
+import cardBundleBuilderScript from "../scripts/cardBundleBuilder.js?url";
+import imageLightboxScript from "../scripts/imageLightbox.js?url";
 import snipcartCheckoutScript from "../scripts/snipcartCheckout.js?url";
 import legacyServiceWorkerCleanupScript from "../scripts/legacyServiceWorkerCleanup.js?url";
 import newsletterFormScript from "../scripts/newsletterForm.js?url";
@@ -81,7 +83,9 @@ const siteSchema = {
     <link rel="manifest" href="/site.webmanifest" />
     <script type="module" src={artFiltersScript}></script>
     <script type="module" src={shopFiltersScript}></script>
-    <script type="module" src={preorderLightboxScript}></script>
+    <script type="module" src={cardFiltersScript}></script>
+    <script type="module" src={cardBundleBuilderScript}></script>
+    <script type="module" src={imageLightboxScript}></script>
     <script type="module" src={snipcartCheckoutScript}></script>
     <script type="module" src={newsletterFormScript}></script>
     <Snipcart />

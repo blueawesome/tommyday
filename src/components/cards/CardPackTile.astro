@@ -1,0 +1,19 @@
+---
+import type { CardPack } from "../../data/cardPacks";
+import { formatCardPrice } from "../../data/cardHelpers";
+
+const { pack } = Astro.props as { pack: CardPack };
+const price = formatCardPrice(pack.price);
+---
+
+<article class="card-pack-tile">
+  <img src={pack.thumbnail || pack.image} alt={pack.alt} loading="lazy" />
+  <div>
+    <p class="card-pack-tile__meta">{pack.cardCount} cards - {price}</p>
+    <h3>{pack.title}</h3>
+    <p>{pack.shortDescription || pack.description}</p>
+    <a class="card-tile__button" href={pack.type === "build-your-own" ? "/cards/build-a-pack/" : `/cards/packs/${pack.slug}/`}>
+      {pack.type === "build-your-own" ? "Build yours" : "View pack"}
+    </a>
+  </div>
+</article>

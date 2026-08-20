@@ -1,18 +1,4 @@
----
-const showVoteInPrimaryNav = true;
-const featuredNavItem = showVoteInPrimaryNav
-  ? {
-      href: "/vote/",
-      icon: "fa-check",
-      label: "Vote",
-    }
-  : {
-      href: "/pre-order/",
-      icon: "fa-wand-magic-sparkles",
-      label: "Pre-Order",
-    };
----
-<div class="max-w-[260px]">
+<div class="max-w-[300px]">
   <a href="/" class="inline-block w-full sidebar-logo-link">
     <img src="/images/td-logo.png" alt="Tommy Day" class="w-full h-auto block td-logo" />
     <span class="sr-only">Tommy Day</span>
@@ -25,24 +11,24 @@ const featuredNavItem = showVoteInPrimaryNav
   <nav class="mt-8 sidebar-nav">
     <ul class="flex gap-4 md:flex-col">
       <li>
-        <a class="flex items-center gap-3" href="/collage/">
+        <a class="flex items-center gap-3" href="/originals/">
           <i class="fa-sharp fa-solid fa-scissors nav-icon" aria-hidden="true"></i>
-          <span class="sr-only">Collage</span>
-          <span class="nav-label">Collage</span>
+          <span class="sr-only">Originals</span>
+          <span class="nav-label">Originals</span>
         </a>
       </li>
       <li>
-        <a class="flex items-center gap-3" href={featuredNavItem.href}>
-          <i class={`fa-sharp fa-solid ${featuredNavItem.icon} nav-icon`} aria-hidden="true"></i>
-          <span class="sr-only">{featuredNavItem.label}</span>
-          <span class="nav-label">{featuredNavItem.label}</span>
-        </a>
-      </li>
-      <li>
-        <a class="flex items-center gap-3" href="/shop/">
+        <a class="flex items-center gap-3" href="/prints/">
           <i class="fa-sharp fa-solid fa-image-polaroid nav-icon" aria-hidden="true"></i>
-          <span class="sr-only">Shop</span>
-          <span class="nav-label">Shop</span>
+          <span class="sr-only">Prints</span>
+          <span class="nav-label">Prints</span>
+        </a>
+      </li>
+      <li>
+        <a class="flex items-center gap-3" href="/cards/">
+          <i class="fa-sharp fa-solid fa-envelope-open-text nav-icon" aria-hidden="true"></i>
+          <span class="sr-only">Greeting Cards</span>
+          <span class="nav-label">Greeting Cards</span>
         </a>
       </li>
       <li>

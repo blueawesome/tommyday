@@ -4,8 +4,6 @@ import SiteShell from "../components/SiteShell.astro";
 import ShopCard from "../components/ShopCard.astro";
 import { getLowestAvailablePrice } from "../data/artworkHelpers";
 import { shopArtworks } from "../data/artworks";
-
-const showPreorderSidebarNote = false;
 ---
 
 <BaseLayout
@@ -15,46 +13,22 @@ const showPreorderSidebarNote = false;
 >
   <SiteShell>
     <div slot="sidebar-extra" class="shop-sidebar-notes" aria-label="Shop notes">
-      {showPreorderSidebarNote && (
-        <section class="shop-sidebar-note">
-          <p class="shop-sidebar-note__kicker">Pre-order window</p>
-          <h2>Pre-orders</h2>
-          <p>Signed archival matte prints and a greeting card 5-pack are available through June 19.</p>
-          <a href="/pre-order/">Learn More</a>
-        </section>
-      )}
-
       <p class="commerce-note shop-sidebar-note__handoff">Real Life Handoff is free for people I know in real life.</p>
     </div>
 
     <div slot="mobile-menu-extra" class="shop-sidebar-notes shop-sidebar-notes--mobile" aria-label="Shop notes">
-      {showPreorderSidebarNote && (
-        <section class="shop-sidebar-note">
-          <p class="shop-sidebar-note__kicker">Pre-order window</p>
-          <h2>Pre-orders</h2>
-          <p>Signed archival matte prints and a greeting card 5-pack are available through June 19.</p>
-          <a href="/pre-order/">Learn More</a>
-        </section>
-      )}
-
       <p class="commerce-note shop-sidebar-note__handoff">Real Life Handoff is free for people I know in real life.</p>
     </div>
 
     <section class="shop-hero">
       <div class="shop-hero__copy">
         <h1 class="shop-hero__title">Shop</h1>
-       
-        <p class="shop-hero__description">
-  Original analog collage and strange paper goods made by hand in Indianapolis, Indiana.
-  Originals are available below; launch prints and cards are on the preorder page.
-</p>
-      </div>
 
-      {/* <div class="shop-hero__visual" aria-hidden="true">
-        <div class="shop-hero__visual-card">
-          <span>Future shop scan</span>
-        </div>
-      </div> */}
+        <p class="shop-hero__description">
+          Original analog collage and strange paper goods made by hand in Indianapolis, Indiana.
+          Available originals and permanent paper goods are listed below.
+        </p>
+      </div>
     </section>
 
     <div x-data="shopFilters()">

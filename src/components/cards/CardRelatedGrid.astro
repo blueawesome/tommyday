@@ -1,0 +1,21 @@
+---
+import type { GreetingCard } from "../../data/cards";
+import CardGrid from "./CardGrid.astro";
+
+const { cards, title = "Related cards" } = Astro.props as {
+  cards: GreetingCard[];
+  title?: string;
+};
+---
+
+{cards.length ? (
+  <section class="cards-section" aria-labelledby="related-cards">
+    <div class="cards-section__header">
+      <p class="section-eyebrow">Keep looking</p>
+      <h2 id="related-cards">{title}</h2>
+    </div>
+    <div x-data="cardFilters()">
+      <CardGrid cards={cards} mode="related" />
+    </div>
+  </section>
+) : null}

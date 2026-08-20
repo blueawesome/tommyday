@@ -1,73 +1,94 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import {
+  createSnipcartClient,
+  getSnipcartProductId,
+  getTrackedStock,
+} from "./lib/snipcart-api.mjs";
+import { readProductCatalog } from "./lib/product-catalog.mjs";
 
-const availabilityPath = resolve(process.cwd(), "src/data/productAvailability.json");
-const apiKey = process.env.SNIPCART_SECRET_API_KEY;
+const root = resolve(fileURLToPath(new URL("..", import.meta.url)));
+const NON_SALE_STATUSES = new Set([
+  "unavailable",
+  "retired",
+  "draft",
+  "archive-only",
+]);
 
-if (!apiKey) {
-  throw new Error("Missing SNIPCART_SECRET_API_KEY.");
+export function nextInventoryStatus({ id, stock, currentStatus }) {
+  if (NON_SALE_STATUSES.has(currentStatus)) return currentStatus;
+  if (stock <= 0) return id.endsWith("-original") ? "sold" : "sold-out";
+  if (id.endsWith("-original") && currentStatus === "sold") return "sold";
+  return "available";
 }
 
-async function snipcartFetch(path) {
-  const response = await fetch(`https://app.snipcart.com/api${path}`, {
-    headers: {
-      Authorization: `Basic ${Buffer.from(`${apiKey}:`).toString("base64")}`,
-      Accept: "application/json",
-    },
-  });
+export async function syncSnipcartStock({
+  rootDirectory = root,
+  apiKey = process.env.SNIPCART_SECRET_API_KEY,
+  dryRun = process.argv.includes("--dry-run"),
+  client,
+  logger = console,
+  now = new Date().toISOString(),
+} = {}) {
+  const availabilityPath = resolve(
+    rootDirectory,
+    "src/data/productAvailability.json"
+  );
+  const catalog = await readProductCatalog({ root: rootDirectory });
+  const manifestById = new Map(
+    catalog.products.map((product) => [product.id, product])
+  );
+  const originalText = await readFile(availabilityPath, "utf8");
+  const overlay = JSON.parse(originalText);
+  overlay.products ||= {};
 
-  if (!response.ok) {
-    throw new Error(`Snipcart API request failed (${response.status}): ${await response.text()}`);
-  }
+  const recognizedIds = new Set([
+    ...manifestById.keys(),
+    ...Object.keys(overlay.products),
+  ]);
+  const snipcart = client || createSnipcartClient({ apiKey, logger });
+  const products = await snipcart.listAllProducts();
+  const summary = {
+    updated: [],
+    unchanged: [],
+    ignored: [],
+    anomalous: [],
+  };
 
-  return response.json();
-}
+  for (const product of products) {
+    const id = getSnipcartProductId(product);
+    if (!id) {
+      summary.anomalous.push("(missing userDefinedId)");
+      continue;
+    }
+    if (!recognizedIds.has(id)) {
+      summary.ignored.push(id);
+      continue;
+    }
 
-function getProductId(product) {
-  return product.userDefinedId || product.id || product.uniqueId || product.sku || null;
-}
+    const stock = getTrackedStock(product);
+    if (stock === null) {
+      summary.anomalous.push(`${id} (inventory disabled or stock unavailable)`);
+      continue;
+    }
 
-function getProductStock(product) {
-  const stock =
-    product.stock ??
-    product.inventory ??
-    product.quantity ??
-    product.availableStock ??
-    product.availableQuantity ??
-    product.stockCount;
-  const numericStock = Number(stock);
-  return Number.isFinite(numericStock) ? numericStock : null;
-}
+    const current = overlay.products[id] || {};
+    const nextStatus = nextInventoryStatus({
+      id,
+      stock,
+      currentStatus: current.status,
+    });
+    if (NON_SALE_STATUSES.has(current.status)) {
+      summary.ignored.push(`${id} (${current.status})`);
+      continue;
+    }
 
-const overlay = JSON.parse(await readFile(availabilityPath, "utf8"));
-overlay.products ||= {};
+    if (current.inventory === stock && current.status === nextStatus) {
+      summary.unchanged.push(id);
+      continue;
+    }
 
-const productsResponse = await snipcartFetch("/products");
-const products = productsResponse.items || productsResponse.data || productsResponse || [];
-
-if (!Array.isArray(products)) {
-  throw new Error("Unexpected Snipcart products response shape.");
-}
-
-const now = new Date().toISOString();
-let changed = 0;
-
-for (const product of products) {
-  const id = getProductId(product);
-  const stock = getProductStock(product);
-
-  if (!id || stock === null) continue;
-
-  const current = overlay.products[id] || {};
-  const nextStatus = stock <= 0
-    ? id.endsWith("-original")
-      ? "sold"
-      : "sold-out"
-    : current.status === "sold" || current.status === "sold-out"
-      ? "available"
-      : current.status;
-
-  if (current.inventory !== stock || current.status !== nextStatus) {
     overlay.products[id] = {
       ...current,
       inventory: stock,
@@ -75,9 +96,27 @@ for (const product of products) {
       source: "snipcart-sync",
       updatedAt: now,
     };
-    changed += 1;
+    summary.updated.push(id);
   }
+
+  const nextText = `${JSON.stringify(overlay, null, 2)}\n`;
+  if (!dryRun && nextText !== originalText) {
+    await writeFile(availabilityPath, nextText);
+  }
+
+  logger.log(
+    `${dryRun ? "Dry run: " : ""}Snipcart stock reconciliation: ` +
+      `${summary.updated.length} updated, ${summary.unchanged.length} unchanged, ` +
+      `${summary.ignored.length} ignored, ${summary.anomalous.length} anomalous.`
+  );
+  for (const id of summary.updated) logger.log(`- updated: ${id}`);
+  for (const id of summary.ignored) logger.log(`- ignored: ${id}`);
+  for (const id of summary.anomalous) logger.log(`- anomalous: ${id}`);
+  if (dryRun) logger.log("Dry run: productAvailability.json was not written.");
+
+  return summary;
 }
 
-await writeFile(availabilityPath, `${JSON.stringify(overlay, null, 2)}\n`);
-console.log(`Synced Snipcart stock. Updated ${changed} product override(s).`);
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  await syncSnipcartStock();
+}

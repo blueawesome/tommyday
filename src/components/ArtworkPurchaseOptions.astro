@@ -52,7 +52,7 @@ const hasMixedAvailableProducts = availableOriginals.length > 0 && availableRepr
   )}
 
   {unavailable.length > 0 ? (
-    <div class="product-options-grid mt-4">
+    <div class="product-options-grid product-options-grid--unavailable mt-4">
       {unavailable.map((product) => (
         <ProductOptionCard artwork={artwork} product={product} />
       ))}

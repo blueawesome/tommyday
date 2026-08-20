@@ -1,0 +1,13 @@
+---
+import type { GreetingCard } from "../../data/cards";
+import CardTile from "./CardTile.astro";
+
+const { cards, mode = "browse" } = Astro.props as {
+  cards: GreetingCard[];
+  mode?: "browse" | "bundle" | "related";
+};
+---
+
+<div class="card-grid">
+  {cards.map((card) => <CardTile card={card} mode={mode} />)}
+</div>

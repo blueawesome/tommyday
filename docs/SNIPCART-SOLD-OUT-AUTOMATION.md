@@ -8,7 +8,10 @@ The site is static, so Snipcart checkout needs to mirror purchase state back int
 2. The Cloudflare Pages Function validates the request.
 3. The function asks the Snipcart Products API for current stock on the purchased item IDs when possible.
 4. The function dispatches the `snipcart-order-completed` GitHub workflow with the order payload and any stock data it found.
-5. The workflow runs `npm run apply:snipcart-order`, updates `src/data/productAvailability.json`, commits to `main`, and Cloudflare Pages redeploys.
+5. The workflow builds the deterministic product catalog, runs
+   `npm run apply:snipcart-order`, verifies the updated build, updates
+   `src/data/productAvailability.json`, commits to `main`, and Cloudflare Pages
+   redeploys.
 
 ## Required Secrets
 
@@ -22,6 +25,8 @@ Cloudflare Pages:
 GitHub Actions:
 
 - `GITHUB_TOKEN` is provided automatically and is used by the workflow to commit `src/data/productAvailability.json`.
+- Add the public `PUBLIC_SNIPCART_API_KEY` as a GitHub Actions repository variable
+  so build validation can render and verify purchase controls.
 - `SNIPCART_SECRET_API_KEY` is only needed if running `npm run sync:snipcart-stock` from GitHub later.
 
 ## Manual Testing
@@ -41,6 +46,7 @@ npm run apply:snipcart-order -- --payload /path/to/order.json
 Reconcile from Snipcart:
 
 ```sh
+SNIPCART_SECRET_API_KEY=... npm run sync:snipcart-stock -- --dry-run
 SNIPCART_SECRET_API_KEY=... npm run sync:snipcart-stock
 ```
 
@@ -51,3 +57,5 @@ SNIPCART_SECRET_API_KEY=... npm run sync:snipcart-stock
 - Restockable products with Snipcart stock or tracked overlay inventory at `0` become `sold-out`.
 - Products without Snipcart stock data fall back to tracked overlay inventory when present.
 - `sold-out` displays as: `Sold out, but more on the way!`
+- Historical and deliberately unavailable products are ignored rather than
+  resurrected from an old Snipcart record.

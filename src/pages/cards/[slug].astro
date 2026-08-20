@@ -1,0 +1,71 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteShell from "../../components/SiteShell.astro";
+import CardProductHero from "../../components/cards/CardProductHero.astro";
+import CardRelatedGrid from "../../components/cards/CardRelatedGrid.astro";
+import { greetingCards } from "../../data/cards";
+import { getRelatedCards } from "../../data/cardHelpers";
+
+export async function getStaticPaths() {
+  return greetingCards
+    .filter((card) => card.status !== "draft" && card.status !== "retired")
+    .map((card) => ({ params: { slug: card.slug } }));
+}
+
+const { slug } = Astro.params;
+const card = greetingCards.find((item) => item.slug === slug);
+
+if (!card) {
+  throw new Error(`Card not found: ${slug}`);
+}
+
+const relatedCards = getRelatedCards(card);
+const productSchema = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  name: card.title,
+  image: new URL(card.frontImage, "https://tommyday.com").href,
+  description: card.seoDescription || card.productDescription,
+  sku: card.sku,
+  brand: {
+    "@type": "Brand",
+    name: card.productLine === "collage-goblin" ? "Collage Goblin" : "Tommy Day Art",
+  },
+  offers: {
+    "@type": "Offer",
+    priceCurrency: "USD",
+    price: card.price,
+    availability:
+      card.status === "available"
+        ? "https://schema.org/InStock"
+        : "https://schema.org/OutOfStock",
+    url: `https://tommyday.com/cards/${card.slug}/`,
+  },
+};
+---
+
+<BaseLayout
+  title={card.seoTitle || `${card.title} Greeting Card | Tommy Day Art`}
+  description={card.seoDescription || card.productDescription}
+  ogImage={card.frontImage}
+  canonicalUrl={`/cards/${card.slug}/`}
+>
+  <SiteShell>
+    <script type="application/ld+json" set:html={JSON.stringify(productSchema)} />
+    <CardProductHero card={card} />
+
+    {card.relatedArtworkSlug ? (
+      <section class="card-artwork-link">
+        <div>
+          <p class="section-eyebrow">Original artwork</p>
+          <h2>See the collage this card came from.</h2>
+        </div>
+        <a class="card-secondary-link" href={`/collage/${card.relatedArtworkSlug}/`}>
+          View artwork
+        </a>
+      </section>
+    ) : null}
+
+    <CardRelatedGrid cards={relatedCards} />
+  </SiteShell>
+</BaseLayout>

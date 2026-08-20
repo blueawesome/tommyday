@@ -57,7 +57,7 @@ const maxVotes = 5;
                   <button
                     class="vote-card__image-wrap vote-card__image-button"
                     type="button"
-                    data-preorder-lightbox-trigger
+                    data-image-lightbox-trigger
                     data-lightbox-src={item.image}
                     data-lightbox-alt={`${item.title} artwork`}
                     data-lightbox-title={item.title}
@@ -106,7 +106,7 @@ const maxVotes = 5;
                   <button
                     class="vote-card__image-wrap vote-card__image-button"
                     type="button"
-                    data-preorder-lightbox-trigger
+                    data-image-lightbox-trigger
                     data-lightbox-src={item.image}
                     data-lightbox-alt={`${item.title} artwork`}
                     data-lightbox-title={item.title}
@@ -197,14 +197,14 @@ const maxVotes = 5;
         </section>
       </template>
 
-      <dialog class="preorder-lightbox" id="preorder-lightbox" aria-labelledby="preorder-lightbox-title">
-        <div class="preorder-lightbox__panel">
-          <button class="preorder-lightbox__close" type="button" data-preorder-lightbox-close>
+      <dialog class="image-lightbox" id="image-lightbox" aria-labelledby="image-lightbox-title">
+        <div class="image-lightbox__panel">
+          <button class="image-lightbox__close" type="button" data-image-lightbox-close>
             Close
           </button>
-          <figure class="preorder-lightbox__figure">
-            <img src="" alt="" class="preorder-lightbox__image" data-preorder-lightbox-image />
-            <figcaption class="preorder-lightbox__caption" id="preorder-lightbox-title" data-preorder-lightbox-caption></figcaption>
+          <figure class="image-lightbox__figure">
+            <img src="" alt="" class="image-lightbox__image" data-image-lightbox-image />
+            <figcaption class="image-lightbox__caption" id="image-lightbox-title" data-image-lightbox-caption></figcaption>
           </figure>
         </div>
       </dialog>

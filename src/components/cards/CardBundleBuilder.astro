@@ -1,0 +1,119 @@
+---
+import type { GreetingCard } from "../../data/cards";
+import { getBundleEligibleCards, getCardProductJson } from "../../data/cardHelpers";
+import { bundlePrices } from "../../data/cardPacks";
+import { getSortedCardOccasions, getSortedCardTones } from "../../data/cardTaxonomies";
+import CardGrid from "./CardGrid.astro";
+
+const { cards = getBundleEligibleCards() } = Astro.props as { cards?: GreetingCard[] };
+const cardData = cards.map(getCardProductJson);
+const occasions = getSortedCardOccasions();
+const tones = getSortedCardTones();
+const snipcartEnabled = Boolean(import.meta.env.PUBLIC_SNIPCART_API_KEY);
+---
+
+<section
+  class="card-builder"
+  x-data={`cardBundleBuilder({ cards: ${JSON.stringify(cardData)}, prices: ${JSON.stringify(bundlePrices)} })`}
+>
+  <div class="card-builder__header">
+    <div>
+      <p class="section-eyebrow">Build a pack</p>
+      <h1>Build a Card Pack</h1>
+      <p>
+        Pick any 5 cards. Snipcart Test mode should automatically price qualifying cards at $6 each.
+      </p>
+    </div>
+
+    <div class="card-builder__summary">
+      <p x-text="`${selectedCards.length} of ${packSize} selected`">0 of 5 selected</p>
+      <strong x-text="bundlePriceLabel()">$30</strong>
+    </div>
+  </div>
+
+  <div class="card-builder__controls">
+    <div class="card-builder__control-group" aria-label="Pack size">
+      <span class="card-builder__segmented is-active">5 cards</span>
+    </div>
+
+    <label class="card-builder__search">
+      <span class="sr-only">Search cards</span>
+      <input type="search" x-model="search" placeholder="Search cards" />
+    </label>
+
+    <select x-model="occasion" aria-label="Filter cards by occasion">
+      <option value="all">All occasions</option>
+      {occasions.map((occasion) => (
+        <option value={occasion.slug}>{occasion.label}</option>
+      ))}
+    </select>
+
+    <select x-model="tone" aria-label="Filter cards by tone">
+      <option value="all">All tones</option>
+      {tones.map((tone) => (
+        <option value={tone.slug}>{tone.label}</option>
+      ))}
+    </select>
+
+    <button type="button" class="card-builder__small-button" @click="surpriseMe()">Surprise me</button>
+    <button type="button" class="card-builder__small-button" @click="clear()">Clear</button>
+  </div>
+
+  <div class="card-builder__layout">
+    <div>
+      <CardGrid cards={cards} mode="bundle" />
+    </div>
+
+    <aside class="card-builder__selected" aria-label="Selected cards">
+      <p class="section-eyebrow">Your pack</p>
+      <p class="card-builder__selected-count" x-text="`${selectedCards.length} of ${packSize} selected`">
+        0 of 5 selected
+      </p>
+      <div class="card-builder__progress">
+        <span x-bind:style="`width: ${completionPercent()}%`"></span>
+      </div>
+
+      <h2 x-text="packStatusMessage()">
+        Start building your pack.
+      </h2>
+
+      <template x-if="selectedCards.length === 0">
+        <p class="card-builder__empty">
+          Start with bestsellers, filter by occasion, or hit Surprise me.
+        </p>
+      </template>
+
+      <ul class="card-builder__selected-list">
+        <template x-for="card in selectedCards" :key="card.selectionKey">
+          <li>
+            <img :src="card.image" alt="" />
+            <span x-text="card.title"></span>
+            <button type="button" @click="removeCard(card.selectionKey)" :aria-label="`Remove ${card.title}`">Remove</button>
+          </li>
+        </template>
+      </ul>
+
+      {snipcartEnabled ? (
+        <button
+          type="button"
+          class="card-primary-button"
+          @click="addPackToCart()"
+          x-bind:disabled="!isComplete() || isAddingToCart"
+          x-text="packActionLabel()"
+        >
+          Pick 5 cards
+        </button>
+      ) : (
+        <div class="card-purchase-panel__disabled">
+          Cart unavailable until Snipcart is configured.
+        </div>
+      )}
+
+      <p class="card-builder__error" x-show="cartError" x-text="cartError" x-cloak></p>
+
+      <p class="card-builder__discount-note">
+        The Test-mode discount should apply automatically in Snipcart when the cart has 5 qualifying greeting cards.
+      </p>
+    </aside>
+  </div>
+</section>

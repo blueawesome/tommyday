@@ -1,0 +1,67 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteShell from "../../components/SiteShell.astro";
+import CardGrid from "../../components/cards/CardGrid.astro";
+import CardOccasionNav from "../../components/cards/CardOccasionNav.astro";
+import { getAvailableCards, sortCards } from "../../data/cardHelpers";
+import { getSortedCardOccasions, getSortedCardTones } from "../../data/cardTaxonomies";
+
+const cards = sortCards(getAvailableCards());
+const occasions = getSortedCardOccasions();
+const tones = getSortedCardTones();
+---
+
+<BaseLayout
+  title="Greeting Cards | Tommy Day Art"
+  description="Shop weird, funny, blank-inside greeting cards printed from Tommy Day's original analog collage artwork."
+  canonicalUrl="/cards/"
+>
+  <SiteShell>
+    <section class="cards-hero">
+      <div>
+        <p class="section-eyebrow">Greeting cards</p>
+        <h1>Greeting Cards</h1>
+        <p>
+          Blank-inside greeting cards printed from my hand-cut analog collages on heavy cardstock, with envelopes included. Printed in the USA. Grab one, or build a small stack and save.
+        </p>
+        <div class="cards-hero__actions">
+          <a class="card-primary-button" href="/cards/build-a-pack/">Bundle & Save</a>
+          <span class="cards-hero__value">Pick any 5 cards for $30.</span>
+        </div>
+      </div>
+    </section>
+
+    <CardOccasionNav />
+
+    <section class="cards-section" aria-labelledby="all-cards-heading" id="all-cards">
+      <div class="cards-section__header">
+        <p class="section-eyebrow">All cards</p>
+        <h2 id="all-cards-heading">All Cards</h2>
+      </div>
+
+      <div x-data="cardFilters()">
+        <div class="cards-filter-panel">
+          <label class="cards-filter-panel__search">
+            <span class="sr-only">Search cards</span>
+            <input type="search" x-model="search" placeholder="Search cards" />
+          </label>
+
+          <select x-model="occasion" aria-label="Filter by occasion">
+            <option value="all">All occasions</option>
+            {occasions.map((occasion) => <option value={occasion.slug}>{occasion.label}</option>)}
+          </select>
+
+          <select x-model="tone" aria-label="Filter by tone">
+            <option value="all">All tones</option>
+            {tones.map((tone) => <option value={tone.slug}>{tone.label}</option>)}
+          </select>
+
+          <button type="button" @click="clearFilters()">Clear</button>
+          <p aria-live="polite" x-text="resultLabel()"></p>
+        </div>
+
+        <CardGrid cards={cards} />
+      </div>
+    </section>
+  </SiteShell>
+</BaseLayout>

@@ -1,0 +1,26 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import SiteShell from "../../../components/SiteShell.astro";
+import CardPackTile from "../../../components/cards/CardPackTile.astro";
+import { cardPacks } from "../../../data/cardPacks";
+---
+
+<BaseLayout
+  title="Greeting Card Packs | Tommy Day Art"
+  description="Build your own greeting card pack or browse curated Tommy Day Art greeting card packs."
+  canonicalUrl="/cards/packs/"
+>
+  <SiteShell>
+    <section class="cards-hero cards-hero--compact">
+      <div>
+        <p class="section-eyebrow">Greeting card packs</p>
+        <h1>Bundles for future mail.</h1>
+        <p>Build your own stack or browse curated packs as they come online.</p>
+      </div>
+    </section>
+
+    <div class="card-pack-grid">
+      {cardPacks.map((pack) => <CardPackTile pack={pack} />)}
+    </div>
+  </SiteShell>
+</BaseLayout>

@@ -1,0 +1,30 @@
+---
+import { getSortedCardOccasions } from "../../data/cardTaxonomies";
+
+const { activeOccasion = "" } = Astro.props as { activeOccasion?: string };
+const preferredOccasionOrder = [
+  "birthday",
+  "thank-you",
+  "friendship",
+  "thinking-of-you",
+  "encouragement",
+  "blank",
+  "party-host",
+];
+const allOccasions = getSortedCardOccasions();
+const occasions = preferredOccasionOrder
+  .map((slug) => allOccasions.find((occasion) => occasion.slug === slug))
+  .filter(Boolean);
+---
+
+<nav class="card-occasion-nav" aria-label="Greeting card occasions">
+  <a class:list={["card-chip-link", !activeOccasion && "is-active"]} href="/cards/">All cards</a>
+  {occasions.map((occasion) => (
+    <a
+      class:list={["card-chip-link", activeOccasion === occasion.slug && "is-active"]}
+      href={`/cards/${occasion.slug}/`}
+    >
+      {occasion.label}
+    </a>
+  ))}
+</nav>

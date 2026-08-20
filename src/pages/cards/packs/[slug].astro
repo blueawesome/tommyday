@@ -1,0 +1,51 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import SiteShell from "../../../components/SiteShell.astro";
+import { cardPacks } from "../../../data/cardPacks";
+
+export async function getStaticPaths() {
+  return cardPacks
+    .filter((pack) => pack.type !== "build-your-own")
+    .map((pack) => ({ params: { slug: pack.slug } }));
+}
+
+const { slug } = Astro.params;
+const pack = cardPacks.find((item) => item.slug === slug);
+
+if (!pack) {
+  throw new Error(`Card pack not found: ${slug}`);
+}
+---
+
+<BaseLayout
+  title={pack.seoTitle || `${pack.title} | Tommy Day Art`}
+  description={pack.seoDescription || pack.description}
+  ogImage={pack.image}
+  canonicalUrl={`/cards/packs/${pack.slug}/`}
+>
+  <SiteShell>
+    <section class="card-product-hero">
+      <div class="card-product-hero__media">
+        <img src={pack.image} alt={pack.alt} />
+      </div>
+
+      <div class="card-product-hero__copy">
+        <nav class="detail-breadcrumb" aria-label="Breadcrumb">
+          <a href="/cards/">Cards</a>
+          <span aria-hidden="true">/</span>
+          <a href="/cards/packs/">Packs</a>
+          <span aria-hidden="true">/</span>
+          <span>{pack.title}</span>
+        </nav>
+
+        <p class="section-eyebrow">{pack.cardCount}-card pack</p>
+        <h1>{pack.title}</h1>
+        <p class="card-product-hero__description">{pack.description}</p>
+
+        <div class="card-purchase-panel__disabled">
+          Bundle checkout is coming later. The eventual cart will use the underlying card SKUs.
+        </div>
+      </div>
+    </section>
+  </SiteShell>
+</BaseLayout>

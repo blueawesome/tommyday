@@ -1,0 +1,139 @@
+---
+import type { GreetingCard } from "../../data/cards";
+import {
+  CARD_BUNDLE_ALTERNATE_PRICE,
+  CARD_BUNDLE_CATEGORY,
+  formatCardPrice,
+  getCardOccasionLabel,
+  getCardProductJson,
+  getSnipcartCardDescription,
+  getSnipcartCardName,
+} from "../../data/cardHelpers";
+import {
+  getAllowOutOfStockPurchases,
+  getEffectiveInventory,
+  shouldRenderSnipcartPurchaseControl,
+} from "../../data/productRules";
+
+const { card, mode = "browse" } = Astro.props as {
+  card: GreetingCard;
+  mode?: "browse" | "bundle" | "related";
+};
+
+const cardJson = getCardProductJson(card);
+const occasionLabels = card.occasions.slice(0, 3).map(getCardOccasionLabel);
+const subtleOccasionLabels = card.occasions.slice(0, 2).map(getCardOccasionLabel);
+const price = formatCardPrice(card.price);
+const snipcartEnabled = Boolean(import.meta.env.PUBLIC_SNIPCART_API_KEY);
+const cardUrl = new URL(`/cards/${card.slug}/`, "https://tommyday.com").href;
+const effectiveInventory = getEffectiveInventory(card);
+const rendersSnipcartControl = shouldRenderSnipcartPurchaseControl(card);
+---
+
+<article
+  class:list={["card-tile", mode === "bundle" && "card-tile--bundle"]}
+  data-card-item
+  data-card-id={card.id}
+  data-card-slug={card.slug}
+  data-card-title={card.title}
+  data-occasions={card.occasions.join(",")}
+  data-tones={card.tones.join(",")}
+  data-subjects={card.subjects.join(",")}
+  data-themes={card.themes.join(",")}
+  data-featured={card.featured ? "true" : "false"}
+  data-bestseller={card.bestseller ? "true" : "false"}
+  data-seasonal={card.seasonal ? "true" : "false"}
+  data-price={card.price}
+  data-sort-order={card.sortOrder || 999}
+  data-card-json={JSON.stringify(cardJson)}
+  x-show={mode === "bundle" ? "matchesCard($el)" : "matches($el) && isVisible($el)"}
+  x-bind:style={mode === "bundle" ? undefined : "{ order: sortOrder($el) }"}
+  x-bind:class={mode === "bundle" ? `{ 'is-selected': isSelected(${JSON.stringify(card.id)}) }` : undefined}
+  x-cloak
+>
+  <a class="card-tile__image-link" href={`/cards/${card.slug}/`}>
+    <img
+      class="card-tile__image"
+      src={card.thumbnail || card.frontImage}
+      alt={card.alt}
+      loading="lazy"
+    />
+  </a>
+
+  <div class="card-tile__body">
+    <div class="card-tile__meta">
+      <span>{price}</span>
+      {card.bestseller ? <span>Bestseller</span> : null}
+    </div>
+
+    <h3 class="card-tile__title">
+      <a href={`/cards/${card.slug}/`}>{card.title}</a>
+    </h3>
+
+    {mode === "bundle" ? (
+      <>
+        <p
+          class="card-tile__count"
+          x-show={`selectedCount(${JSON.stringify(card.id)}) > 0`}
+          x-text={`selectedCount(${JSON.stringify(card.id)}) === 1 ? 'In pack' : selectedCount(${JSON.stringify(card.id)}) + ' in pack'`}
+        >
+          In pack
+        </p>
+        <div class="card-chip-list" aria-label={`${card.title} occasions`}>
+          {occasionLabels.map((label) => <span class="card-chip">{label}</span>)}
+        </div>
+
+      <div class="card-tile__bundle-actions">
+        <button
+          type="button"
+          class="card-tile__button"
+          @click={`addCard(${JSON.stringify(cardJson)})`}
+          x-bind:disabled={`!canAddMore()`}
+          x-text={`isSelected(${JSON.stringify(card.id)}) ? 'Add another' : 'Add to pack'`}
+        >
+          Add to pack
+        </button>
+        <button
+          type="button"
+          class="card-tile__remove-button"
+          x-show={`isSelected(${JSON.stringify(card.id)})`}
+          @click={`removeOneCard(${JSON.stringify(card.id)})`}
+        >
+          Remove one
+        </button>
+      </div>
+      </>
+    ) : (
+      <>
+        <div class="card-tile__actions">
+          <a class="card-tile__button" href={`/cards/build-a-pack/?start=${card.slug}`}>Add to pack</a>
+          {rendersSnipcartControl && snipcartEnabled ? (
+            <button
+              class="card-tile__single-button snipcart-add-item"
+              data-item-id={card.id}
+              data-item-price={card.price}
+              data-item-url={cardUrl}
+              data-item-description={getSnipcartCardDescription(card)}
+              data-item-image={card.frontImage}
+              data-item-name={getSnipcartCardName(card)}
+              data-item-categories={CARD_BUNDLE_CATEGORY}
+              data-item-price-card5={CARD_BUNDLE_ALTERNATE_PRICE.toFixed(2)}
+              data-item-max-quantity={effectiveInventory}
+              data-initial-inventory={card.initialInventory}
+              data-allow-out-of-stock-purchases={String(getAllowOutOfStockPurchases(card))}
+            >
+              Buy single - {price}
+            </button>
+          ) : (
+            <span class="card-tile__unavailable">
+              {rendersSnipcartControl ? "Cart unavailable" : "Unavailable"}
+            </span>
+          )}
+        </div>
+        {subtleOccasionLabels.length ? (
+          <p class="card-tile__taxonomy">{subtleOccasionLabels.join(" / ")}</p>
+        ) : null}
+      </>
+    )}
+  </div>
+</article>

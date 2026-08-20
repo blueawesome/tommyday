@@ -2,9 +2,8 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SiteShell from "../../components/SiteShell.astro";
 import ArtworkPurchaseOptions from "../../components/ArtworkPurchaseOptions.astro";
-import ArtworkPreorderOptions from "../../components/ArtworkPreorderOptions.astro";
 import { publishedArtworks } from "../../data/artworks";
-import { getPreorderProductsForArtwork } from "../../data/preorderProducts";
+import { getCardsByArtworkSlug } from "../../data/cardHelpers";
 import {
   getDetailPageDescription,
   getAvailableProducts,
@@ -56,7 +55,7 @@ const galleryState = `{
   }
 }`;
 const availableProducts = getAvailableProducts(artwork);
-const relatedPreorderProducts = getPreorderProductsForArtwork(artwork.slug);
+const relatedCards = getCardsByArtworkSlug(artwork.slug);
 const isSecretArtwork = artwork.showInGallery === false && artwork.showInShop === false;
 const pricedAvailableProducts = availableProducts.filter(
   (product) => typeof product.price === "number"
@@ -173,8 +172,25 @@ const artworkSchema = {
         <div class="mt-6">
           <h2 class="font-semibold text-xl">Available As</h2>
           <ArtworkPurchaseOptions artwork={artwork} />
-          <ArtworkPreorderOptions artwork={artwork} products={relatedPreorderProducts} />
         </div>
+
+        {relatedCards.length ? (
+          <section class="detail-card-cross-sell" aria-labelledby="detail-card-cross-sell-title">
+            <p class="section-eyebrow">Greeting card</p>
+            <h2 id="detail-card-cross-sell-title">Available as a card.</h2>
+            <p>
+              This collage is also available as a blank-inside greeting card. Buy it solo, or start a discounted pack with it.
+            </p>
+            <div class="detail-card-cross-sell__actions">
+              <a class="card-primary-button" href={`/cards/${relatedCards[0].slug}/`}>
+                View card
+              </a>
+              <a class="card-secondary-link" href={`/cards/build-a-pack/?start=${relatedCards[0].slug}`}>
+                Start a pack
+              </a>
+            </div>
+          </section>
+        ) : null}
       </div>
     </div>
   </SiteShell>

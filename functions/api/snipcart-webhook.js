@@ -1,3 +1,5 @@
+import { getTrackedSnipcartStock } from "../../src/lib/snipcartInventory.js";
+
 const DEFAULT_REPOSITORY = "blueawesome/tommyday";
 const DISPATCH_EVENT = "snipcart-order-completed";
 const SNIPCART_API_BASE = "https://app.snipcart.com/api";
@@ -84,29 +86,6 @@ function getLineItemId(item) {
   );
 }
 
-function getProductId(product) {
-  return product?.userDefinedId || product?.id || product?.uniqueId || product?.sku || null;
-}
-
-function getProductStock(product) {
-  const stock =
-    product?.stock ??
-    product?.inventory ??
-    product?.quantity ??
-    product?.availableStock ??
-    product?.availableQuantity ??
-    product?.stockCount ??
-    null;
-
-  const numericStock = Number(stock);
-  return Number.isFinite(numericStock) ? numericStock : null;
-}
-
-function getProductsFromResponse(response) {
-  const products = response?.items || response?.data || response?.products || response;
-  return Array.isArray(products) ? products : [];
-}
-
 async function snipcartApiFetch(env, path) {
   const response = await fetch(`${SNIPCART_API_BASE}${path}`, {
     headers: {
@@ -116,7 +95,7 @@ async function snipcartApiFetch(env, path) {
   });
 
   if (!response.ok) {
-    throw new Error(`Snipcart API request failed (${response.status}): ${await response.text()}`);
+    throw new Error(`Snipcart API request failed (${response.status}).`);
   }
 
   return response.json();
@@ -125,16 +104,19 @@ async function snipcartApiFetch(env, path) {
 async function fetchSnipcartProductsById(env, productIds) {
   if (!env.SNIPCART_SECRET_API_KEY || !productIds.length) return {};
 
-  const productsResponse = await snipcartApiFetch(env, "/products");
-  const products = getProductsFromResponse(productsResponse);
-  const wanted = new Set(productIds);
   const stockByProductId = {};
+  const results = await Promise.all(
+    productIds.map(async (id) => {
+      const product = await snipcartApiFetch(
+        env,
+        `/products/${encodeURIComponent(id)}`
+      );
+      return { id, product };
+    })
+  );
 
-  for (const product of products) {
-    const id = getProductId(product);
-    if (!id || !wanted.has(id)) continue;
-
-    const inventory = getProductStock(product);
+  for (const { id, product } of results) {
+    const inventory = getTrackedSnipcartStock(product);
     if (inventory === null) continue;
 
     stockByProductId[id] = {

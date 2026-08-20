@@ -2,11 +2,10 @@ import { createHash } from "node:crypto";
 import { readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { readProductCatalog } from "./lib/product-catalog.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const availabilityPath = resolve(root, "src/data/productAvailability.json");
-const artworksPath = resolve(root, "src/data/artworks.ts");
-const preorderProductsPath = resolve(root, "src/data/preorderProducts.ts");
 
 function readArg(name) {
   const index = process.argv.indexOf(name);
@@ -21,30 +20,14 @@ function stableHash(value) {
   return createHash("sha256").update(JSON.stringify(value)).digest("hex").slice(0, 16);
 }
 
-async function getKnownProductIds() {
-  const source = [
-    await readFile(artworksPath, "utf8"),
-    await readFile(preorderProductsPath, "utf8"),
-  ].join("\n");
-  const slugs = [...source.matchAll(/slug:\s*"([^"]+)"/g)].map((match) => match[1]);
-  const explicitIds = [...source.matchAll(/id:\s*"([^"]+)"/g)].map((match) => match[1]);
-
-  return new Set([
-    ...slugs.map((slug) => `${slug}-original`),
-    ...explicitIds,
-  ]);
-}
-
 async function readPayload() {
   const payloadPath = readArg("--payload");
   if (payloadPath) {
     return JSON.parse(await readFile(resolve(process.cwd(), payloadPath), "utf8"));
   }
-
   if (process.env.SNIPCART_ORDER_PAYLOAD) {
     return JSON.parse(process.env.SNIPCART_ORDER_PAYLOAD);
   }
-
   throw new Error("Missing order payload. Pass --payload <file> or SNIPCART_ORDER_PAYLOAD.");
 }
 
@@ -71,7 +54,6 @@ function getLineItems(order) {
     order?.cart?.items,
     order?.details?.items,
   ];
-
   return candidates.find((candidate) => Array.isArray(candidate)) || [];
 }
 
@@ -98,7 +80,6 @@ function getSnipcartStockForProduct(payload, itemId) {
   const inventory = Number(
     typeof stockEntry === "number" ? stockEntry : stockEntry?.inventory
   );
-
   return Number.isFinite(inventory) ? inventory : null;
 }
 
@@ -145,64 +126,78 @@ function applyItemToOverlay({ overlay, itemId, quantity, orderId, now, snipcartI
     return inventory === 0 ? "marked product sold-out" : `decremented inventory to ${inventory}`;
   }
 
-  return "no tracked inventory; left unchanged";
+  return "no synchronized inventory; left unchanged";
 }
 
-const payload = await readPayload();
-const dryRun = hasFlag("--dry-run");
-const order = getOrder(payload);
-const orderId = getOrderId(payload, order);
-const knownProductIds = await getKnownProductIds();
-const overlay = JSON.parse(await readFile(availabilityPath, "utf8"));
+export async function applySnipcartOrder({
+  rootDirectory = root,
+  payload = null,
+  dryRun = hasFlag("--dry-run"),
+  logger = console,
+  now = new Date().toISOString(),
+} = {}) {
+  const resolvedPayload = payload || (await readPayload());
+  const catalog = await readProductCatalog({ root: rootDirectory });
+  const knownProductIds = new Set(catalog.products.map((product) => product.id));
+  const resolvedAvailabilityPath = resolve(
+    rootDirectory,
+    "src/data/productAvailability.json"
+  );
+  const overlay = JSON.parse(await readFile(resolvedAvailabilityPath, "utf8"));
+  const order = getOrder(resolvedPayload);
+  const orderId = getOrderId(resolvedPayload, order);
 
-overlay.processedOrders ||= {};
-overlay.products ||= {};
+  overlay.processedOrders ||= {};
+  overlay.products ||= {};
 
-if (overlay.processedOrders[orderId]) {
-  console.log(`Order ${orderId} already processed; no changes made.`);
-  process.exit(0);
-}
-
-const items = getLineItems(order);
-const now = new Date().toISOString();
-const updates = [];
-const ignored = [];
-
-for (const item of items) {
-  const itemId = getLineItemId(item);
-  if (!itemId || !knownProductIds.has(itemId)) {
-    ignored.push(itemId || "(missing product id)");
-    continue;
+  if (overlay.processedOrders[orderId]) {
+    logger.log(`Order ${orderId} already processed; no changes made.`);
+    return { duplicate: true, orderId };
   }
 
-  const quantity = getLineItemQuantity(item);
-  const snipcartInventory = getSnipcartStockForProduct(payload, itemId);
-  const result = applyItemToOverlay({
-    overlay,
-    itemId,
-    quantity,
-    orderId,
-    now,
-    snipcartInventory,
-  });
-  updates.push({ itemId, quantity, result });
+  const items = getLineItems(order);
+  const updates = [];
+  const ignored = [];
+
+  for (const item of items) {
+    const itemId = getLineItemId(item);
+    if (!itemId || !knownProductIds.has(itemId)) {
+      ignored.push(itemId || "(missing product id)");
+      continue;
+    }
+
+    const quantity = getLineItemQuantity(item);
+    const result = applyItemToOverlay({
+      overlay,
+      itemId,
+      quantity,
+      orderId,
+      now,
+      snipcartInventory: getSnipcartStockForProduct(resolvedPayload, itemId),
+    });
+    updates.push({ itemId, quantity, result });
+  }
+
+  overlay.processedOrders[orderId] = {
+    processedAt: now,
+    itemCount: items.length,
+    updatedProductIds: updates.map((update) => update.itemId),
+    ignoredProductIds: ignored,
+  };
+
+  if (!dryRun) {
+    await writeFile(resolvedAvailabilityPath, `${JSON.stringify(overlay, null, 2)}\n`);
+  }
+
+  logger.log(`${dryRun ? "Dry run processed" : "Processed"} order ${orderId}.`);
+  for (const update of updates) {
+    logger.log(`- ${update.itemId} x${update.quantity}: ${update.result}`);
+  }
+  for (const itemId of ignored) logger.log(`- ignored unknown product: ${itemId}`);
+
+  return { duplicate: false, orderId, updates, ignored };
 }
 
-overlay.processedOrders[orderId] = {
-  processedAt: now,
-  itemCount: items.length,
-  updatedProductIds: updates.map((update) => update.itemId),
-  ignoredProductIds: ignored,
-};
-
-if (!dryRun) {
-  await writeFile(availabilityPath, `${JSON.stringify(overlay, null, 2)}\n`);
-}
-
-console.log(`${dryRun ? "Dry run processed" : "Processed"} order ${orderId}.`);
-for (const update of updates) {
-  console.log(`- ${update.itemId} x${update.quantity}: ${update.result}`);
-}
-for (const itemId of ignored) {
-  console.log(`- ignored unknown product: ${itemId}`);
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  await applySnipcartOrder();
 }
