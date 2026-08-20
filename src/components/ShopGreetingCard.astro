@@ -1,0 +1,29 @@
+---
+import type { GreetingCard } from "../data/cards";
+import { formatCardPrice } from "../data/cardHelpers";
+
+const { card } = Astro.props as {
+  card: GreetingCard;
+};
+const price = formatCardPrice(card.price);
+---
+
+<a href={`/cards/${card.slug}/`} class="shop-card">
+  <div class="shop-card__image-wrap">
+    <img
+      src={card.thumbnail || card.frontImage}
+      alt={card.alt}
+      class="shop-card__image"
+      loading="lazy"
+    />
+  </div>
+
+  <div class="shop-card__body">
+    <div class="shop-card__meta">
+      <span>{price}</span>
+    </div>
+    <h2 class="shop-card__title">{card.title}</h2>
+    <p class="shop-card__summary">Greeting Card</p>
+    <span class="shop-card__cta">View card</span>
+  </div>
+</a>
