@@ -1,0 +1,10 @@
+---
+---
+
+<aside class="card-bundle-tray" x-data="cardBundleTray()" x-show="count() > 0" x-cloak aria-live="polite">
+  <div>
+    <p class="card-bundle-tray__label" x-text="`${count()} card${count() === 1 ? '' : 's'} selected`"></p>
+    <p class="card-bundle-tray__summary">Build toward 5 cards for $30.</p>
+  </div>
+  <a class="card-bundle-tray__button" href="/cards/build-a-pack/">Continue</a>
+</aside>

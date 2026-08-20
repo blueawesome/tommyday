@@ -7,15 +7,23 @@ import {
   hasAvailableProductType,
 } from "../data/artworkHelpers";
 
-const { artwork } = Astro.props as { artwork: Artwork };
+const { artwork, mode = "default" } = Astro.props as {
+  artwork: Artwork;
+  mode?: "default" | "original";
+};
 const lowestPrice = getLowestAvailablePrice(artwork);
 const hasAvailableOriginal = hasAvailableProductType(artwork, "original");
 const availableProducts = getAvailableProducts(artwork);
+const availableOriginal = availableProducts.find((product) => product.type === "original");
 const hasOnlyAvailableOriginal = availableProducts.length === 1 && availableProducts[0].type === "original";
-const priceLabel = lowestPrice
-  ? `${hasOnlyAvailableOriginal ? "" : "From "}${formatPrice(lowestPrice)}`
+const displayPrice = mode === "original" ? availableOriginal?.price : lowestPrice;
+const priceLabel = displayPrice
+  ? `${mode === "original" || hasOnlyAvailableOriginal ? "" : "From "}${formatPrice(displayPrice)}`
   : "View piece";
-const compactSummary = availableProducts
+const summaryProducts = mode === "original" && availableOriginal
+  ? [availableOriginal]
+  : availableProducts;
+const compactSummary = summaryProducts
   .map((product) => {
     if (product.type === "original" && artwork.dimensions) {
       return `Original · ${artwork.dimensions}`;
@@ -29,7 +37,7 @@ const compactSummary = availableProducts
 
 <a href={`/collage/${artwork.slug}/`} class="shop-card">
   <div class="shop-card__image-wrap">
-    {hasAvailableOriginal ? <span class="shop-card__badge">Original available</span> : null}
+    {mode !== "original" && hasAvailableOriginal ? <span class="shop-card__badge">Original available</span> : null}
     <img
       src={artwork.thumbnail || artwork.image}
       alt={artwork.alt}

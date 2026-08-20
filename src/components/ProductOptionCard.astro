@@ -5,6 +5,11 @@ import {
   getSnipcartDescription,
   getSnipcartName,
 } from "../data/artworkHelpers";
+import {
+  getAllowOutOfStockPurchases,
+  getEffectiveInventory,
+  shouldRenderSnipcartPurchaseControl,
+} from "../data/productRules";
 
 const { artwork, product, hideNote = false } = Astro.props as {
   artwork: Artwork;
@@ -15,8 +20,12 @@ const { artwork, product, hideNote = false } = Astro.props as {
 const snipcartEnabled = Boolean(import.meta.env.PUBLIC_SNIPCART_API_KEY);
 const price = getProductDisplayPrice(product);
 const hasPrice = typeof product.price === "number";
+const productUrl = new URL(`/collage/${artwork.slug}/`, "https://tommyday.com").href;
+const effectiveInventory = getEffectiveInventory(product);
+const rendersSnipcartControl = shouldRenderSnipcartPurchaseControl(product);
 const soldOut = product.status === "sold-out";
 const soldLike = product.status === "sold" || product.status === "unavailable" || soldOut;
+const soldOriginal = product.type === "original" && soldLike;
 const cardClass = [
   "product-option-card",
   product.status === "available"
@@ -26,9 +35,9 @@ const cardClass = [
 ].filter(Boolean).join(" ");
 const statusLabel = product.status === "available"
   ? price || "Available"
-  : product.status === "coming-soon"
-    ? "Coming soon"
-    : soldOut
+  : soldOriginal
+      ? "SOLD"
+      : soldOut
       ? "Sold out, but more on the way!"
       : product.status === "sold"
       ? "Sold"
@@ -74,17 +83,19 @@ const productNote = product.type === "original"
       </a>
     ) : null}
 
-    {product.status === "available" && !product.externalUrl && snipcartEnabled && hasPrice ? (
+    {rendersSnipcartControl && snipcartEnabled ? (
       <button
         class="product-option-card__button snipcart-add-item"
         data-item-id={product.id}
         data-item-price={product.price}
-        data-item-url={`/collage/${artwork.slug}/`}
+        data-item-url={productUrl}
         data-item-description={getSnipcartDescription(artwork, product)}
         data-item-image={artwork.image}
         data-item-name={getSnipcartName(artwork, product)}
         data-item-quantity={product.type === "original" ? "1" : undefined}
-        data-item-max-quantity={typeof product.inventory === "number" ? product.inventory : product.type === "original" ? "1" : undefined}
+        data-item-max-quantity={effectiveInventory}
+        data-initial-inventory={product.initialInventory}
+        data-allow-out-of-stock-purchases={String(getAllowOutOfStockPurchases(product))}
       >
         Add to cart
       </button>
@@ -96,17 +107,14 @@ const productNote = product.type === "original"
       </a>
     ) : null}
 
-    {product.status === "available" && !product.externalUrl && !snipcartEnabled && hasPrice ? (
+    {rendersSnipcartControl && !snipcartEnabled ? (
       <div class="product-option-card__disabled">
         Cart unavailable until Snipcart is configured.
       </div>
     ) : null}
 
     {product.status === "sold" || product.status === "unavailable" ? (
-      <div class="product-option-card__status">Unavailable</div>
-    ) : null}
-    {product.status === "coming-soon" ? (
-      <div class="product-option-card__status">Not on sale yet</div>
+      <div class="product-option-card__status">{soldOriginal ? "SOLD" : "Unavailable"}</div>
     ) : null}
   </div>
 </article>

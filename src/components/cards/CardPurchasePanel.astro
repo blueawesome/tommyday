@@ -1,0 +1,77 @@
+---
+import type { GreetingCard } from "../../data/cards";
+import {
+  CARD_BUNDLE_ALTERNATE_PRICE,
+  CARD_BUNDLE_CATEGORY,
+  formatCardPrice,
+  getCardOccasionLabel,
+  getSnipcartCardDescription,
+  getSnipcartCardName,
+} from "../../data/cardHelpers";
+import {
+  getAllowOutOfStockPurchases,
+  getEffectiveInventory,
+  shouldRenderSnipcartPurchaseControl,
+} from "../../data/productRules";
+
+const { card } = Astro.props as { card: GreetingCard };
+const snipcartEnabled = Boolean(import.meta.env.PUBLIC_SNIPCART_API_KEY);
+const price = formatCardPrice(card.price);
+const cardUrl = new URL(`/cards/${card.slug}/`, "https://tommyday.com").href;
+const effectiveInventory = getEffectiveInventory(card);
+const rendersSnipcartControl = shouldRenderSnipcartPurchaseControl(card);
+---
+
+<aside class="card-purchase-panel" aria-label={`${card.title} purchase options`}>
+  <p class="card-purchase-panel__eyebrow">Blank inside. Envelope included.</p>
+  <h2>Pick any 5 cards for $30.</h2>
+  <p>
+    This card is {price} on its own, or it can start a better-stocked drawer of cards for future you.
+  </p>
+
+  <div class="card-purchase-panel__actions">
+    <a class="card-primary-button" href={`/cards/build-a-pack/?start=${card.slug}`}>
+      Start a 5-pack with this card
+    </a>
+
+    {rendersSnipcartControl && snipcartEnabled ? (
+      <button
+        class="card-secondary-button snipcart-add-item"
+        data-item-id={card.id}
+        data-item-price={card.price}
+        data-item-url={cardUrl}
+        data-item-description={getSnipcartCardDescription(card)}
+        data-item-image={card.frontImage}
+        data-item-name={getSnipcartCardName(card)}
+        data-item-categories={CARD_BUNDLE_CATEGORY}
+        data-item-price-card5={CARD_BUNDLE_ALTERNATE_PRICE.toFixed(2)}
+        data-item-max-quantity={effectiveInventory}
+        data-initial-inventory={card.initialInventory}
+        data-allow-out-of-stock-purchases={String(getAllowOutOfStockPurchases(card))}
+      >
+        Add single card - {price}
+      </button>
+    ) : rendersSnipcartControl ? (
+      <div class="card-purchase-panel__disabled">
+        Cart unavailable until Snipcart is configured.
+      </div>
+    ) : (
+      <div class="card-purchase-panel__disabled">Not on sale yet.</div>
+    )}
+  </div>
+
+  <dl class="card-detail-list">
+    <div>
+      <dt>Good for</dt>
+      <dd>{card.occasions.slice(0, 4).map(getCardOccasionLabel).join(", ")}</dd>
+    </div>
+    <div>
+      <dt>Tone</dt>
+      <dd>{card.tones.join(", ")}</dd>
+    </div>
+    <div>
+      <dt>Format</dt>
+      <dd>{card.foldedSizeLabel}</dd>
+    </div>
+  </dl>
+</aside>

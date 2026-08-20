@@ -1,0 +1,92 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteShell from "../components/SiteShell.astro";
+import { formatPrice } from "../data/artworkHelpers";
+import { publishedArtworks } from "../data/artworks";
+
+const printListings = publishedArtworks
+  .map((artwork) => {
+    const printProducts = artwork.products.filter(
+      (product) =>
+        product.type === "print" &&
+        product.status === "available"
+    );
+    const availablePrintPrices = printProducts
+      .filter((product) => product.status === "available")
+      .map((product) => product.price)
+      .filter((price): price is number => typeof price === "number");
+    const lowestPrintPrice = availablePrintPrices.length
+      ? Math.min(...availablePrintPrices)
+      : null;
+
+    return { artwork, printProducts, lowestPrintPrice };
+  })
+  .filter(({ artwork, printProducts }) =>
+    artwork.showInShop !== false &&
+    printProducts.length > 0
+  );
+---
+
+<BaseLayout
+  title="Collage Prints | Tommy Day Art"
+  description="Shop small-batch collage prints by Tommy Day."
+  canonicalUrl="/prints/"
+>
+  <SiteShell>
+    <section class="shop-hero">
+      <div class="shop-hero__copy">
+        <h1 class="shop-hero__title">Prints</h1>
+        <p class="shop-hero__description">
+          Small-batch print editions of selected analog collages. More print inventory will appear here as it arrives.
+        </p>
+      </div>
+    </section>
+
+    {printListings.length ? (
+      <div class="shop-grid">
+        {printListings.map(({ artwork, printProducts, lowestPrintPrice }) => {
+          const hasAvailablePrint = lowestPrintPrice !== null;
+          const availableLabels = printProducts
+            .filter((product) => product.status === "available")
+            .map((product) => product.label);
+          const fallbackLabels = printProducts.map((product) => product.label);
+          const summaryLabels = availableLabels.length ? availableLabels : fallbackLabels;
+          const priceLabel = printProducts.length > 1
+            ? `From ${formatPrice(lowestPrintPrice)}`
+            : formatPrice(lowestPrintPrice);
+
+          return (
+          <a href={`/collage/${artwork.slug}/`} class="shop-card">
+            <div class="shop-card__image-wrap">
+              <img
+                src={artwork.thumbnail || artwork.image}
+                alt={artwork.alt}
+                class="shop-card__image"
+                loading="lazy"
+              />
+            </div>
+
+            <div class="shop-card__body">
+              <div class="shop-card__meta">
+                <span>{priceLabel}</span>
+              </div>
+              <h2 class="shop-card__title">{artwork.title}</h2>
+              <p class="shop-card__summary">{summaryLabels.join(" · ")}</p>
+              <span class="shop-card__cta">View piece</span>
+            </div>
+          </a>
+          );
+        })}
+      </div>
+    ) : (
+      <section class="card-pack-promo">
+        <div>
+          <p class="section-eyebrow">Prints</p>
+          <h2>No prints are available right now.</h2>
+          <p>The print shelf will update here when physical stock is ready.</p>
+        </div>
+        <a class="card-primary-button" href="/collage/">All Work</a>
+      </section>
+    )}
+  </SiteShell>
+</BaseLayout>

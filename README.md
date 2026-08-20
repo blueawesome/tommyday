@@ -25,6 +25,10 @@ Personal Astro site for Tommy Day. This is the home base for collage, music, vid
 - `npm run dev`: start the Astro dev server
 - `npm run build`: create the production build in `dist/`
 - `npm run preview`: serve the built site locally
+- `npm test`: run mocked inventory and product-sync tests
+- `npm run sync:snipcart-products`: manually register genuinely new products after deployment
+- `npm run sync:snipcart-stock`: reconcile live stock into the static availability overlay
+- `npm run set:snipcart-stock -- <id> <count> --confirm`: deliberately set one absolute stock count
 
 ## Notes
 
@@ -32,3 +36,5 @@ Personal Astro site for Tommy Day. This is the home base for collage, music, vid
 - The collage filter UI is sentence-based and only exposes medium-specific filtering when the user is browsing work for sale.
 - Music and Video content are data-driven so real links and embeds can be swapped in without changing page structure.
 - The blog is intentionally lightweight: markdown posts, flat archive, no CMS, no pagination.
+- Snipcart inventory and launch procedures are documented in
+  `docs/SNIPCART-PRODUCT-SYNC.md`.

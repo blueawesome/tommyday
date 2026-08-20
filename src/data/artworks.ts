@@ -11,7 +11,6 @@ export type ProductStatus =
   | "available"
   | "sold"
   | "sold-out"
-  | "coming-soon"
   | "unavailable";
 
 export type ShippingCategory =
@@ -28,7 +27,16 @@ export type ArtworkProduct = {
   status: ProductStatus;
   price?: number;
   compareAtPrice?: number;
+  /**
+   * Starting quantity used only when a genuinely new Snipcart product is registered.
+   */
+  initialInventory?: number;
+  /**
+   * Effective live quantity, normally supplied by productAvailability.json.
+   */
   inventory?: number;
+  trackInventory?: boolean;
+  allowOutOfStockPurchases?: boolean;
   limitedRun?: number;
   note?: string;
   shippingCategory?: ShippingCategory;
@@ -37,14 +45,6 @@ export type ArtworkProduct = {
   snipcartName?: string;
   snipcartDescription?: string;
   imageId?: string;
-  isPreorder?: boolean;
-  preorderCampaign?: string;
-  preorderClosesAt?: string;
-  estimatedShipDate?: string;
-  preorderBadge?: string;
-  preorderNote?: string;
-  preorderBonusEligible?: boolean;
-  preorderButtonLabel?: string;
 };
 
 export type ArtworkGalleryImage = {
@@ -134,11 +134,16 @@ const availabilityOverlay = productAvailability as ProductAvailabilityOverlay;
 
 function applyAvailabilityOverlay(product: ArtworkProduct): ArtworkProduct {
   const override = availabilityOverlay.products?.[product.id];
-  if (!override) return product;
+  const canUseInventoryStatus =
+    product.status === "available" ||
+    product.status === "sold-out" ||
+    product.status === "sold";
 
   return {
     ...product,
-    ...override,
+    inventory: override?.inventory ?? product.inventory ?? product.initialInventory,
+    ...(override?.note ? { note: override.note } : {}),
+    ...(override?.status && canUseInventoryStatus ? { status: override.status } : {}),
   };
 }
 
@@ -169,6 +174,20 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     price: 0,
     webFilename: "step-into-tomorrow-web.jpg",
     gridFilename: "step-into-tomorrow-grid.jpg",
+    additionalProducts: [
+      {
+        id: "step-into-tomorrow-print-8x10",
+        type: "print",
+        label: "8x10 Print",
+        status: "available",
+        price: 25,
+        initialInventory: 10,
+        trackInventory: true,
+        allowOutOfStockPurchases: false,
+        limitedRun: 10,
+        shippingCategory: "flat-print",
+      },
+    ],
   },
   {
     slug: "the-dinner-guest",
@@ -182,6 +201,20 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     price: 75,
     webFilename: "the-dinner-guest-web.jpg",
     gridFilename: "the-dinner-guest-grd.jpg",
+    additionalProducts: [
+      {
+        id: "the-dinner-guest-print-8x10",
+        type: "print",
+        label: "8x10 Print",
+        status: "available",
+        price: 25,
+        initialInventory: 10,
+        trackInventory: true,
+        allowOutOfStockPurchases: false,
+        limitedRun: 10,
+        shippingCategory: "flat-print",
+      },
+    ],
   },
   {
     slug: "such-a-wilderness",
@@ -207,7 +240,32 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     price: 150,
     webFilename: "somewhere-between-heaven-and-hell-web.jpg",
     gridFilename: "somewhere-between-heaven-and-hell-grid.jpg",
-
+    additionalProducts: [
+      {
+        id: "somewhere-between-heaven-and-hell-print-8x10",
+        type: "print",
+        label: "8x10 Print",
+        status: "available",
+        price: 25,
+        initialInventory: 10,
+        trackInventory: true,
+        allowOutOfStockPurchases: false,
+        limitedRun: 10,
+        shippingCategory: "flat-print",
+      },
+      {
+        id: "somewhere-between-heaven-and-hell-print-11x14",
+        type: "print",
+        label: "11x14 Print",
+        status: "available",
+        price: 40,
+        initialInventory: 7,
+        trackInventory: true,
+        allowOutOfStockPurchases: false,
+        limitedRun: 7,
+        shippingCategory: "flat-print",
+      },
+    ],
   },
   {
     slug: "pink-elephant",
@@ -234,15 +292,6 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     price: 15,
     webFilename: "lets-get-toasted-web.jpg",
     gridFilename: "lets-get-toasted-grid.jpg",
-    additionalProducts: [
-      {
-        id: "lets-get-toasted-card",
-        type: "card",
-        label: "A2 Greeting Card with Envelope",
-        status: "coming-soon",
-        price: 7,   
-      },
-    ],
   },
   {
     slug: "june-1985",
@@ -255,15 +304,6 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     price: 85,
     webFilename: "june_1985_web.jpg",
     gridFilename: "june_1985_web_grid.jpg",
-    additionalProducts: [
-      {
-        id: "june-1985-print",
-        type: "print",
-        label: "Print",
-        status: "coming-soon",
-        price: 7,
-      },
-    ],
   },
   {
     slug: "louis-vs-the-monster",
@@ -304,6 +344,20 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     price: 125,
     webFilename: "false-idol-web.jpg",
     gridFilename: "false-idol-grid.jpg",
+    additionalProducts: [
+      {
+        id: "false-idol-print-8x10",
+        type: "print",
+        label: "8x10 Print",
+        status: "available",
+        price: 25,
+        initialInventory: 10,
+        trackInventory: true,
+        allowOutOfStockPurchases: false,
+        limitedRun: 10,
+        shippingCategory: "flat-print",
+      },
+    ],
   },
   {
     slug: "dreams-are-made-of-magic",
@@ -341,15 +395,6 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     webFilename: "dog-smoking-web.jpg",
     gridFilename: "dog-smoking-grid.jpg",
     featured: false,
-    additionalProducts: [
-      {
-        id: "dog-smoking-card",
-        type: "card",
-        label: "A2 Greeting Card with Envelope",
-        status: "coming-soon",
-        price: 7,
-      },
-    ],
   },
   {
     slug: "catch",
@@ -362,6 +407,20 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     price: 125,
     webFilename: "catch-web.jpg",
     gridFilename: "catch-grid.jpg",
+    additionalProducts: [
+      {
+        id: "catch-print-8x10",
+        type: "print",
+        label: "8x10 Print",
+        status: "available",
+        price: 25,
+        initialInventory: 10,
+        trackInventory: true,
+        allowOutOfStockPurchases: false,
+        limitedRun: 10,
+        shippingCategory: "flat-print",
+      },
+    ],
   },
   {
     slug: "cant-nobody-hide-from-god",
@@ -375,15 +434,6 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     price: 15,
     webFilename: "cant-nobody-hide-from-god-web.jpg",
     gridFilename: "cant-nobody-hide-from-god-grid.jpg",
-    additionalProducts: [
-      {
-        id: "cant-nobody-hide-from-god-card",
-        type: "card",
-        label: "A2 Greeting Card with Envelope",
-        status: "coming-soon",
-        price: 7,
-      },
-    ],
   },
   {
     slug: "camera-man",
@@ -409,6 +459,20 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     price: 125,
     webFilename: "burlington-dream-factory-web.jpg",
     gridFilename: "burlington-dream-factory-grid.jpg",
+    additionalProducts: [
+      {
+        id: "burlington-dream-factory-print-8x10",
+        type: "print",
+        label: "8x10 Print",
+        status: "available",
+        price: 25,
+        initialInventory: 10,
+        trackInventory: true,
+        allowOutOfStockPurchases: false,
+        limitedRun: 10,
+        shippingCategory: "flat-print",
+      },
+    ],
   },
   {
     slug: "tread-carefully",
@@ -423,16 +487,6 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     webFilename: "tread-carefully-web.jpg",
     gridFilename: "tread-carefully-grid.jpg",
     series: artworkSeries.minimalCutStudy,
-    additionalProducts: [
-      {
-        id: "tread-carefully-print",
-        type: "print",
-        label: "Print",
-        status: "coming-soon",
-        note: "Print option may be available for preorder.",
-        shippingCategory: "flat-print",
-      },
-    ],
   },
   {
     slug: "calm-lake",
@@ -447,13 +501,17 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     webFilename: "calm-lake-web.jpg",
     gridFilename: "calm-lake-grid.jpg",
     series: artworkSeries.minimalCutStudy,
-      additionalProducts: [
+    additionalProducts: [
       {
-        id: "calm-lake-print",
+        id: "calm-lake-print-8x10",
         type: "print",
-        label: "Print",
-        status: "coming-soon",
-        note: "Print coming soon!",
+        label: "8x10 Print",
+        status: "available",
+        price: 25,
+        initialInventory: 10,
+        trackInventory: true,
+        allowOutOfStockPurchases: false,
+        limitedRun: 10,
         shippingCategory: "flat-print",
       },
     ],
@@ -497,6 +555,32 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     webFilename: "hang-in-there-web.jpg",
     gridFilename: "hang-in-there-grid.jpg",
     featured: false,
+    additionalProducts: [
+      {
+        id: "hang-in-there-print-8x10",
+        type: "print",
+        label: "8x10 Print",
+        status: "available",
+        price: 25,
+        initialInventory: 10,
+        trackInventory: true,
+        allowOutOfStockPurchases: false,
+        limitedRun: 10,
+        shippingCategory: "flat-print",
+      },
+      {
+        id: "hang-in-there-print-11x14",
+        type: "print",
+        label: "11x14 Print",
+        status: "available",
+        price: 40,
+        initialInventory: 7,
+        trackInventory: true,
+        allowOutOfStockPurchases: false,
+        limitedRun: 7,
+        shippingCategory: "flat-print",
+      },
+    ],
   },
   {
     slug: "the-descent",
@@ -511,6 +595,20 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     gridFilename: "the-descent-grid.jpg",
     series: artworkSeries.minimalCutStudy,
     featured: false,
+    additionalProducts: [
+      {
+        id: "the-descent-print-8x10",
+        type: "print",
+        label: "8x10 Print",
+        status: "available",
+        price: 25,
+        initialInventory: 10,
+        trackInventory: true,
+        allowOutOfStockPurchases: false,
+        limitedRun: 10,
+        shippingCategory: "flat-print",
+      },
+    ],
   },
   {
     slug: "eyes-of-the-tiger",
@@ -519,11 +617,12 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     year: "2026",
     dimensions: "9x12",
     aspect: "portrait",
-    status: "available",
+    status: "unavailable",
     price: 75,
     webFilename: "eyes-of-the-tiger-web.jpg",
     gridFilename: "eyes-of-the-tiger-grid.jpg",
     series: artworkSeries.minimalCutStudy,
+    showInShop: false,
     featured: false,
   },
   {
@@ -634,6 +733,84 @@ const importedArtworkRows: ImportedArtworkRow[] = [
     gridFilename: "golden-age-gal-grid.jpg",
     featured: true,
     series: artworkSeries.IRLsuperHeroes,
+    additionalProducts: [
+      {
+        id: "golden-age-gal-print-8x10",
+        type: "print",
+        label: "8x10 Print",
+        status: "available",
+        price: 25,
+        initialInventory: 10,
+        trackInventory: true,
+        allowOutOfStockPurchases: false,
+        limitedRun: 10,
+        shippingCategory: "flat-print",
+      },
+      {
+        id: "golden-age-gal-print-11x14",
+        type: "print",
+        label: "11x14 Print",
+        status: "available",
+        price: 40,
+        initialInventory: 7,
+        trackInventory: true,
+        allowOutOfStockPurchases: false,
+        limitedRun: 7,
+        shippingCategory: "flat-print",
+      },
+    ],
+  },
+  {
+    slug: "ww3",
+    title: "WW3",
+    catalogId: "TD-035",
+    year: "2026",
+    dimensions: "9x12",
+    aspect: "landscape",
+    status: "available",
+    price: 125,
+    webFilename: "ww3-web.jpg",
+    gridFilename: "ww3-grid.jpg",
+    featured: true,
+    additionalProducts: [
+      {
+        id: "ww3-print-8x10",
+        type: "print",
+        label: "8x10 Print",
+        status: "available",
+        price: 25,
+        initialInventory: 10,
+        trackInventory: true,
+        allowOutOfStockPurchases: false,
+        limitedRun: 10,
+        shippingCategory: "flat-print",
+      },
+      {
+        id: "ww3-print-11x14",
+        type: "print",
+        label: "11x14 Print",
+        status: "available",
+        price: 40,
+        initialInventory: 7,
+        trackInventory: true,
+        allowOutOfStockPurchases: false,
+        limitedRun: 7,
+        shippingCategory: "flat-print",
+      },
+    ],
+  },
+  {
+    slug: "mothman",
+    title: "Mothman",
+    catalogId: "TD-036",
+    year: "2026",
+    dimensions: "9x12",
+    aspect: "portrait",
+    status: "available",
+    price: 100,
+    webFilename: "mothman-web.jpg",
+    gridFilename: "mothman-grid.jpg",
+    featured: true,
   },
 ];
 
@@ -647,7 +824,9 @@ function getOriginalProducts(row: ImportedArtworkRow): ArtworkProduct[] {
       label: "Original",
       status: row.status,
       price: row.price,
-      inventory: row.status === "available" ? 1 : 0,
+      initialInventory: row.status === "available" ? 1 : undefined,
+      trackInventory: true,
+      allowOutOfStockPurchases: false,
       shippingCategory: "original",
     },
   ];

@@ -40,10 +40,17 @@ jobs:
             printf '%s' "$DISPATCH_PAYLOAD" > "$RUNNER_TEMP/snipcart-order.json"
           fi
 
+      - name: Build product catalog
+        env:
+          PUBLIC_SNIPCART_API_KEY: ${{ vars.PUBLIC_SNIPCART_API_KEY }}
+        run: npm run build
+
       - name: Apply product availability update
         run: npm run apply:snipcart-order -- --payload "$RUNNER_TEMP/snipcart-order.json"
 
-      - name: Verify build
+      - name: Verify updated availability build
+        env:
+          PUBLIC_SNIPCART_API_KEY: ${{ vars.PUBLIC_SNIPCART_API_KEY }}
         run: npm run build
 
       - name: Commit availability overlay

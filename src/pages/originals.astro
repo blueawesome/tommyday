@@ -1,0 +1,45 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteShell from "../components/SiteShell.astro";
+import ShopCard from "../components/ShopCard.astro";
+import { publishedArtworks } from "../data/artworks";
+
+const originalArtworks = publishedArtworks.filter((artwork) =>
+  artwork.showInShop !== false &&
+  artwork.products.some(
+    (product) => product.type === "original" && product.status === "available"
+  )
+);
+---
+
+<BaseLayout
+  title="Original Collage Artwork | Tommy Day Art"
+  description="Shop available one-of-one hand-cut analog collage originals by Tommy Day."
+  canonicalUrl="/originals/"
+>
+  <SiteShell>
+    <section class="shop-hero">
+      <div class="shop-hero__copy">
+        <h1 class="shop-hero__title">Originals</h1>
+        <p class="shop-hero__description">
+          One-of-one hand-cut analog collage pieces. When an original sells, its artwork page can still connect to prints or greeting cards when those formats exist.
+        </p>
+      </div>
+    </section>
+
+    {originalArtworks.length ? (
+      <div class="shop-grid">
+        {originalArtworks.map((artwork) => <ShopCard artwork={artwork} mode="original" />)}
+      </div>
+    ) : (
+      <section class="card-pack-promo">
+        <div>
+          <p class="section-eyebrow">Originals</p>
+          <h2>No originals are available right now.</h2>
+          <p>Check back soon, or browse the full collage archive.</p>
+        </div>
+        <a class="card-primary-button" href="/collage/">All Work</a>
+      </section>
+    )}
+  </SiteShell>
+</BaseLayout>

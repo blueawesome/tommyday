@@ -1,0 +1,18 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteShell from "../../components/SiteShell.astro";
+import CardBundleBuilder from "../../components/cards/CardBundleBuilder.astro";
+import { getBundleEligibleCards, sortCards } from "../../data/cardHelpers";
+
+const cards = sortCards(getBundleEligibleCards());
+---
+
+<BaseLayout
+  title="Build Your Own Greeting Card Pack | Tommy Day Art"
+  description="Pick any 5 Tommy Day Art greeting cards for $30."
+  canonicalUrl="/cards/build-a-pack/"
+>
+  <SiteShell>
+    <CardBundleBuilder cards={cards} />
+  </SiteShell>
+</BaseLayout>

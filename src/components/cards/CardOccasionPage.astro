@@ -1,0 +1,71 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteShell from "../SiteShell.astro";
+import CardGrid from "./CardGrid.astro";
+import CardOccasionNav from "./CardOccasionNav.astro";
+import CardPackPromo from "./CardPackPromo.astro";
+import { cardOccasions, getSortedCardTones, type CardOccasion } from "../../data/cardTaxonomies";
+import { getCardsByOccasion, sortCards } from "../../data/cardHelpers";
+
+const { occasion } = Astro.props as { occasion: CardOccasion };
+const term = cardOccasions[occasion];
+const cards = sortCards(getCardsByOccasion(occasion));
+const tones = getSortedCardTones();
+
+if (!term) {
+  throw new Error(`Unknown card occasion: ${occasion}`);
+}
+---
+
+<BaseLayout
+  title={term.seoTitle || `${term.label} Cards | Tommy Day Art`}
+  description={term.seoDescription || term.heroCopy || `Shop ${term.label.toLowerCase()} greeting cards by Tommy Day.`}
+  canonicalUrl={`/cards/${term.slug}/`}
+>
+  <SiteShell>
+    <section class="cards-hero cards-hero--compact">
+      <div>
+        <p class="section-eyebrow">Greeting cards</p>
+        <h1>{term.heroHeading || `${term.label} cards`}</h1>
+        {term.heroCopy ? <p>{term.heroCopy}</p> : null}
+      </div>
+      <a class="card-primary-button" href={`/cards/build-a-pack/?occasion=${term.slug}`}>
+        Build a {term.label.toLowerCase()} pack
+      </a>
+    </section>
+
+    <CardOccasionNav activeOccasion={term.slug} />
+    <CardPackPromo />
+
+    <section class="cards-section" aria-labelledby={`${term.slug}-cards`}>
+      <div class="cards-section__header">
+        <p class="section-eyebrow">{cards.length} cards</p>
+        <h2 id={`${term.slug}-cards`}>Browse {term.label.toLowerCase()} cards</h2>
+      </div>
+
+      <div x-data="cardFilters()">
+        <div class="cards-filter-panel">
+          <label class="cards-filter-panel__search">
+            <span class="sr-only">Search cards</span>
+            <input type="search" x-model="search" placeholder="Search cards" />
+          </label>
+
+          <select x-model="tone" aria-label="Filter by tone">
+            <option value="all">All tones</option>
+            {tones.map((tone) => <option value={tone.slug}>{tone.label}</option>)}
+          </select>
+
+          <select x-model="sort" aria-label="Sort cards">
+            <option value="featured">Featured</option>
+            <option value="title">Title</option>
+            <option value="price-low">Price</option>
+          </select>
+
+          <p aria-live="polite" x-text="resultLabel()"></p>
+        </div>
+
+        <CardGrid cards={cards} />
+      </div>
+    </section>
+  </SiteShell>
+</BaseLayout>
