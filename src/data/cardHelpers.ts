@@ -85,6 +85,33 @@ export function getCardOccasionLabel(occasion: CardOccasion | string) {
   return cardOccasions[occasion as CardOccasion]?.label || occasion;
 }
 
+export function getVisibleCardOccasions(card: GreetingCard, limit = 2) {
+  const occasions = [
+    card.primaryOccasion,
+    ...card.occasions.filter((occasion) => occasion !== card.primaryOccasion),
+  ].filter(
+    (occasion): occasion is CardOccasion =>
+      Boolean(occasion) && occasion !== "blank"
+  );
+
+  return Array.from(new Set(occasions)).slice(0, limit);
+}
+
+export function getCardInsideLabel(card: GreetingCard) {
+  if (card.inside === "blank") return "Blank inside";
+
+  return card.insideMessage ? "Printed message inside" : "Message inside";
+}
+
+export function getCardPhysicalSpecLine(card: GreetingCard) {
+  return [
+    getCardInsideLabel(card),
+    `${card.size} size`,
+    card.envelope,
+    "Printed in the USA",
+  ].join(" · ");
+}
+
 export function getCardProductJson(card: GreetingCard) {
   return {
     id: card.id,

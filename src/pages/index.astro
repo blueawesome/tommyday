@@ -26,24 +26,71 @@ const featured = featuredArtworks.slice(0, 9);
       </div>
 
       <div class="home-brand-hero__copy">
-        <p class="home-brand-hero__line">Hand-Cut Analog Collage</p>
+        <h1 class="home-brand-hero__line">Hand-Cut Analog Collage</h1>
         <p class="home-brand-hero__text">
           I'm Tommy, a web developer by day and collage goblin by night. I cut and paste by the glow of an old CRT to create analog collages and strange paper goods.
         </p>
       </div>
 
       <div class="home-brand-hero__actions">
-        <a href="/shop/" class="hero-link">Originals for Sale</a>
-        <a href="/vote/" class="hero-link hero-link--primary">Help me pick what to print!</a>
+        <a href="/prints/" class="hero-link hero-link--primary">Shop Prints</a>
+        <a href="/cards/build-a-pack/" class="hero-link">Build a Card Pack</a>
+        <a href="/originals/" class="hero-link">Browse Originals</a>
+      </div>
+    </section>
+
+    <section class="home-storefront" aria-labelledby="home-storefront-heading">
+      <div class="home-storefront__header">
+        <p class="section-eyebrow">Shop</p>
+        <h2 id="home-storefront-heading">Originals, prints, and cards</h2>
+        <p>Three ways to buy the work, depending on how much wall, mailbox, or danger you are inviting into your life.</p>
+      </div>
+
+      <div class="home-storefront__grid">
+        <article class="home-storefront-card paper-card">
+          <a class="home-storefront-card__image-link" href="/originals/" aria-label="Browse originals">
+            <img src="/art/collage/ww3-grid.jpg" alt="WW3 analog collage" loading="lazy" />
+          </a>
+          <div class="home-storefront-card__body">
+            <h3>Originals</h3>
+            <p>One-of-one hand-cut analog collages. Once they're gone, they're gone.</p>
+            <a href="/originals/" class="hero-link">Browse Originals</a>
+          </div>
+        </article>
+
+        <article class="home-storefront-card paper-card">
+          <a class="home-storefront-card__image-link" href="/prints/" aria-label="Shop prints">
+            <img src="/art/collage/golden-age-gal-grid.jpg" alt="Golden Age Gal analog collage" loading="lazy" />
+          </a>
+          <div class="home-storefront-card__body">
+            <h3>Prints</h3>
+            <p>Signed small-batch reproductions of selected collages.</p>
+            <a href="/prints/" class="hero-link">Shop Prints</a>
+          </div>
+        </article>
+
+        <article class="home-storefront-card paper-card home-storefront-card--cards">
+          <a class="home-storefront-card__image-link" href="/cards/build-a-pack/" aria-label="Build a greeting card pack">
+            <img src="/art/collage/dogbday-grid.jpg" alt="Happy Birthday Dog greeting card artwork" loading="lazy" />
+          </a>
+          <div class="home-storefront-card__body">
+            <h3>Greeting Cards</h3>
+            <p>Blank-inside collage cards with envelopes included. $7 each, or $6 each when you buy 5 or more.</p>
+            <div class="home-storefront-card__actions">
+              <a href="/cards/build-a-pack/" class="hero-link">Build a Card Pack</a>
+              <a href="/cards/" class="section-link">Browse all cards</a>
+            </div>
+          </div>
+        </article>
       </div>
     </section>
 
     <section class="home-featured" aria-labelledby="home-featured-heading">
       <div class="home-featured__header">
         <p class="section-eyebrow">Featured collage</p>
-        <h1 id="home-featured-heading" class="home-featured__title">Recent Cuts</h1>
+        <h2 id="home-featured-heading" class="home-featured__title">Recent Cuts</h2>
         <p>
-          Here's a sample of my recent work. Browse the gallery or the shop to see everything, including available originals and prints.
+          A few recent collages. Open any piece to see the original artwork and any prints or cards currently available.
         </p>
         <a href="/collage/" class="section-link">View full collage gallery</a>
       </div>
