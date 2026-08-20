@@ -546,6 +546,101 @@ main > section + section {
   box-shadow: 5px 5px 0 rgba(17, 16, 13, 0.9);
 }
 
+.home-storefront {
+  display: grid;
+  gap: 1.1rem;
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+}
+
+.home-storefront__header {
+  display: grid;
+  gap: 0.4rem;
+  max-width: 47rem;
+}
+
+.home-storefront__header h2 {
+  margin: 0;
+  font-family: 'Special Elite', 'Space Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: clamp(1.65rem, 3.4vw, 2.45rem);
+  line-height: 1.03;
+  color: var(--ink);
+}
+
+.home-storefront__header p:not(.section-eyebrow) {
+  margin: 0;
+  color: #3d392f;
+  line-height: 1.38;
+}
+
+.home-storefront__grid {
+  display: grid;
+  gap: 1.1rem;
+}
+
+.home-storefront-card {
+  display: grid;
+  gap: 0;
+  overflow: hidden;
+}
+
+.home-storefront-card__image-link {
+  display: block;
+  padding: 0.75rem;
+  color: inherit;
+}
+
+.home-storefront-card__image-link:focus-visible {
+  outline: 3px solid var(--riso-pink);
+  outline-offset: -0.3rem;
+}
+
+.home-storefront-card__image-link img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border: 2px solid rgba(17, 16, 13, 0.72);
+  background: rgba(247, 244, 237, 0.9);
+}
+
+.home-storefront-card__body {
+  display: grid;
+  gap: 0.65rem;
+  align-content: start;
+  padding: 0 0.9rem 1rem;
+}
+
+.home-storefront-card__body h3 {
+  margin: 0;
+  font-family: 'Special Elite', 'Space Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: clamp(1.35rem, 2.5vw, 1.75rem);
+  line-height: 1.02;
+  color: var(--ink);
+}
+
+.home-storefront-card__body p {
+  margin: 0;
+  color: #3d392f;
+  line-height: 1.35;
+}
+
+.home-storefront-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 0.9rem;
+  align-items: center;
+}
+
+.home-storefront-card__actions .section-link {
+  font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--ink);
+  text-decoration-color: var(--riso-pink);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.18rem;
+}
+
 .home-notes {
   display: grid;
   gap: 1.1rem;
@@ -1270,6 +1365,14 @@ a.group { margin-bottom: 2rem; }
     grid-template-columns: minmax(0, 1.08fr) minmax(20rem, 0.92fr);
   }
 
+  .home-storefront__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .home-storefront-card--cards {
+    transform: rotate(-0.45deg);
+  }
+
   .home-featured__grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -1336,6 +1439,19 @@ a.group { margin-bottom: 2rem; }
 
   .home-stockist {
     grid-template-columns: minmax(4.75rem, 6.25rem) minmax(0, 1fr);
+  }
+
+  .home-storefront-card {
+    grid-template-columns: minmax(7.5rem, 38%) minmax(0, 1fr);
+    align-items: center;
+  }
+
+  .home-storefront-card__image-link img {
+    aspect-ratio: 1;
+  }
+
+  .home-storefront-card__body {
+    padding: 0.9rem 0.9rem 0.9rem 0;
   }
 
   .newsletter-form {
@@ -1507,9 +1623,16 @@ a.group { margin-bottom: 2rem; }
 
 .page-intro-copy a {
   color: var(--ink);
+  font-weight: 700;
+  text-decoration-line: underline;
   text-decoration-color: var(--riso-pink);
-  text-decoration-thickness: 2px;
+  text-decoration-thickness: 2.5px;
   text-underline-offset: 0.18rem;
+}
+
+.page-intro-copy a:hover,
+.page-intro-copy a:focus-visible {
+  background: rgba(255, 241, 47, 0.45);
 }
 
 .thank-you-page__actions {
@@ -3267,6 +3390,7 @@ a.group { margin-bottom: 2rem; }
 }
 
 .card-secondary-button,
+.card-primary-button--quiet,
 .card-builder__small-button,
 .card-builder__segmented,
 .cards-filter-panel button {
@@ -3275,6 +3399,8 @@ a.group { margin-bottom: 2rem; }
 
 .card-primary-button:hover,
 .card-primary-button:focus-visible,
+.card-primary-button--quiet:hover,
+.card-primary-button--quiet:focus-visible,
 .card-secondary-button:hover,
 .card-secondary-button:focus-visible,
 .card-tile__button:hover,
@@ -3549,10 +3675,11 @@ a.group { margin-bottom: 2rem; }
   background: rgb(250, 250, 249);
 }
 
-.card-purchase-panel__eyebrow {
+.card-purchase-panel .card-purchase-panel__eyebrow {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: clamp(0.58rem, 0.75vw, 0.68rem);
   font-weight: 700;
+  line-height: 1.35;
   text-transform: uppercase;
 }
 
@@ -4050,17 +4177,31 @@ a.group { margin-bottom: 2rem; }
   margin-bottom: clamp(0.85rem, 2vw, 1.25rem);
 }
 
+.card-product-hero__copy > h1 + .card-chip-list {
+  margin-top: clamp(0.25rem, 1vw, 0.55rem);
+}
+
 .card-product-hero__description {
   margin: 0 0 clamp(1.15rem, 2.5vw, 1.65rem);
 }
 
 .card-product-hero__copy > .card-chip-list {
   gap: 0.55rem 0.75rem;
-  margin: 0 0 clamp(2rem, 4vw, 3rem);
+  margin: 0 0 clamp(1.45rem, 3vw, 2rem);
 }
 
 .card-product-hero__copy > .card-purchase-panel {
   margin-top: 0;
+}
+
+.card-product-hero__copy > .card-purchase-panel .card-purchase-panel__eyebrow {
+  font-size: clamp(0.54rem, 0.7vw, 0.64rem);
+}
+
+@media (min-width: 900px) {
+  .card-product-hero__copy > .card-purchase-panel .card-purchase-panel__eyebrow {
+    white-space: nowrap;
+  }
 }
 
 .card-detail-list div {
