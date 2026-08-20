@@ -7,7 +7,6 @@ const site = "https://tommyday.com";
 
 const staticRoutes = [
   "/",
-  "/collage/",
   "/originals/",
   "/prints/",
   "/shop/",
