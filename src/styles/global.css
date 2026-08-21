@@ -624,6 +624,11 @@ main > section + section {
   line-height: 1.35;
 }
 
+.home-storefront-card__body .hero-link {
+  width: fit-content;
+  justify-self: start;
+}
+
 .home-storefront-card__actions {
   display: flex;
   flex-wrap: wrap;
