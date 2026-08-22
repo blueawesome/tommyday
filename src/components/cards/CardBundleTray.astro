@@ -6,5 +6,20 @@
     <p class="card-bundle-tray__label" x-text="`${count()} card${count() === 1 ? '' : 's'} selected`"></p>
     <p class="card-bundle-tray__summary">Build toward 5 cards for $30.</p>
   </div>
-  <a class="card-bundle-tray__button" href="/cards/build-a-pack/">Continue</a>
+  <button
+    type="button"
+    class="card-bundle-tray__button"
+    x-show="isReadyOnBuilderPage()"
+    @click="submitPack()"
+    x-cloak
+  >
+    Add to cart
+  </button>
+  <a
+    class="card-bundle-tray__button"
+    href="/cards/build-a-pack/"
+    x-show="!isReadyOnBuilderPage()"
+  >
+    Continue
+  </a>
 </aside>

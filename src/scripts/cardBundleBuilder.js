@@ -47,6 +47,18 @@ document.addEventListener("alpine:init", () => {
     count() {
       return this.selectedCards.length;
     },
+
+    isBuilderPage() {
+      return window.location.pathname.replace(/\/+$/, "") === "/cards/build-a-pack";
+    },
+
+    isReadyOnBuilderPage() {
+      return this.isBuilderPage() && this.count() >= PACK_SIZE;
+    },
+
+    submitPack() {
+      window.dispatchEvent(new CustomEvent("td-card-pack-submit"));
+    },
   }));
 
   Alpine.data("cardBundleBuilder", ({ cards = [], prices = {} } = {}) => ({
@@ -72,6 +84,7 @@ document.addEventListener("alpine:init", () => {
       if (start) this.consumeStartParam(params, start);
       this.trimToPackSize();
       this.persist();
+      window.addEventListener("td-card-pack-submit", () => this.addPackToCart());
     },
 
     restore() {
