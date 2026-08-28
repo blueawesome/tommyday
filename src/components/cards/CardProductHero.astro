@@ -5,11 +5,130 @@ import CardPurchasePanel from "./CardPurchasePanel.astro";
 
 const { card } = Astro.props as { card: GreetingCard };
 const visibleOccasions = getVisibleCardOccasions(card);
+const galleryImages = [
+  {
+    id: "front",
+    src: card.frontImage,
+    alt: card.alt,
+    label: "Artwork",
+  },
+  ...(card.lifestyleImages || []).map((src, index) => ({
+    id: `product-${index + 1}`,
+    src,
+    alt: `${card.title} greeting card product photo ${index + 1}`,
+    label: `Photo ${index + 1}`,
+  })),
+  ...(card.backImage
+    ? [{
+        id: "back",
+        src: card.backImage,
+        alt: `${card.title} greeting card back`,
+        label: "Card back",
+      }]
+    : []),
+];
+const galleryState = `{
+  images: ${JSON.stringify(galleryImages)},
+  activeIndex: 0,
+  get activeImage() {
+    return this.images[this.activeIndex];
+  },
+  selectImage(image) {
+    const index = this.images.findIndex((item) => item.id === image?.id);
+    if (index >= 0) this.activeIndex = index;
+  },
+  previousImage() {
+    this.activeIndex = (this.activeIndex - 1 + this.images.length) % this.images.length;
+  },
+  nextImage() {
+    this.activeIndex = (this.activeIndex + 1) % this.images.length;
+  }
+}`;
 ---
 
 <section class="card-product-hero">
-  <div class="card-product-hero__media">
-    <img src={card.frontImage} alt={card.alt} />
+  <div class="card-product-gallery" x-data={galleryState}>
+    <button
+      type="button"
+      class="card-product-hero__media"
+      aria-haspopup="dialog"
+      x-bind:aria-label="`View ${activeImage.alt} larger`"
+      @click="$refs.cardLightbox.showModal()"
+    >
+      <img
+        src={card.frontImage}
+        alt={card.alt}
+        x-bind:src="activeImage.src"
+        x-bind:alt="activeImage.alt"
+      />
+    </button>
+
+    {galleryImages.length > 1 ? (
+      <div class="detail-gallery-strip" aria-label={`${card.title} greeting card image gallery`}>
+        {galleryImages.map((image) => (
+          <button
+            type="button"
+            class="detail-gallery-thumb"
+            x-bind:class={`activeImage.id === ${JSON.stringify(image.id)} ? 'is-active' : ''`}
+            @click={`selectImage(${JSON.stringify(image)})`}
+            aria-label={`Show ${image.label.toLowerCase()}`}
+          >
+            <img src={image.src} alt="" loading="lazy" />
+          </button>
+        ))}
+      </div>
+    ) : null}
+
+    <dialog
+      class="image-lightbox card-image-lightbox"
+      aria-label={`${card.title} greeting card image viewer`}
+      x-ref="cardLightbox"
+      @click.self="$refs.cardLightbox.close()"
+      @keydown.escape.prevent="$refs.cardLightbox.close()"
+      @keydown.left.prevent="previousImage()"
+      @keydown.right.prevent="nextImage()"
+    >
+      <div class="image-lightbox__panel">
+        <button
+          class="image-lightbox__close"
+          type="button"
+          @click="$refs.cardLightbox.close()"
+        >
+          Close
+        </button>
+
+        <figure class="image-lightbox__figure">
+          <img
+            src={card.frontImage}
+            alt={card.alt}
+            class="image-lightbox__image"
+            x-bind:src="activeImage.src"
+            x-bind:alt="activeImage.alt"
+          />
+        </figure>
+
+        {galleryImages.length > 1 ? (
+          <>
+            <button
+              type="button"
+              class="card-image-lightbox__control card-image-lightbox__control--previous"
+              aria-label="Previous image"
+              @click="previousImage()"
+            >
+              <span aria-hidden="true">&larr;</span>
+            </button>
+            <button
+              type="button"
+              class="card-image-lightbox__control card-image-lightbox__control--next"
+              aria-label="Next image"
+              @click="nextImage()"
+            >
+              <span aria-hidden="true">&rarr;</span>
+            </button>
+          </>
+        ) : null}
+      </div>
+    </dialog>
   </div>
 
   <div class="card-product-hero__copy">

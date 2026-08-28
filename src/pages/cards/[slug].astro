@@ -20,11 +20,12 @@ if (!card) {
 }
 
 const relatedCards = getRelatedCards(card);
+const productImages = [card.frontImage, ...(card.lifestyleImages || []), ...(card.backImage ? [card.backImage] : [])];
 const productSchema = {
   "@context": "https://schema.org",
   "@type": "Product",
   name: card.title,
-  image: new URL(card.frontImage, "https://tommyday.com").href,
+  image: productImages.map((image) => new URL(image, "https://tommyday.com").href),
   description: card.seoDescription || card.productDescription,
   sku: card.sku,
   brand: {
