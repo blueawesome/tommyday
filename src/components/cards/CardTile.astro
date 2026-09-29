@@ -1,8 +1,6 @@
 ---
 import type { GreetingCard } from "../../data/cards";
 import {
-  CARD_BUNDLE_ALTERNATE_PRICE,
-  CARD_BUNDLE_CATEGORY,
   formatCardPrice,
   getCardOccasionLabel,
   getCardProductJson,
@@ -106,29 +104,27 @@ const rendersSnipcartControl = shouldRenderSnipcartPurchaseControl(card);
     ) : (
       <>
         <div class="card-tile__actions">
-          <a class="card-tile__button" href={`/cards/build-a-pack/?start=${card.slug}`}>Add to pack</a>
           {rendersSnipcartControl && snipcartEnabled ? (
             <button
-              class="card-tile__single-button snipcart-add-item"
+              class="card-tile__button card-tile__single-button snipcart-add-item"
               data-item-id={card.id}
               data-item-price={card.price}
               data-item-url={cardUrl}
               data-item-description={getSnipcartCardDescription(card)}
               data-item-image={card.frontImage}
               data-item-name={getSnipcartCardName(card)}
-              data-item-categories={CARD_BUNDLE_CATEGORY}
-              data-item-price-card5={CARD_BUNDLE_ALTERNATE_PRICE.toFixed(2)}
               data-item-max-quantity={effectiveInventory}
               data-initial-inventory={card.initialInventory}
               data-allow-out-of-stock-purchases={String(getAllowOutOfStockPurchases(card))}
             >
-              Buy single - {price}
+              Add to cart - {price}
             </button>
           ) : (
             <span class="card-tile__unavailable">
               {rendersSnipcartControl ? "Cart unavailable" : "Unavailable"}
             </span>
           )}
+          <a class="card-tile__button" href={`/cards/build-a-pack/?start=${card.slug}`}>Build a stack</a>
         </div>
         {subtleOccasionLabels.length ? (
           <p class="card-tile__taxonomy">{subtleOccasionLabels.join(" / ")}</p>

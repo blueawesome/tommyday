@@ -4498,27 +4498,18 @@ a.group { margin-bottom: 2rem; }
 }
 
 .card-tile__single-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 0;
-  padding: 0.5rem 0;
-  background: transparent;
-  box-shadow: none;
+  border: 2px solid var(--ink);
+  padding: 0.5rem 0.82rem;
+  background: var(--riso-pink);
+  box-shadow: 4px 4px 0 var(--ink);
   color: var(--ink);
-  font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 0.74rem;
-  font-weight: 700;
-  text-decoration: underline;
-  text-decoration-color: var(--riso-pink);
-  text-decoration-thickness: 2px;
-  text-underline-offset: 0.18rem;
-  text-transform: none;
+  text-decoration: none;
 }
 
 .card-tile__single-button:hover,
 .card-tile__single-button:focus-visible {
-  color: rgba(17, 16, 13, 0.72);
+  background: var(--riso-yellow);
+  color: var(--ink);
 }
 
 .card-tile:not(.card-tile--bundle) .card-tile__pack-button {
@@ -4581,14 +4572,14 @@ a.group { margin-bottom: 2rem; }
   color: #3d392f;
 }
 
-.card-builder__discount-note,
+.card-builder__price-note,
 .card-builder__error {
   margin: 0.75rem 0 0;
   font-size: 0.88rem;
   line-height: 1.35;
 }
 
-.card-builder__discount-note {
+.card-builder__price-note {
   color: #3d392f;
 }
 

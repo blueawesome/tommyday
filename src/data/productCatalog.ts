@@ -3,13 +3,7 @@ import {
   getSnipcartName,
 } from "./artworkHelpers";
 import { artworks } from "./artworks";
-import {
-  CARD_BUNDLE_ALTERNATE_PRICE,
-  CARD_BUNDLE_ALTERNATE_PRICE_LIST,
-  CARD_BUNDLE_CATEGORY,
-  getSnipcartCardDescription,
-  getSnipcartCardName,
-} from "./cardHelpers";
+import { getSnipcartCardDescription, getSnipcartCardName } from "./cardHelpers";
 import { greetingCards } from "./cards";
 import {
   getAllowOutOfStockPurchases,
@@ -81,10 +75,6 @@ export function getNormalizedSnipcartProducts(): NormalizedSnipcartProduct[] {
         inventory: getEffectiveInventory(card),
         trackInventory: tracksInventory(card),
         allowOutOfStockPurchases: getAllowOutOfStockPurchases(card),
-        categories: [CARD_BUNDLE_CATEGORY],
-        alternatePrices: {
-          [CARD_BUNDLE_ALTERNATE_PRICE_LIST]: CARD_BUNDLE_ALTERNATE_PRICE,
-        },
       };
     });
 

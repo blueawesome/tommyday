@@ -256,8 +256,6 @@ document.addEventListener("alpine:init", () => {
           url: card.url,
           quantity: 1,
           stackable: true,
-          categories: card.categories || ["greeting-card"],
-          alternatePrices: card.alternatePrices || { card5: 6 },
           metadata: {
             bundleGroupId: this.bundleItemId(),
             bundleName: this.bundleName(),

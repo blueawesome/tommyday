@@ -2,10 +2,6 @@ import { greetingCards, type GreetingCard } from "./cards";
 import { cardOccasions, type CardOccasion } from "./cardTaxonomies";
 import { bundlePrices, type BundlePackSize } from "./cardPacks";
 
-export const CARD_BUNDLE_CATEGORY = "greeting-card";
-export const CARD_BUNDLE_ALTERNATE_PRICE_LIST = "card5";
-export const CARD_BUNDLE_ALTERNATE_PRICE = 6;
-
 export function formatCardPrice(price?: number | null) {
   if (typeof price !== "number") return null;
 
@@ -124,10 +120,6 @@ export function getCardProductJson(card: GreetingCard) {
     url: new URL(`/cards/${card.slug}/`, "https://tommyday.com").href,
     name: getSnipcartCardName(card),
     description: getSnipcartCardDescription(card),
-    categories: [CARD_BUNDLE_CATEGORY],
-    alternatePrices: {
-      [CARD_BUNDLE_ALTERNATE_PRICE_LIST]: CARD_BUNDLE_ALTERNATE_PRICE,
-    },
     occasions: card.occasions,
     tones: card.tones,
     subjects: card.subjects,

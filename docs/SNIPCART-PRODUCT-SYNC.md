@@ -80,10 +80,10 @@ SNIPCART_SECRET_API_KEY=... npm run set:snipcart-stock -- dog-smoking-card 50 --
 The command reads current stock first and updates only inventory fields for the
 named product.
 
-## Greeting-card bundle contract
+## Greeting-card stack-builder contract
 
-Launch bundle pricing is a Snipcart Test-mode spike for one offer: any 5
-qualifying greeting cards for $30.
+Greeting cards have one flat price of `$6` each. The five-card builder is a
+selection convenience, not a discount or separate bundle product.
 
 The implementation must:
 
@@ -91,11 +91,10 @@ The implementation must:
   individual card line items;
 - support repeated selections of the same card design;
 - preserve a bundle group identifier for fulfillment;
-- define the `greeting-card` category and `card5` alternate price on every
-  qualifying card product;
+- use each card's standard `$6` price with no alternate price list;
 - use synchronized card inventory for selection limits before launch;
 - rely on Snipcart component stock for final oversell protection; and
 - never use a single opaque bundle SKU as the inventory record.
 
-The native automatic discount must be proven in Snipcart Test mode before this
-pricing behavior is treated as launch-safe.
+Any legacy `card5` automatic discount in the Snipcart dashboard must remain
+disabled.

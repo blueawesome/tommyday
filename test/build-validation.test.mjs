@@ -19,13 +19,9 @@ const catalog = {
     {
       id: "example-card",
       url: "https://tommyday.com/cards/example/",
-      price: 7,
+      price: 6,
       initialInventory: 25,
       allowOutOfStockPurchases: false,
-      categories: ["greeting-card"],
-      alternatePrices: {
-        card5: 6,
-      },
     },
   ],
 };
@@ -49,19 +45,19 @@ const button = ({
 const cardButton = ({
   id = "example-card",
   url = "/cards/example/",
-  price = "7",
+  price = "6",
   inventory = "25",
   allow = "false",
-  categories = "greeting-card",
-  card5 = "6",
+  categories,
+  card5,
 } = {}) => `
   <button
     class="button snipcart-add-item"
     data-item-id="${id}"
     data-item-url="${url}"
     data-item-price="${price}"
-    data-item-categories="${categories}"
-    data-item-price-card5="${card5}"
+    ${categories ? `data-item-categories="${categories}"` : ""}
+    ${card5 ? `data-item-price-card5="${card5}"` : ""}
     data-initial-inventory="${inventory}"
     data-allow-out-of-stock-purchases="${allow}">
   </button>`;
@@ -125,12 +121,12 @@ test("missing rendered controls produce a public-key diagnostic", () => {
   );
 });
 
-test("validator catches greeting-card category and alternate price mismatches", () => {
+test("validator rejects obsolete greeting-card discount metadata", () => {
   assert.throws(
     () =>
       validateCatalogAgainstMarkup(
         catalog,
-        collect(button() + cardButton({ categories: "other-category" }))
+        collect(button() + cardButton({ categories: "greeting-card" }))
       ),
     /Category mismatch/
   );
@@ -138,7 +134,7 @@ test("validator catches greeting-card category and alternate price mismatches", 
     () =>
       validateCatalogAgainstMarkup(
         catalog,
-        collect(button() + cardButton({ card5: "5" }))
+        collect(button() + cardButton({ card5: "6" }))
       ),
     /Alternate price mismatch/
   );

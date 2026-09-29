@@ -1,8 +1,6 @@
 ---
 import type { GreetingCard } from "../../data/cards";
 import {
-  CARD_BUNDLE_ALTERNATE_PRICE,
-  CARD_BUNDLE_CATEGORY,
   formatCardPrice,
   getCardPhysicalSpecLine,
   getSnipcartCardDescription,
@@ -25,10 +23,8 @@ const physicalSpecLine = getCardPhysicalSpecLine(card);
 
 <aside class="card-purchase-panel" aria-label={`${card.title} purchase options`}>
   <p class="card-purchase-panel__eyebrow">{physicalSpecLine}</p>
-  <h2>Pick any 5 cards for $30.</h2>
-  <p>
-    {price} on its own, or $6 each when you buy 5 or more.
-  </p>
+  <h2>{price} per card.</h2>
+  <p>No minimum. Add one card or build a custom five-card stack.</p>
 
   <div class="card-purchase-panel__actions">
     {rendersSnipcartControl && snipcartEnabled ? (
@@ -40,13 +36,11 @@ const physicalSpecLine = getCardPhysicalSpecLine(card);
         data-item-description={getSnipcartCardDescription(card)}
         data-item-image={card.frontImage}
         data-item-name={getSnipcartCardName(card)}
-        data-item-categories={CARD_BUNDLE_CATEGORY}
-        data-item-price-card5={CARD_BUNDLE_ALTERNATE_PRICE.toFixed(2)}
         data-item-max-quantity={effectiveInventory}
         data-initial-inventory={card.initialInventory}
         data-allow-out-of-stock-purchases={String(getAllowOutOfStockPurchases(card))}
       >
-        Add single card &mdash; {price}
+        Add card &mdash; {price}
       </button>
     ) : rendersSnipcartControl ? (
       <div class="card-purchase-panel__disabled">
@@ -57,7 +51,7 @@ const physicalSpecLine = getCardPhysicalSpecLine(card);
     )}
 
     <a class="card-primary-button card-primary-button--quiet" href={`/cards/build-a-pack/?start=${card.slug}`}>
-      Start a 5-Pack with this card
+      Build a 5-card stack
     </a>
   </div>
 

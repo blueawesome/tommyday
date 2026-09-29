@@ -40,10 +40,10 @@ registered, reconciled, or processed as current storefront products.
 
 | ID | Previous state | Current phase-one state | Inventory |
 |---|---|---|---|
-| `lets-get-toasted-card` | `available`, $7 | `available` | Physical count seeded in card catalog |
-| `dog-smoking-card` | `available`, $7 | `available` | Physical count seeded in card catalog |
-| `cant-nobody-hide-from-god-card` | `available`, $7 | `available` | Physical count seeded in card catalog |
-| `hang-in-there-card` | `available`, $7 | `available` | Physical count seeded in card catalog |
+| `lets-get-toasted-card` | `available`, $7 | `available`, $6 | Physical count seeded in card catalog |
+| `dog-smoking-card` | `available`, $7 | `available`, $6 | Physical count seeded in card catalog |
+| `cant-nobody-hide-from-god-card` | `available`, $7 | `available`, $6 | Physical count seeded in card catalog |
+| `hang-in-there-card` | `available`, $7 | `available`, $6 | Physical count seeded in card catalog |
 
 These stable IDs are reserved for the individual card designs. Each design will
 receive its own starting stock when real inventory arrives.
